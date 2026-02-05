@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEGA - Социальная сеть</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #3a86ff;
+            --secondary: #8338ec;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #06d6a0;
+            --warning: #ffbe0b;
+            --danger: #ef476f;
+            --card-bg: #ffffff;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--card-bg);
+            box-shadow: 0 2px 10px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 0 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo i {
+            color: var(--secondary);
+        }
+
+        .search-bar {
+            display: flex;
+            background-color: #f0f2f5;
+            border-radius: 20px;
+            padding: 8px 15px;
+            width: 40%;
+        }
+
+        .search-bar input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            margin-left: 10px;
+            outline: none;
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: 20px;
+            font-size: 20px;
+        }
+
+        .nav-icons a {
+            color: var(--gray);
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-icons a:hover {
+            color: var(--primary);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--danger);
+            color: white;
+            font-size: 12px;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            padding: 20px 15px;
+            position: sticky;
+            top: 80px;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px var(--shadow);
+        }
+
+        .sidebar-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark);
+            font-size: 18px;
+        }
+.menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            color: var(--dark);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .menu-item:hover {
+            background-color: #f0f2f5;
+        }
+
+        .menu-item.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .friend-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .friend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .friend-item:hover {
+            background-color: #f0f2f5;
+        }
+
+        .friend-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .friend-name {
+            font-weight: 500;
+        }
+
+        .friend-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: auto;
+        }
+
+        .online {
+            background-color: var(--success);
+        }
+
+        .offline {
+            background-color: var(--gray);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Story Section */
+        .story-section {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .story-card {
+            min-width: 120px;
+            height: 200px;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 3px 10px var(--shadow);
+            cursor: pointer;
+        }
+
+        .story-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .story-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .story-card.add-story {
+            background-color: var(--card-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed var(--gray);
+        }
+
+        .add-story i {
+            font-size: 30px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .story-author {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            font-weight: 500;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Create Post */
+        .create-post {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 5px var(--shadow);
+        }
+
+        .post-input {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .post-input textarea {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 12px 20px;
+            resize: none;
+            height: 50px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+.post-action:hover {
+            background-color: #f0f2f5;
+        }
+
+        .post-action i {
+            font-size: 18px;
+        }
+
+        .photo-action i { color: var(--success); }
+        .video-action i { color: var(--primary); }
+        .event-action i { color: var(--warning); }
+
+        .post-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 25px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .post-button:hover {
+            background-color: #2a75ff;
+        }
+
+        /* Feed */
+        .feed {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .post {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px var(--shadow);
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .post-author-info h4 {
+            font-weight: 600;
+        }
+
+        .post-author-info p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .post-content {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .post-image {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .post-stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .post-actions-buttons {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 10px;
+        }
+
+        .post-action-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .post-action-button:hover {
+            background-color: #f0f2f5;
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            width: 300px;
+            padding: 20px 15px;
+            position: sticky;
+            top: 80px;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+
+        .birthdays, .events, .sponsored {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px var(--shadow);
+        }
+
+        .birthday-item, .event-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .birthday-item:last-child, .event-item:last-child {
+            border-bottom: none;
+        }
+
+        .birthday-icon, .event-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #ffeaa7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e17055;
+        }
+
+        .event-icon {
+            background-color: #a29bfe;
+            color: white;
+        }
+
+        .sponsored-item {
+            margin-top: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px var(--shadow);
+        }
+
+        .sponsored-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .sponsored-info {
+            padding: 10px;
+        }
+/* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 30px 20px;
+            margin-top: 40px;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .footer-links a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            margin-top: 20px;
+            border-top: 1px solid #444;
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .right-sidebar {
+                display: none;
+            }
+            
+            .sidebar {
+                width: 80px;
+            }
+            
+            .menu-item span, .sidebar-title, .friend-name {
+                display: none;
+            }
+            
+            .menu-item {
+                justify-content: center;
+            }
+            
+            .search-bar {
+                width: 30%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                display: flex;
+                overflow-x: auto;
+                padding: 10px;
+                gap: 10px;
+            }
+            
+            .sidebar-section {
+                min-width: 200px;
+                margin-bottom: 0;
+            }
+            
+            .search-bar {
+                display: none;
+            }
+            
+            .post-actions-buttons span {
+                display: none;
+            }
+            
+            .nav-icons {
+                gap: 15px;
+            }
+        }
+
+        /* Dark mode toggle */
+        .dark-mode-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-users"></i>
+                <span>VEGA</span>
+            </div>
+            
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Поиск друзей, сообществ, новостей...">
+            </div>
+            
+            <div class="nav-icons">
+                <a href="#"><i class="fas fa-home"></i></a>
+                <a href="#">
+                    <i class="fas fa-user-friends"></i>
+                    <span class="notification-badge">3</span>
+                </a>
+                <a href="#">
+                    <i class="fas fa-comment-dots"></i>
+                    <span class="notification-badge">5</span>
+                </a>
+                <a href="#">
+                    <i class="fas fa-bell"></i>
+<span class="notification-badge">12</span>
+                </a>
+            </div>
+            
+            <div class="user-profile">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Аватар" class="avatar">
+                <span>Иван Петров</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Left Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Меню</div>
+                <a href="#" class="menu-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Лента новостей</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Друзья</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Сообщества</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-images"></i>
+                    <span>Фотографии</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-video"></i>
+                    <span>Видео</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>События</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Настройки</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">Друзья онлайн</div>
+                <div class="friend-list">
+                    <div class="friend-item">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Друг" class="friend-avatar">
+                        <div class="friend-name">Анна Смирнова</div>
+                        <div class="friend-status online"></div>
+                    </div>
+                    <div class="friend-item">
+                        <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Друг" class="friend-avatar">
+                        <div class="friend-name">Сергей Иванов</div>
+                        <div class="friend-status online"></div>
+                    </div>
+                    <div class="friend-item">
+                        <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Друг" class="friend-avatar">
+                        <div class="friend-name">Ольга Кузнецова</div>
+                        <div class="friend-status offline"></div>
+                    </div>
+                    <div class="friend-item">
+                        <img src="https://randomuser.me/api/portraits/men/55.jpg" alt="Друг" class="friend-avatar">
+                        <div class="friend-name">Дмитрий Соколов</div>
+                        <div class="friend-status online"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Stories -->
+            <div class="story-section">
+                <div class="story-card add-story">
+                    <i class="fas fa-plus"></i>
+                    <span>Добавить историю</span>
+                </div>
+                <div class="story-card">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80" alt="История">
+                    <div class="story-author">Алексей</div>
+</div>
+                <div class="story-card">
+                    <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80" alt="История">
+                    <div class="story-author">Мария</div>
+                </div>
+                <div class="story-card">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80" alt="История">
+                    <div class="story-author">Анна</div>
+                </div>
+                <div class="story-card">
+                    <img src="https://images.unsplash.com/photo-1507591064344-4c6ce005-128b-97dc8267b0a8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80" alt="История">
+                    <div class="story-author">Михаил</div>
+                </div>
+            </div>
+
+            <!-- Create Post -->
+            <div class="create-post">
+                <div class="post-input">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Аватар" class="avatar">
+                    <textarea placeholder="Что у вас нового, Иван?"></textarea>
+                </div>
+                <div class="post-actions">
+                    <div class="post-actions-left">
+                        <div class="post-action photo-action">
+                            <i class="fas fa-image"></i>
+                            <span>Фото/Видео</span>
+                        </div>
+                        <div class="post-action video-action">
+                            <i class="fas fa-video"></i>
+                            <span>Прямой эфир</span>
+                        </div>
+                        <div class="post-action event-action">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Событие</span>
+                        </div>
+                    </div>
+                    <button class="post-button">Опубликовать</button>
+                </div>
+            </div>
+
+            <!-- Feed -->
+            <div class="feed">
+                <!-- Post 1 -->
+                <div class="post">
+                    <div class="post-header">
+                        <div class="post-author">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Автор" class="avatar">
+                            <div class="post-author-info">
+                                <h4>Анна Смирнова</h4>
+                                <p>2 часа назад · <i class="fas fa-globe-europe"></i></p>
+                            </div>
+                        </div>
+                        <i class="fas fa-ellipsis-h"></i>
+                    </div>
+                    
+                    <div class="post-content">
+                        <p>Вчера побывала на потрясающей выставке современного искусства! Очень вдохновляет, когда видишь, как творчество может передавать такие глубокие эмоции и идеи. Рекомендую всем, кто будет в городе на этих выходных! 🎨✨</p>
+                    </div>
+                    
+                    <img src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Пост" class="post-image">
+                    
+                    <div class="post-stats">
+                        <div class="post-likes">
+                            <i class="fas fa-thumbs-up"></i> 245
+                        </div>
+                        <div class="post-comments">
+                            42 комментария
+</div>
+                        <div class="post-shares">
+                            5 репостов
+                        </div>
+                    </div>
+                    
+                    <div class="post-actions-buttons">
+                        <div class="post-action-button">
+                            <i class="far fa-thumbs-up"></i>
+                            <span>Нравится</span>
+                        </div>
+                        <div class="post-action-button">
+                            <i class="far fa-comment"></i>
+                            <span>Комментировать</span>
+                        </div>
+                        <div class="post-action-button">
+                            <i class="fas fa-share"></i>
+                            <span>Поделиться</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Post 2 -->
+                <div class="post">
+                    <div class="post-header">
+                        <div class="post-author">
+                            <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Автор" class="avatar">
+                            <div class="post-author-info">
+                                <h4>Сергей Иванов</h4>
+                                <p>5 часов назад · <i class="fas fa-user-friends"></i></p>
+                            </div>
+                        </div>
+                        <i class="fas fa-ellipsis-h"></i>
+                    </div>
+                    
+                    <div class="post-content">
+                        <p>Наконец-то завершил большой проект на работе! Полгода упорного труда, и вот результат. Очень благодарен своей команде за поддержку и слаженную работу. 🚀</p>
+                        <p>Теперь можно немного передохнуть и взяться за что-то новое. Кстати, кто что посоветует почитать на тему личной эффективности?</p>
+                    </div>
+                    
+                    <div class="post-stats">
+                        <div class="post-likes">
+                            <i class="fas fa-thumbs-up"></i> 189
+                        </div>
+                        <div class="post-comments">
+                            36 комментариев
+                        </div>
+                        <div class="post-shares">
+                            3 репоста
+                        </div>
+                    </div>
+                    
+                    <div class="post-actions-buttons">
+                        <div class="post-action-button">
+                            <i class="far fa-thumbs-up"></i>
+                            <span>Нравится</span>
+                        </div>
+                        <div class="post-action-button">
+                            <i class="far fa-comment"></i>
+                            <span>Комментировать</span>
+                        </div>
+                        <div class="post-action-button">
+                            <i class="fas fa-share"></i>
+                            <span>Поделиться</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="right-sidebar">
+            <div class="birthdays">
+                <div class="sidebar-title">Дни рождения</div>
+                <div class="birthday-item">
+                    <div class="birthday-icon">
+                        <i class="fas fa-birthday-cake"></i>
+                    </div>
+                    <div class="birthday-info">
+                        <div class="birthday-name">Мария Кузнецова</div>
+                        <div class="birthday-date">Сегодня</div>
+                    </div>
+                </div>
+❓ Не понимаю эту команду. Используйте кнопки меню.
+<div class="birthday-item">
+                    <div class="birthday-icon">
+                        <i class="fas fa-birthday-cake"></i>
+                    </div>
+                    <div class="birthday-info">
+                        <div class="birthday-name">Дмитрий Соколов</div>
+                        <div class="birthday-date">Завтра</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="events">
+                <div class="sidebar-title">Ближайшие события</div>
+                <div class="event-item">
+                    <div class="event-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="event-info">
+                        <div class="event-name">Концерт в парке</div>
+                        <div class="event-date">Суббота, 15:00</div>
+                    </div>
+                </div>
+                <div class="event-item">
+                    <div class="event-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="event-info">
+                        <div class="event-name">Встреча выпускников</div>
+                        <div class="event-date">Воскресенье, 19:00</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sponsored">
+                <div class="sidebar-title">Рекомендуем</div>
+                <div class="sponsored-item">
+                    <img src="https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Реклама">
+                    <div class="sponsored-info">
+                        <div class="sponsored-title">Новый фитнес-клуб в центре!</div>
+                        <div class="sponsored-desc">Скидка 20% на первый месяц</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>ConnectHub</h3>
+                <div class="footer-links">
+                    <a href="#">О нас</a>
+                    <a href="#">Вакансии</a>
+                    <a href="#">Реклама</a>
+                    <a href="#">Помощь</a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Конфиденциальность</h3>
+                <div class="footer-links">
+                    <a href="#">Политика конфиденциальности</a>
+                    <a href="#">Условия использования</a>
+                    <a href="#">Настройки конфиденциальности</a>
+                    <a href="#">Файлы cookie</a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Контакты</h3>
+                <div class="footer-links">
+                    <a href="#">Служба поддержки</a>
+                    <a href="#">Пресс-центр</a>
+                    <a href="#">Разработчикам</a>
+                    <a href="#">Партнеры</a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Следите за нами</h3>
+                <div class="footer-links">
+                    <a href="#"><i class="fab fa-vk"></i> ВКонтакте</a>
+                    <a href="#"><i class="fab fa-telegram"></i> Telegram</a>
+                    <a href="#"><i class="fab fa-youtube"></i> YouTube</a>
+                    <a href="#"><i class="fab fa-instagram"></i> Instagram</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            &copy; 2023 ConnectHub. Все права защищены.
+        </div>
+    </footer>
+
+    <div class="dark-mode-toggle" id="darkModeToggle">
+        <i class="fas fa-moon"></i>
+    </div>
+<script>
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+        
+        darkModeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                // Apply dark mode
+                document.documentElement.style.setProperty('--dark', '#f8f9fa');
+                document.documentElement.style.setProperty('--light', '#1a1a2e');
+                document.documentElement.style.setProperty('--card-bg', '#16213e');
+                document.documentElement.style.setProperty('--shadow', 'rgba(255, 255, 255, 0.05)');
+                body.style.backgroundColor = '#0f3460';
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                // Revert to light mode
+                document.documentElement.style.setProperty('--dark', '#1a1a2e');
+                document.documentElement.style.setProperty('--light', '#f8f9fa');
+                document.documentElement.style.setProperty('--card-bg', '#ffffff');
+                document.documentElement.style.setProperty('--shadow', 'rgba(0, 0, 0, 0.1)');
+                body.style.backgroundColor = '#f0f2f5';
+                darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        });
+
+        // Like button functionality
+        document.querySelectorAll('.post-action-button').forEach(button => {
+            button.addEventListener('click', function() {
+                if (this.querySelector('span').textContent === 'Нравится') {
+                    this.innerHTML = '<i class="fas fa-thumbs-up"></i><span>Понравилось</span>';
+                    this.style.color = 'var(--primary)';
+                }
+            });
+        });
+
+        // Story hover effect
+        document.querySelectorAll('.story-card:not(.add-story)').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Post button functionality
+        const postButton = document.querySelector('.post-button');
+        const postTextarea = document.querySelector('textarea');
+        
+        postButton.addEventListener('click', function() {
+            if (postTextarea.value.trim() !== '') {
+                alert('Пост опубликован!');
+                postTextarea.value = '';
+            } else {
+                alert('Пожалуйста, введите текст поста');
+            }
+        });
+    </script>
+</body>
+</html>
