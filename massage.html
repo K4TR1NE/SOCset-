@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VEGA — Сообщения с гороскопом</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --bg-gradient-default: linear-gradient(135deg, #5b2a8a 0%, #7a5cff 40%, #0b061a 100%);
+      --bg: #0b0b12;
+      --card-bg: rgba(20,16,24,0.75);
+      --text: #e9e0f9;
+      --muted: #b7a7c8;
+      --border: #2a1f35;
+      --shadow: rgba(0,0,0,.6);
+      --gradient: linear-gradient(135deg, #7a5cff 0%, #b36dff 100%);
+      --zodiac-glow: rgba(123, 99, 232, 0.4);
+      --online: #22c55e;      /* зелёный онлайн */
+      --offline: #777;        /* серый оффлайн */
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: var(--bg);
+    }
+    body.vega-bg { background: var(--bg-gradient-default); background-attachment: fixed; }
+
+    .top-nav { position: fixed; top:12px; left:50%; transform: translateX(-50%); display:flex; gap:8px; z-index: 1000;
+      background: rgba(0,0,0,.25); padding:8px; border-radius:12px; border:1px solid var(--border); }
+    .top-nav .nav-btn { padding:6px 12px; border-radius:999px; border:1px solid var(--border);
+      background: rgba(255,255,255,.08); color:#fff; cursor:pointer; font-weight:600; }
+    .top-nav .nav-btn.active { background: var(--gradient); border-color: transparent; }
+
+    .vega-header { display:flex; align-items:center; gap:12px;
+      padding: 12px 16px; border-bottom: 1px solid var(--border);
+      background: rgba(0,0,0,.15); position: sticky; top:0; z-index: 10;
+      backdrop-filter: blur(6px); }
+    .vega-logo { width: 40px; height: 40px; display:flex; align-items:center; justify-content:center;
+      border-radius: 8px; background: linear-gradient(135deg, #7a5cff 0%, #b36dff 100%);
+      box-shadow: 0 6px 14px var(--zodiac-glow); }
+    .vega-logo svg { width: 22px; height: 22px; fill: #fff; }
+    .vega-title { font-weight: 800; font-size: 20px; }
+
+    .container-full { display:flex; flex-direction:column; min-height:100vh; padding-top: 64px; }
+
+    .vega-layout { display:grid; grid-template-columns: 320px 1fr 360px; gap:10px;
+      padding:12px; height: calc(100vh - 64px); }
+
+    .dialog-list, .chat-window, .horoscope { border:1px solid var(--border); border-radius:12px;
+      background: var(--card-bg); overflow:hidden; display:flex; flex-direction:column;
+      box-shadow:0 6px 16px var(--shadow); }
+
+    .dialog-header { padding:10px 12px; font-weight:700; border-bottom:1px solid var(--border); background: rgba(0,0,0,.14); }
+    .dialog-scroll { overflow:auto; padding:6px; }
+    .dialog-item { display:flex; align-items:center; gap:8px; padding:8px; margin:6px 8px;
+                    border-radius:8px; border:1px solid var(--border); background: rgba(0,0,0,.18);
+                    cursor:pointer; position:relative; }
+    .dialog-item:hover { background: rgba(0,0,0,.28); transform: translateX(2px); }
+    .dialog-avatar { width:30px; height:30px; border-radius:50%; border:2px solid var(--gradient); object-fit:cover; }
+    .status-dot { position:absolute; right:6px; bottom:6px; width:10px; height:10px; border-radius:50%;
+                  border:2px solid #000; background: var(--offline); }
+
+    .chat-header { display:flex; align-items:center; gap:10px; padding:10px; border-bottom:1px solid var(--border);
+                   background: rgba(0,0,0,.18); }
+    .avatar { width:38px; height:38px; border-radius:50%; border:2px solid var(--gradient); object-fit:cover; }
+    .chat-area { flex:1; overflow:auto; padding:12px; background: rgba(10,10,18,.6);
+                 display:flex; flex-direction:column; gap:6px; }
+    .message { display:flex; margin:6px 0; }
+    .bubble { max-width:70%; padding:10px 12px; border-radius:12px; border:1px solid var(--border);
+               color: var(--text); box-shadow:0 4px 12px rgba(0,0,0,.25); background: rgba(255,255,255,.12); }
+    .from-me { justify-content:flex-end; }
+    .to-me { justify-content:flex-start; }
+    .bubble.me { background: var(--gradient); color:#fff; }
+    .bubble.them { background: rgba(255,255,255,.08); }
+
+    @keyframes appear { from { transform: translateY(6px); opacity:.0 } to { transform: translateY(0); opacity:1 } }
+
+    .chat-input { display:flex; align-items:center; padding:8px; border-top:1px solid var(--border); background: rgba(0,0,0,.25); }
+    .attachment { position:relative; display:flex; align-items:center; justify-content:center;
+                  width:42px; height:42px; border-radius:10px; border:1px solid var(--border);
+                  background: rgba(255,255,255,.08); cursor:pointer; margin-right:6px; }
+    .attach-menu { position:absolute; bottom: calc(100% + 8px); left:0;
+                   display:grid; grid-template-columns: repeat(4, 42px); gap:8px;
+                   padding:8px; border-radius:12px; background: var(--card-bg);
+                   border:1px solid var(--border); box-shadow: var(--shadow);
+                   opacity:0; transform: translateY(6px); pointer-events:none;
+                   transition: opacity .2s ease, transform .2s ease; }
+    .attach-menu.show { opacity:1; transform: translateY(0); pointer-events:auto; }
+    .attach-item { width:42px; height:42px; display:flex; align-items:center; justify-content:center;
+                    border-radius:8px; border:1px solid var(--border); background: rgba(255,255,255,.04); cursor:pointer; color:#fff; }
+    .attach-item:hover { background: rgba(123,99,232,.6); }
+
+    .send-btn { padding:8px 14px; border-radius:10px; border:none; font-weight:700; cursor:pointer;
+                 background: linear-gradient(135deg, #7a5cff 0%, #b36dff 100%); color:#fff;
+                 box-shadow:0 4px 12px rgba(122,92,255,.6); }
+
+    .horoscope { padding:0; }
+    .horoscope-header { padding:10px 12px; border-bottom:1px solid var(--border);
+                        display:flex; align-items:center; gap:8px; background: rgba(0,0,0,.18); }
+    .horoscope-title { font-weight:700; }
+    .signs { display:flex; flex-wrap:wrap; gap:6px; padding:8px 12px; }
+    .sign-chip { padding:6px 10px; border-radius:999px; border:1px solid var(--border);
+                  background: rgba(255,255,255,.05); cursor:pointer; font-size:12px; }
+    .sign-chip.active { background: var(--gradient); border-color: transparent; color:#fff; }
+
+    .horoscope-content { padding:12px; line-height:1.5; font-size:14px; color: var(--text); }
+
+    section.section { padding:12px; }
+
+    /* Заглушки контента */
+    #homeContent { display:none; }
+
+    @media (max-width: 1100px) {
+      .vega-layout { grid-template-columns: 1fr; height:auto; }
+      #homeScreen { padding: 12px; }
+      .top-nav { display:none; }
+    }
+  </style>
+</head>
+<body class="theme-dark vega-bg" style="min-height:100vh;">
+  <!-- Верхняя навигация (без левой панели) -->
+  <div class="top-nav" aria-label="Навигация">
+    <button class="nav-btn active" id="navFeed" title="Перейти к ленте VEGA">
+      <i class="fa-solid fa-newspaper"></i> Лента
+    </button>
+    <button class="nav-btn" id="navHome" title="На главный экран">
+      <i class="fa-solid fa-house"></i> Главная
+    </button>
+  </div>
+
+  <!-- Шапка VEGA -->
+  <header class="vega-header" style="margin: 0 0 0 0;">
+    <div class="vega-logo" aria-label="Логотип VEGA" title="VEGA">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-label="VEGA">
+        <defs><linearGradient id="gradVEGA" x1="0" y1="0" x2="1" y2="1">
+          <stop stop-color="#7a5cff" offset="0"/><stop stop-color="#b36dff" offset="1"/></linearGradient></defs>
+        <circle cx="12" cy="12" r="8" fill="url(#gradVEGA)" opacity="0.25"></circle>
+        <path d="M12 4l2.4 4.9 5.4.8-3.9 3.8 1 5.5-5.9-3.3-5.9 3.3 1-5.5L4.2 9.7l5.4-.8L12 4z" fill="url(#gradVEGA)"/>
+      </svg>
+    </div>
+    <div class="vega-title" style="font-weight:800;">VEGA — Сообщения</div>
+  </header>
+
+  <!-- Главные разделы -->
+  <main class="container-full" style="margin-top: 12px;">
+    <!-- Главная страница -->
+    <section id="homeScreen" aria-label="Главная страница" style="display:flex;">
+      <div class="card" style="margin:auto;">
+        <h1>Добро пожаловать в VEGA</h1>
+        <p>Здесь стильная соцсеть с уникальным гороскопом. Выберите секцию во вкладке выше.</p>
+        <button class="nav-btn" id="openFeedFromHome" style="margin-top:12px;">
+          Перейти к ленте VEGA
+        </button>
+      </div>
+    </section>
+
+    <!-- Лента VEGA (диалоги + чат + гороскоп) -->
+    <section id="vegaFeed" aria-label="VEGA лента" style="display:flex; flex-direction:column;">
+      <section class="vega-layout" aria-label="Сообщения VEGA" style="height: calc(100vh - 64px);">
+        <!-- Диалоги слева -->
+        <aside class="dialog-list" aria-label="Список диалогов" style="min-height: 120px;">
+          <div class="dialog-header">Диалоги</div>
+          <div class="dialog-scroll">
+            <div class="dialog-item" role="button" tabindex="0">
+              <img class="dialog-avatar" src="https://randomuser.me/api/portraits/men/11.jpg" alt="Аватар 1">
+              <div class="dialog-info">
+                <div class="dialog-name">Иван • Лев</div>
+                <div class="dialog-preview">Привет! Как дела? Это тестовая переписка.</div>
+              </div>
+              <div class="dialog-time">2 ч.</div>
+              <span class="status-dot" aria-label="Статус онлайн" title="Онлайн/офлайн"></span>
+            </div>
+            <div class="dialog-item" role="button" tabindex="0">
+              <img class="dialog-avatar" src="https://randomuser.me/api/portraits/women/21.jpg" alt="Аватар 2">
+              <div class="dialog-info">
+                <div class="dialog-name">Анна • Рыбы</div>
+                <div class="dialog-preview">Договорились обсудить позже...</div>
+              </div>
+              <div class="dialog-time">3 ч.</div>
+              <span class="status-dot" aria-label="Статус онлайн" title="Онлайн/офлайн"></span>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Чат в центре -->
+        <div class="chat-window" aria-label="Чат VEGA" style="min-height:100%;">
+          <div class="chat-header">
+            <div style="position:relative;">
+              <img src="https://randomuser.me/api/portraits/men/12.jpg" alt="Собеседник" class="avatar" />
+              <span class="status-dot" id="chatStatus" aria-label="Статус онлайн" title="Онлайн/офлайн" style="right:-4px; bottom:-4px; position:absolute;"></span>
+            </div>
+            <div style="font-weight:700;">Иван • Лев</div>
+            <span style="margin-left:auto; padding:6px 10px; border-radius:999px; background: rgba(122,92,255,.25); border:1px solid var(--border); font-size:12px;">
+              Сейчас онлайн
+            </span>
+          </div>
+
+          <div class="chat-area" id="chatArea" style="flex:1;">
+            <div class="message from-me" style="justify-content:flex-end;">
+              <div class="bubble me" style="background: linear-gradient(135deg, #7a5cff 0%, #b36dff 100%);">
+                Привет! Гороскоп на сегодня добавлен — смотрим справа.
+              </div>
+            </div>
+
+            <div class="message to-me" style="justify-content:flex-start;">
+              <div class="bubble them" style="background: rgba(255,255,255,.12);">
+                Ух как здорово! Живой чат с гороскопом — круто.
+              </div>
+            </div>
+
+            <div class="message from-me" style="justify-content:flex-end;">
+              <div class="bubble me" style="background: linear-gradient(135deg, #7a5cff 0%, #b36dff 100%);">
+                Дублируем фишку и улучшаем стиль.
+              </div>
+            </div>
+          </div>
+
+          <!-- Ввод + вложения -->
+          <div class="chat-input" style="align-items:center;">
+            <div class="attachment" id="attachBtn" title="Вложения" style="position:relative;">
+              <i class="fa-solid fa-paperclip" aria-hidden="true" style="font-size:18px;"></i>
+              <div class="attach-menu" id="attachMenu" aria-label="Вложения">
+                <div class="attach-item" title="Голос" onclick="insertAction('voice')"><i class="fas fa-microphone"></i></div>
+                <div class="attach-item" title="Фото" onclick="insertAction('photo')"><i class="fas fa-camera"></i></div>
+                <div class="attach-item" title="Видео" onclick="insertAction('video')"><i class="fas fa-video"></i></div>
+                <div class="attach-item" title="Документы" onclick="insertAction('document')"><i class="fas fa-paperclip"></i></div>
+                <div class="attach-item" title="Стикеры" onclick="insertAction('sticker')"><i class="fas fa-smile"></i></div>
+                <div class="attach-item" title="Эмодзи" onclick="insertAction('emoji')"><i class="fas fa-face-smile"></i></div>
+                <div class="attach-item" title="Стикеры 2" onclick="insertAction('sticker2')"><i class="fas fa-stamp"></i></div>
+                <div class="attach-item" title="Стикеры 3" onclick="insertAction('sticker3')"><i class="fas fa-tags"></i></div>
+              </div>
+            </div>
+
+            <textarea id="messageInput" placeholder="Напишите сообщение..." style="flex:1; resize:none; height:42px;
+              border-radius:12px; border:1px solid var(--border); padding:8px 12px; background: rgba(255,255,255,.08);
+              color:var(--text);"></textarea>
+
+            <button class="send-btn" id="sendBtn" title="Отправить">Отправить</button>
+          </div>
+        </div>
+
+        <!-- Гороскоп слева/справа -->
+        <section class="horoscope" aria-label="Гороскоп VEGA" style="min-height:100%;">
+          <div class="horoscope-header">
+            <span class="horoscope-title" style="display:flex; align-items:center; gap:8px;">
+              <i class="fa-solid fa-star" style="color:#ffd166"></i> Гороскоп VEGA
+            </span>
+            <span style="margin-left:auto; font-size:12px; color: var(--muted);">День: <span id="horoscopeDate"></span></span>
+          </div>
+          <div class="signs" id="signsContainer" aria-label="Знаки зодиака">
+            <button class="sign-chip" data-sign="aries">Овен</button>
+            <button class="sign-chip" data-sign="taurus">Телец</button>
+            <button class="sign-chip" data-sign="gemini">Близнецы</button>
+            <button class="sign-chip" data-sign="cancer">Рак</button>
+            <button class="sign-chip" data-sign="leo">Лев</button>
+            <button class="sign-chip" data-sign="virgo">Дева</button>
+            <button class="sign-chip" data-sign="libra">Весы</button>
+            <button class="sign-chip" data-sign="scorpio">Скорпион</button>
+            <button class="sign-chip" data-sign="sagittarius">Стрелец</button>
+            <button class="sign-chip" data-sign="capricorn">Козерог</button>
+            <button class="sign-chip" data-sign="aquarius">Водолей</button>
+            <button class="sign-chip" data-sign="pisces">Рыбы</button>
+          </div>
+          <div class="horoscope-content" id="horoscopeText"></div>
+        </section>
+      </section>
+    </section>
+
+    <!-- Дополнительные секции (заглушки) -->
+    <section id="friends" aria-label="Друзья" style="display:none;" class="section"><div class="section-card"><h3>Друзья</h3><p>Контент раздела Друзья будет здесь.</p></div></section>
+    <section id="communities" aria-label="Сообщества" style="display:none;" class="section"><div class="section-card"><h3>Сообщества</h3><p>Контент раздела Сообщества будет здесь.</p></div></section>
+    <section id="photos" aria-label="Фотографии" style="display:none;" class="section"><div class="section-card"><h3>Фотографии</h3><p>Контент раздела Фотографии будет здесь.</p></div></section>
+    <section id="videos" aria-label="Видео" style="display:none;" class="section"><div class="section-card"><h3>Видео</h3><p>Контент раздела Видео будет здесь.</p></div></section>
+    <section id="events" aria-label="События" style="display:none;" class="section"><div class="section-card"><h3>События</h3><p>Контент раздела События будет здесь.</p></div></section>
+    <section id="settings" aria-label="Настройки" style="display:none;" class="section"><div class="section-card"><h3>Настройки</h3><p>Контент раздела Настройки будет здесь.</p></div></section>
+  </main>
+
+  <script>
+    // Подключаем онлайн-статусы
+    // В реальном приложении статус можно получать по WebSocket/HTTP.
+    // Здесь имитируем онлайн/оффлайн для демонстрации.
+    const statusDots = []; // будут храниться элементы status-dot для диалогов
+    // Найдем статус-доты в диалогах
+    document.querySelectorAll('.dialog-item .status-dot').forEach((el) => statusDots.push(el));
+
+    // Эмулятор: случайно устанавливать онлайн/офлайн каждые ~5 секунд
+    function randomBool() { return Math.random() > 0.5; }
+    function updateStatuses() {
+      statusDots.forEach(dot => {
+        const isOnline = randomBool();
+        dot.style.background = isOnline ? getComputedStyle(document.documentElement).getPropertyValue('--online') || '#22c55e' : getComputedStyle(document.documentElement).getPropertyValue('--offline') || '#777';
+        dot.style.borderColor = '#000';
+        dot.title = isOnline ? 'Онлайн' : 'Офлайн';
+      });
+      // чат-статус тоже обновим
+      const chatStatus = document.getElementById('chatStatus');
+      if (chatStatus) {
+        const myOnline = randomBool();
+        chatStatus.style.background = myOnline ? getComputedStyle(document.documentElement).getPropertyValue('--online') || '#22c55e' : getComputedStyle(document.documentElement).getPropertyValue('--offline') || '#777';
+        chatStatus.title = myOnline ? 'Собеседник онлайн' : 'Собеседник оффлайн';
+      }
+    }
+    // запуским обновление каждые 5 секунд
+    setInterval(updateStatuses, 5000);
+    // первый запуск сразу
+    updateStatuses();
+
+    // Функционал переключения секций (верхняя навигация)
+    const navFeed = document.getElementById('navFeed');
+    const navHome = document.getElementById('navHome');
+    const homeScreen = document.getElementById('homeScreen');
+    const vegaFeed = document.getElementById('vegaFeed');
+    const openFeedFromHome = document.getElementById('openFeedFromHome');
+    const sections = {
+      feed: document.getElementById('vegaFeed'),
+      home: document.getElementById('homeScreen'),
+      friends: document.getElementById('friends'),
+      communities: document.getElementById('communities'),
+      photos: document.getElementById('photos'),
+      videos: document.getElementById('videos'),
+      events: document.getElementById('events'),
+      settings: document.getElementById('settings')
+    };
+
+    function showSection(name) {
+      Object.keys(sections).forEach(key => {
+        const el = sections[key];
+        if (!el) return;
+        el.style.display = (key === name) ? (name === 'home' ? 'flex' : 'block') : 'none';
+      });
+      document.querySelectorAll('.top-nav .nav-btn').forEach(n => n.classList.remove('active'));
+      if (name === 'feed') navFeed?.classList.add('active');
+      if (name === 'home') navHome?.classList.add('active');
+    }
+
+    // По умолчанию: показать ленту
+    showSection('feed');
+    if (navFeed) navFeed.addEventListener('click', () => showSection('feed'));
+    if (navHome) navHome.addEventListener('click', () => showSection('home'));
+    if (openFeedFromHome) openFeedFromHome.addEventListener('click', () => showSection('feed'));
+
+    // Управление вложениями
+    const attachBtn = document.getElementById('attachBtn');
+    const attachMenu = document.getElementById('attachMenu');
+    let menuOpen = false;
+    if (attachBtn) attachBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      menuOpen = !menuOpen;
+      attachMenu?.classList.toggle('show', menuOpen);
+    });
+    document.addEventListener('click', () => { if (attachMenu) attachMenu.classList.remove('show'); menuOpen = false; });
+
+    function insertAction(type) {
+      const input = document.getElementById('messageInput');
+      let text = '';
+      switch(type) {
+        case 'voice': text = 'Голосовая заметка: записано 00:12 сек.'; break;
+        case 'photo': text = 'Фото отправлено: photo.jpg'; break;
+        case 'video': text = 'Видео отправлено: video.mp4'; break;
+        case 'document': text = 'Документ: файл.pdf отправлен'; break;
+        case 'sticker': text = '😊 Вставлен стикер'; break;
+        case 'emoji': text = '🔥🔥🔥'; break;
+        case 'sticker2': text = '🎉 Праздничный стикер'; break;
+        default: text = 'Вложение';
+      }
+      addMessage(text, true);
+      simulateReply();
+      if (attachMenu) attachMenu.classList.remove('show'); menuOpen = false;
+    }
+
+    // Сообщения
+    const chatArea = document.getElementById('chatArea');
+    const input = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    function addMessage(text, fromMe = true) {
+      const div = document.createElement('div');
+      div.className = 'message ' + (fromMe ? 'from-me' : 'to-me');
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble' + (fromMe ? ' me' : ' them');
+      bubble.textContent = text;
+      div.appendChild(bubble);
+      chatArea.appendChild(div);
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }
+    function simulateReply() {
+      const reply = document.createElement('div');
+      reply.className = 'message to-me';
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble them';
+      bubble.textContent = 'Спасибо за сообщение! Это демонстрация живого чата VEGA с гороскопом.';
+      setTimeout(() => { reply.appendChild(bubble); chatArea.appendChild(reply); chatArea.scrollTop = chatArea.scrollHeight; }, 900);
+    }
+
+    if (sendBtn) {
+      sendBtn.addEventListener('click', () => {
+        const text = input.value.trim();
+        if (text) { addMessage(text, true); input.value=''; simulateReply(); }
+      });
+      input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { sendBtn.click(); } });
+    }
+
+    // Гороскоп
+    const signs = ['aries','taurus','gemini','cancer','leo','virgo','libra','scorpio','sagittarius','capricorn','aquarius','pisces'];
+    const signsContainer = document.getElementById('signsContainer');
+    const horoscopeText = document.getElementById('horoscopeText');
+    const horoscopeDate = document.getElementById('horoscopeDate');
+    let activeSign = 'leo';
+
+    function generateHoroscope(sign) {
+      const messages = {
+        aries: "Сегодня энергия в вашей груди: действуйте смело, вы на коне. Любовь и проекты — на подъёме.",
+        taurus: "Сосредоточьтесь на стабильности. Маленькие шаги сегодня приведут к большим результатам завтра.",
+        gemini: "Коммуникации важны: позвоните старому другу, найдите новые идеи через общение.",
+        cancer: "Дом и семья приоритет, уют и забота — ваш ключ к внутреннему балансу.",
+        leo: "Лидерство сегодня на пике. Ваша уверенность заразительна; ловите удачу в проектах.",
+        virgo: "Порядок — ваша сила. Планируйте, систематизируйте и результаты не заставят ждать.",
+        libra: "Баланс и гармония. Найдите компромисс между мечтой и реальностью.",
+        scorpio: "Интенсивность в делах: держите фокус и не забывайте про отдых, иначе выгорите.",
+        sagittarius: "Новые горизонты зовут. Риск оправдан, если взвешен и подготовлен.",
+        capricorn: "Целеустремленность — ваш козырь. Упорство принесет долгожданный прогресс.",
+        aquarius: "Идеи зашкаливают. Делитесь ими и найдите полезных союзников.",
+        pisces: "Чувствительность и интуиция помогают в отношениях и творческих проектах."
+      };
+      const d = new Date();
+      const today = d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+      const text = messages[sign] || "Гороскоп на сегодня: множество возможностей впереди.";
+      return `<strong>${sign.charAt(0).toUpperCase() + sign.slice(1)}</strong> • ${today}<br/>${text}`;
+    }
+
+    function renderHoroscope(sign) {
+      if (!horoscopeText) return;
+      horoscopeText.innerHTML = generateHoroscope(sign);
+      document.querySelectorAll('.sign-chip').forEach(el => el.classList.remove('active'));
+      document.querySelector(`.sign-chip[data-sign="${sign}"]`)?.classList.add('active');
+      activeSign = sign;
+      horoscopeDate.textContent = new Date().toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+    }
+
+    if (signsContainer) {
+      signsContainer.addEventListener('click', (e) => {
+        const btn = e.target.closest('.sign-chip');
+        if (btn && btn.dataset.sign) {
+          renderHoroscope(btn.dataset.sign);
+        }
+      });
+      renderHoroscope('leo');
+    }
+  </script>
+</body>
+</html>

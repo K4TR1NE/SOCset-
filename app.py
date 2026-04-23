@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from datetime import datetime, timedelta
-import random
+
 import os
 
 app = Flask(__name__)
@@ -399,9 +399,13 @@ def get_notifications():
         'unread_count': sum(1 for n in notifications if not n['read'])
     })
 
+@app.route("/team")
+def team():
+
+    return render_template("team.html")
+
 
 if __name__ == '__main__':
-    # Создаем папку templates, если её нет
     if not os.path.exists('templates'):
         os.makedirs('templates')
 

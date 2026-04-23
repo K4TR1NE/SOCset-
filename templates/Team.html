@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Team</title>
+  <style>
+    :root {
+      --primary: #9d7be8;
+      --primary-dark: #7c5bc0;
+      --secondary: #c77dff;
+      --accent: #b8a2ff;
+      --dark: #1a142b;
+      --dark-light: #2a1f3a;
+      --card-bg: #251c33;
+      --card-hover: #322841;
+      --text-light: #f0e9ff;
+      --text-muted: #cbbae3;
+      --gray: #a08bb4;
+      --shadow: rgba(0, 0, 0, 0.3);
+      --border-color: #3f3153;
+      --gradient: linear-gradient(135deg, #9d7be8 0%, #c77dff 100%);
+      --zodiac-glow: rgba(157, 123, 232, 0.3);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+    body {
+      background: linear-gradient(135deg, #1e1730 0%, #2a1f3a 100%);
+      color: var(--text-light);
+      min-height: 100vh;
+    }
+
+    .container {
+      display: flex;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 16px;
+    }
+
+    #team {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .member {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 8px 20px var(--shadow);
+    }
+
+    .member p {
+      margin-bottom: 8px;
+      color: var(--text-light);
+    }
+
+    .member strong {
+      color: #f6e9ff;
+    }
+
+    @media (max-width: 600px) {
+      #team { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section id="team">
+      <div class="member">
+        <p><strong>ФИО:</strong> Возисов Аретмий Вадимович</p>
+        <p><strong>Соцсети:</strong> LinkedIn: @ivanov-i</p>
+        <p><strong>Должность:</strong> Руководитель проекта</p>
+        <p><strong>Чем занимался(сь):</strong> Разрабатывал архитектуру сервиса, координировал команды, интегрировал CI/CD</p>
+        <p><strong>Что будут делать:</strong> Вести стратегию продукта, внедрять новые процессы и масштабировать сервис</p>
+      </div>
+
+      <div class="member">
+        <p><strong>ФИО:</strong> Овчинников Максим Александрович</p>
+        <p><strong>Соцсети:</strong> GitHub: @anapetrova</p>
+        <p><strong>Должность:</strong> Старший фронтенд-разработчик</p>
+        <p><strong>Чем занималась(сь):</strong> Разработка клиентской части, улучшение UX, внедрение React-инструментов</p>
+        <p><strong>Что будут делать:</strong> Разрабатывать новые интерфейсы и ускорять загрузку страниц, работать над доступностью</p>
+      </div>
+
+      <div class="member">
+        <p><strong>ФИО:</strong> Трефилов Семён Андреевич</p>
+        <p><strong>Соцсети:</strong> X: @sv_smcn</p>
+        <p><strong>Должность:</strong> Бэкенд-разработчик</p>
+        <p><strong>Чем занимался(сь):</strong> Разработка API, оптимизация запросов, работа с базами данных</p>
+        <p><strong>Что будут делать:</strong> Разрабатывать новые сервисы, обеспечивать безопасность и масштабируемость</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

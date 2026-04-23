@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEGA - Астрологическая сеть</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #9d7be8;
+            --primary-dark: #7c5bc0;
+            --secondary: #c77dff;
+            --accent: #b8a2ff;
+            --dark: #1a142b;
+            --dark-light: #2a1f3a;
+            --card-bg: #251c33;
+            --card-hover: #322841;
+            --text-light: #f0e9ff;
+            --text-muted: #cbbae3;
+            --gray: #a08bb4;
+            --success: #8a9eff;
+            --warning: #ffb86b;
+            --danger: #ff6b8b;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --border-color: #3f3153;
+            --gradient: linear-gradient(135deg, #9d7be8 0%, #c77dff 100%);
+            --zodiac-glow: rgba(157, 123, 232, 0.3);
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e1730 0%, #2a1f3a 100%);
+            color: var(--text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            background: rgba(37, 28, 51, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 0 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 26px;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px;
+        }
+
+        .logo i {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 30px;
+        }
+
+        .search-bar {
+            display: flex;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            padding: 8px 20px;
+            width: 40%;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(5px);
+        }
+
+        .search-bar i {
+            color: var(--text-muted);
+        }
+
+        .search-bar input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            margin-left: 10px;
+            outline: none;
+            color: var(--text-light);
+        }
+
+        .search-bar input::placeholder {
+            color: var(--gray);
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: 20px;
+            font-size: 20px;
+        }
+
+        .nav-icons a {
+            color: var(--text-muted);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-icons a:hover {
+            color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--gradient);
+            color: white;
+            font-size: 11px;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--card-bg);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(157, 123, 232, 0.15);
+            padding: 5px 15px 5px 5px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--secondary);
+            box-shadow: 0 0 10px var(--zodiac-glow);
+        }
+
+        .user-profile span {
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            padding: 20px 15px;
+            position: sticky;
+            top: 80px;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: var(--dark-light);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .sidebar-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px var(--shadow);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(5px);
+        }
+
+        .sidebar-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-light);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-title i {
+            color: var(--secondary);
+            font-size: 16px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-bottom: 5px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .menu-item:hover {
+            background: rgba(157, 123, 232, 0.15);
+            color: var(--secondary);
+            transform: translateX(5px);
+        }
+
+        .menu-item.active {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 5px 15px rgba(157, 123, 232, 0.4);
+        }
+
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .friend-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .friend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .friend-item:hover {
+            background: rgba(157, 123, 232, 0.1);
+        }
+
+        .friend-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+        }
+
+        .friend-name {
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .friend-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: auto;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .online {
+            background-color: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        .offline {
+            background-color: var(--gray);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Story Section */
+        .story-section {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .story-section::-webkit-scrollbar {
+            height: 5px;
+        }
+
+        .story-section::-webkit-scrollbar-track {
+            background: var(--dark-light);
+            border-radius: 10px;
+        }
+
+        .story-section::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .story-card {
+            min-width: 120px;
+            height: 200px;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 20px var(--shadow);
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+        }
+
+        .story-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .story-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .story-card.add-story {
+            background: var(--card-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed var(--primary);
+        }
+
+        .add-story i {
+            font-size: 30px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .add-story span {
+            color: var(--text-muted);
+        }
+
+        .story-author {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            font-weight: 500;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Create Post */
+        .create-post {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 20px var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .post-input {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .post-input textarea {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 12px 20px;
+            resize: none;
+            height: 50px;
+            font-size: 16px;
+            outline: none;
+            color: var(--text-light);
+        }
+
+        .post-input textarea::placeholder {
+            color: var(--gray);
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .post-actions-left {
+            display: flex;
+            gap: 10px;
+        }
+
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-muted);
+        }
+
+        .post-action:hover {
+            background: rgba(157, 123, 232, 0.15);
+            color: var(--secondary);
+        }
+
+        .post-action i {
+            font-size: 18px;
+        }
+
+        .photo-action i { color: var(--success); }
+        .video-action i { color: var(--primary); }
+        .event-action i { color: var(--warning); }
+
+        .post-button {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 8px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .post-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(157, 123, 232, 0.4);
+        }
+
+        /* Feed */
+        .feed {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .post {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 20px var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .post-author-info h4 {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .post-author-info p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .post-content {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: var(--text-light);
+        }
+
+        .post-image {
+            width: 100%;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .post-stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .post-actions-buttons {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 10px;
+        }
+
+        .post-action-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-muted);
+        }
+
+        .post-action-button:hover {
+            background: rgba(157, 123, 232, 0.15);
+            color: var(--secondary);
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            width: 300px;
+            padding: 20px 15px;
+            position: sticky;
+            top: 80px;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+
+        .right-sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .right-sidebar::-webkit-scrollbar-track {
+            background: var(--dark-light);
+        }
+
+        .right-sidebar::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .birthdays, .events, .sponsored, .horoscope, .social-links {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .birthday-item, .event-item, .horoscope-item, .social-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .birthday-item:last-child, .event-item:last-child, .horoscope-item:last-child, .social-item:last-child {
+            border-bottom: none;
+        }
+
+        .birthday-icon, .event-icon, .zodiac-icon, .social-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #9d7be8 0%, #c77dff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 5px 15px rgba(157, 123, 232, 0.3);
+        }
+
+        .event-icon {
+            background: linear-gradient(135deg, #c77dff 0%, #b8a2ff 100%);
+        }
+
+        .social-icon {
+            background: linear-gradient(135deg, #0088cc 0%, #5d8bf4 100%);
+        }
+
+        .social-icon.vk {
+            background: linear-gradient(135deg, #4a76a8 0%, #6d8eb0 100%);
+        }
+
+        .social-icon.telegram {
+            background: linear-gradient(135deg, #0088cc 0%, #5d8bf4 100%);
+        }
+
+        .birthday-info, .event-info, .zodiac-info, .social-info {
+            flex: 1;
+        }
+
+        .birthday-name, .event-name, .zodiac-sign, .social-name {
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .birthday-date, .event-date, .zodiac-date, .social-link {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .social-link a {
+            color: var(--secondary);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .social-link a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        .zodiac-prediction {
+            color: var(--secondary);
+            font-size: 12px;
+            margin-top: 3px;
+            font-style: italic;
+        }
+
+        .sponsored-item {
+            margin-top: 15px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .sponsored-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .sponsored-info {
+            padding: 15px;
+            background: var(--dark-light);
+        }
+
+        .sponsored-title {
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .sponsored-desc {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        /* Team Section (new) */
+        #team {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            margin: 0 0 20px;
+        }
+
+        .member {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 20px var(--shadow);
+        }
+
+        .member p {
+            margin-bottom: 8px;
+            color: var(--text-light);
+        }
+
+        .member strong {
+            color: #f6e9ff;
+        }
+
+        @media (max-width: 600px) {
+            #team { grid-template-columns: 1fr; }
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: var(--text-light);
+            padding: 40px 20px 20px;
+            margin-top: 40px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-links a:hover {
+            color: var(--secondary);
+            transform: translateX(5px);
+        }
+
+        /* User Agreement Section (existing) */
+        .user-agreement {
+            max-width: 1400px;
+            margin: 30px auto 20px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 20px var(--shadow);
+        }
+
+        .agreement-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .agreement-header h2 {
+            font-size: 22px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .agreement-header i {
+            font-size: 24px;
+            color: var(--secondary);
+            transition: transform 0.3s;
+        }
+
+        .agreement-header i.rotate {
+            transform: rotate(180deg);
+        }
+
+        .agreement-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .agreement-content.show {
+            max-height: 2000px;
+            transition: max-height 0.5s ease-in;
+        }
+
+        .agreement-section {
+            margin-bottom: 20px;
+        }
+
+        .agreement-section h3 {
+            color: var(--secondary);
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .agreement-section p {
+            margin-bottom: 8px;
+            padding-left: 15px;
+        }
+
+        .agreement-section ul {
+            padding-left: 35px;
+            margin: 10px 0;
+        }
+
+        .agreement-section li {
+            margin-bottom: 5px;
+        }
+
+        .agreement-date {
+            text-align: right;
+            color: var(--secondary);
+            font-style: italic;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Theme toggle */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--gradient);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(157, 123, 232, 0.5);
+            z-index: 1000;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* Zodiac decorations */
+        .zodiac-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .horoscope-badge {
+            display: inline-block;
+            background: rgba(157, 123, 232, 0.2);
+            padding: 5px 10px;
+            border-radius: 20px;
+            color: var(--secondary);
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .right-sidebar {
+                display: none;
+            }
+
+            .sidebar {
+                width: 80px;
+            }
+
+            .menu-item span, .sidebar-title, .friend-name {
+                display: none;
+            }
+
+            .menu-item {
+                justify-content: center;
+            }
+
+            .search-bar {
+                width: 30%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                display: flex;
+                overflow-x: auto;
+                padding: 10px;
+                gap: 10px;
+            }
+
+            .sidebar-section {
+                min-width: 200px;
+                margin-bottom: 0;
+            }
+
+            .search-bar {
+                display: none;
+            }
+
+            .post-actions-buttons span {
+                display: none;
+            }
+
+            .nav-icons {
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-star"></i>
+                <span>VEGA</span>
+            </div>
+
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Поиск людей, гороскопов, событий...">
+            </div>
+
+            <div class="nav-icons">
+                <a href="#"><i class="fas fa-home"></i></a>
+                <a href="#">
+                    <i class="fas fa-user-friends"></i>
+                    <span class="notification-badge">3</span>
+                </a>
+                <a href="#">
+                    <i class="fas fa-comment-dots"></i>
+                    <span class="notification-badge">5</span>
+                </a>
+                <a href="#">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">12</span>
+                </a>
+                <!-- Пункт перехода к О команде (якорь) добавлен ниже в навигацию -->
+            </div>
+
+            <div class="user-profile">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Аватар" class="avatar">
+                <span>Иван ♌ Лев</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Left Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="fas fa-crystal-ball"></i> Меню
+                </div>
+                <a href="#" class="menu-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Лента</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Друзья</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Сообщества</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-images"></i>
+                    <span>Фотографии</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-video"></i>
+                    <span>Видео</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>События</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Настройки</span>
+                </a>
+                <!-- Добавляю пункт "О команде" здесь, чтобы прокрутить к секции на той же странице -->
+                <a href="#team" class="menu-item">
+                    <i class="fas fa-user-friends"></i>
+                    <span>О команде</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="fas fa-moon"></i> Друзья онлайн
+                </div>
+                <div class="friend-list">
+                    <div class="friend-item">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Друг" class="friend-avatar">
+                        <div class="friend-name">Анна ♓ Рыбы</div>
+                        <div class="friend-status online"></div>
+                    </div>
+                    <div class="friend-item">
+                        <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Друг" class="friend-avatar">
+                        <div class="friend-name">Сергей ♏ Скорпион</div>
+                        <div class="friend-status online"></div>
+                    </div>
+                    <div class="friend-item">
+                        <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Друг" class="friend-avatar">
+                        <div class="friend-name">Ольга ♎ Весы</div>
+                        <div class="friend-status offline"></div>
+                    </div>
+                    <div class="friend-item">
+                        <img src="https://randomuser.me/api/portraits/men/55.jpg" alt="Друг" class="friend-avatar">
+                        <div class="friend-name">Дмитрий ♉ Телец</div>
+                        <div class="friend-status online"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="fas fa-sun"></i> Гороскоп на сегодня
+                </div>
+                <div class="horoscope-item">
+                    <div class="zodiac-icon">
+                        <i class="fas fa-lion"></i>
+                    </div>
+                    <div class="zodiac-info">
+                        <div class="zodiac-sign">Лев</div>
+                        <div class="zodiac-date">23.07 - 22.08</div>
+                        <div class="zodiac-prediction">Удачный день для начинаний</div>
+                    </div>
+                </div>
+                <div class="horoscope-badge">
+                    <i class="fas fa-sparkles"></i> Ваш знак - Лев
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Stories -->
+            <div class="story-section">
+                <div class="story-card add-story">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>История</span>
+                </div>
+                <div class="story-card">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="История">
+                    <div class="story-author">♈ Овен</div>
+                </div>
+                <div class="story-card">
+                    <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="История">
+                    <div class="story-author">♉ Телец</div>
+                </div>
+                <div class="story-card">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="История">
+                    <div class="story-author">♊ Близнецы</div>
+                </div>
+                <div class="story-card">
+                    <img src="https://images.unsplash.com/photo-1507591064344-4c6ce005-128b-97dc8267b0a8?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="История">
+                    <div class="story-author">♋ Рак</div>
+                </div>
+            </div>
+
+            <!-- Create Post -->
+            <div class="create-post">
+                <div class="post-input">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Аватар" class="avatar">
+                    <textarea placeholder="Что вам подсказывают звезды, Иван?"></textarea>
+                </div>
+                <div class="post-actions">
+                    <div class="post-actions-left">
+                        <div class="post-action photo-action">
+                            <i class="fas fa-image"></i>
+                            <span>Фото</span>
+                        </div>
+                        <div class="post-action video-action">
+                            <i class="fas fa-video"></i>
+                            <span>Видео</span>
+                        </div>
+                        <div class="post-action event-action">
+                            <i class="fas fa-star"></i>
+                            <span>Гороскоп</span>
+                        </div>
+                    </div>
+                    <button class="post-button">Опубликовать</button>
+                </div>
+            </div>
+
+            <!-- Team Section (Новая вкладка на index.html) -->
+            <section id="team" aria-label="О команде">
+                <div class="member">
+                    <p><strong>ФИО:</strong> Иванов Иван Иванович</p>
+                    <p><strong>Соцсети:</strong> LinkedIn: @ivanov-i</p>
+                    <p><strong>Должность:</strong> Руководитель проекта</p>
+                    <p><strong>Чем занимался(сь):</strong> Разрабатывал архитектуру сервиса, координировал команды, интегрировал CI/CD</p>
+                    <p><strong>Что будут делать:</strong> Вести стратегию продукта, внедрять новые процессы и масштабировать сервис</p>
+                </div>
+
+                <div class="member">
+                    <p><strong>ФИО:</strong> Петрова Анна Сергеевна</p>
+                    <p><strong>Соцсети:</strong> GitHub: @anapetrova</p>
+                    <p><strong>Должность:</strong> Старший фронтенд-разработчик</p>
+                    <p><strong>Чем занималась(сь):</strong> Разработка клиентской части, улучшение UX, внедрение React-инструментов</p>
+                    <p><strong>Что будут делать:</strong> Разрабатывать новые интерфейсы и ускорять загрузку страниц, работать над доступностью</p>
+                </div>
+
+                <div class="member">
+                    <p><strong>ФИО:</strong> Смирнов Сергей Владимирович</p>
+                    <p><strong>Соцсети:</strong> X: @sv_smcn</p>
+                    <p><strong>Должность:</strong> Бэкенд-разработчик</p>
+                    <p><strong>Чем занимался(сь):</strong> Разработка API, оптимизация запросов, работа с базами данных</p>
+                    <p><strong>Что будут делать:</strong> Разрабатывать новые сервисы, обеспечивать безопасность и масштабируемость</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="right-sidebar">
+            <div class="birthdays">
+                <div class="sidebar-title">
+                    <i class="fas fa-cake-candles"></i> Дни рождения
+                </div>
+                <div class="birthday-item">
+                    <div class="birthday-icon">
+                        <i class="fas fa-birthday-cake"></i>
+                    </div>
+                    <div class="birthday-info">
+                        <div class="birthday-name">Мария ♊ Близнецы</div>
+                        <div class="birthday-date">Сегодня · 25 лет</div>
+                    </div>
+                </div>
+                <div class="birthday-item">
+                    <div class="birthday-icon">
+                        <i class="fas fa-birthday-cake"></i>
+                    </div>
+                    <div class="birthday-info">
+                        <div class="birthday-name">Дмитрий ♉ Телец</div>
+                        <div class="birthday-date">Завтра · 32 года</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="events">
+                <div class="sidebar-title">
+                    <i class="fas fa-calendar-check"></i> События
+                </div>
+                <div class="event-item">
+                    <div class="event-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="event-info">
+                        <div class="event-name">✨ Астрологический фестиваль</div>
+                        <div class="event-date">Суббота, 15:00</div>
+                    </div>
+                </div>
+                <div class="event-item">
+                    <div class="event-icon">
+                        <i class="fas fa-moon"></i>
+                    </div>
+                    <div class="event-info">
+                        <div class="event-name">Новолуние в Раке</div>
+                        <div class="event-date">Воскресенье, 19:00</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="horoscope">
+                <div class="sidebar-title">
+                    <i class="fas fa-sparkles"></i> Гороскоп недели
+                </div>
+                <div class="horoscope-item">
+                    <div class="zodiac-icon">
+                        <i class="fas fa-ram"></i>
+                    </div>
+                    <div class="zodiac-info">
+                        <div class="zodiac-sign">Овен</div>
+                        <div class="zodiac-prediction">Энергия бьет ключом</div>
+                    </div>
+                </div>
+                <div class="horoscope-item">
+                    <div class="zodiac-icon">
+                        <i class="fas fa-bull"></i>
+                    </div>
+                    <div class="zodiac-info">
+                        <div class="zodiac-sign">Телец</div>
+                        <div class="zodiac-prediction">Финансовая удача</div>
+                    </div>
+                </div>
+                <div class="horoscope-item">
+                    <div class="zodiac-icon">
+                        <i class="fas fa-twins"></i>
+                    </div>
+                    <div class="zodiac-info">
+                        <div class="zodiac-sign">Близнецы</div>
+                        <div class="zodiac-prediction">Новые знакомства</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Telegram Links -->
+            <div class="social-links">
+                <div class="sidebar-title">
+                    <i class="fab fa-telegram"></i> Telegram
+                </div>
+                <div class="social-item">
+                    <div class="social-icon telegram">
+                        <i class="fab fa-telegram"></i>
+                    </div>
+                    <div class="social-info">
+                        <div class="social-name">K4TR1NE</div>
+                        <div class="social-link">
+                            <a href="https://t.me/K4TR1NE" target="_blank">@K4TR1NE</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="social-item">
+                    <div class="social-icon telegram">
+                        <i class="fab fa-telegram"></i>
+                    </div>
+                    <div class="social-info">
+                        <div class="social-name">ArtemiyVadimch</div>
+                        <div class="social-link">
+                            <a href="https://t.me/ArtemiyVadimch" target="_blank">@ArtemiyVadimch</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="social-item">
+                    <div class="social-icon telegram">
+                        <i class="fab fa-telegram"></i>
+                    </div>
+                    <div class="social-info">
+                        <div class="social-name">G1h0sts</div>
+                        <div class="social-link">
+                            <a href="https://t.me/G1h0sts" target="_blank">@G1h0sts</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VK Links -->
+            <div class="social-links">
+                <div class="sidebar-title">
+                    <i class="fab fa-vk"></i> ВКонтакте
+                </div>
+                <div class="social-item">
+                    <div class="social-icon vk">
+                        <i class="fab fa-vk"></i>
+                    </div>
+                    <div class="social-info">
+                        <div class="social-name">gregoreu</div>
+                        <div class="social-link">
+                            <a href="https://vk.ru/gregoreu" target="_blank">vk.ru/gregoreu</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="social-item">
+                    <div class="social-icon vk">
+                        <i class="fab fa-vk"></i>
+                    </div>
+                    <div class="social-info">
+                        <div class="social-name">jamkar</div>
+                        <div class="social-link">
+                            <a href="https://vk.ru/jamkar" target="_blank">vk.ru/jamkar</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="social-item">
+                    <div class="social-icon vk">
+                        <i class="fab fa-vk"></i>
+                    </div>
+                    <div class="social-info">
+                        <div class="social-name">id617362202</div>
+                        <div class="social-link">
+                            <a href="https://vk.ru/id617362202" target="_blank">vk.ru/id617362202</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sponsored">
+                <div class="sidebar-title">
+                    <i class="fas fa-ad"></i> Рекомендуем
+                </div>
+                <div class="sponsored-item">
+                    <img src="https://images.unsplash.com/photo-1532968961962-8a0cb3a2d4f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Реклама">
+                    <div class="sponsored-info">
+                        <div class="sponsored-title">✨ Астрологический центр</div>
+                        <div class="sponsored-desc">Консультация астролога -20%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-star"></i> VEGA</h3>
+                <div class="footer-links">
+                    <a href="#"><i class="fas fa-crystal-ball"></i> О проекте</a>
+                    <a href="team"><i class="fas fa-sparkles"></i> О команде</a>
+                    <a href="#"><i class="fas fa-question-circle"></i> Помощь</a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3><i class="fas fa-lock"></i> Конфиденциальность</h3>
+                <div class="footer-links">
+                    <a href="#">Политика конфиденциальности</a>
+                    <a href="#">Условия использования</a>
+                    <a href="#">Настройки конфиденциальности</a>
+                    <a href="#">Файлы cookie</a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3><i class="fas fa-envelope"></i> Контакты</h3>
+                <div class="footer-links">
+                    <a href="#">Служба поддержки</a>
+                    <a href="#">Пресс-центр</a>
+                    <a href="#">Разработчикам</a>
+                    <a href="#">Партнеры</a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3><i class="fas fa-globe"></i> Мы в соцсетях</h3>
+                <div class="footer-links">
+                    <a href="https://t.me/K4TR1NE" target="_blank"><i class="fab fa-telegram"></i> Telegram</a>
+                    <a href="https://vk.ru/gregoreu" target="_blank"><i class="fab fa-vk"></i> ВКонтакте</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Agreement Section -->
+        <div class="user-agreement" id="userAgreement">
+            <div class="agreement-header" onclick="toggleAgreement()">
+                <i class="fas fa-chevron-down" id="agreementArrow"></i>
+                <h2>📜 ПОЛЬЗОВАТЕЛЬСКОЕ СОГЛАШЕНИЕ</h2>
+            </div>
+            <div class="agreement-content" id="agreementContent">
+                <p><strong>г. Ижевск, 07.02.2026</strong></p>
+                <p>Настоящий документ «Пользовательское соглашение» (далее — Соглашение) представляет собой предложение Vega (далее — «Администрация») заключить договор на изложенных ниже условиях с любым физическим лицом, использующим Сайт (далее — «Пользователь»).</p>
+
+                <div class="agreement-section">
+                    <h3>1. Общие положения</h3>
+                    <p>1.1. Настоящее Соглашение регулирует отношения между Администрацией сайта http://127.0.0.1:5000/ (далее — «Сайт») и Пользователем по использованию Сайта и его функциональных возможностей.</p>
+                    <p>1.2. Текст Соглашения является публичной офертой в соответствии со ст. 437 Гражданского кодекса РФ.</p>
+                    <p>1.3. Фактом начала использования Сайта (любых его сервисов, включая просмотр страниц, регистрацию, размещение контента) Пользователь выражает свое полное и безоговорочное согласие (акцепт) с условиями настоящего Соглашения в соответствии со ст. 438 ГК РФ.</p>
+                    <p>1.4. Администрация имеет право вносить изменения в Соглашение в одностороннем порядке путем размещения новой версии на Сайте. Новая редакция вступает в силу с момента ее публикации, если иное не предусмотрено новой редакцией. Продолжение использования Сайта означает принятие изменений.</p>
+                </div>
+
+                <div class="agreement-section">
+                    <h3>2. Статус Сторон и регистрация</h3>
+                    <p>2.1. Администрация Сайта — лицо, обладающее правами администрирования Сайта и обеспечивающее его функционирование.</p>
+                    <p>2.2. Пользователь — дееспособное физическое лицо, достигшее возраста, допустимого для акцепта настоящего Соглашения в соответствии с законодательством РФ, и прошедшее процедуру регистрации на Сайте.</p>
+                    <p>2.3. Регистрация на Сайте является бесплатной и добровольной.</p>
+                    <p>2.4. При регистрации Пользователь обязан предоставить достоверную и актуальную информацию (адрес электронной почты, логин, пароль). Пользователь несет ответственность за достоверность предоставленной информации.</p>
+                    <p>2.5. Пользователь обязуется не передавать третьим лицам свои логин и пароль, а также несет ответственность за сохранность своей учетной записи.</p>
+                </div>
+
+                <div class="agreement-section">
+                    <h3>3. Права и обязанности Сторон</h3>
+                    <p><strong>3.1. Пользователь имеет право:</strong></p>
+                    <p>3.1.1. Бесплатно пользоваться основными сервисами Сайта (создавать профиль, размещать контент, общаться с другими пользователями) в соответствии с функционалом Сайта.</p>
+                    <p>3.1.2. Получать информацию о работе Сайта.</p>
+                    <p>3.1.3. Обращаться к Администрации с вопросами и предложениями.</p>
+
+                    <p><strong>3.2. Пользователь обязуется:</strong></p>
+                    <p>3.2.1. Не размещать на Сайте материалы, которые являются незаконными, нарушают права третьих лиц (в том числе авторские права), пропагандируют насилие, ненависть, дискриминацию, содержат нецензурную брань или оскорбления.</p>
+                    <p>3.2.2. Не использовать Сайт для распространения спама, вирусов, а также для сбора персональных данных других пользователей.</p>
+                    <p>3.2.3. Не выдавать себя за другого человека или представителя организации без достаточных прав.</p>
+                    <p>3.2.4. Не нарушать работоспособность Сайта, не пытаться получить несанкционированный доступ к его функциям.</p>
+
+                    <p><strong>3.3. Администрация имеет право:</strong></p>
+                    <p>3.3.1. По своему усмотрению изменять, дополнять или удалять любой контент, размещенный Пользователем, если он нарушает условия Соглашения.</p>
+                    <p>3.3.2. Блокировать или удалять учетную запись Пользователя без предварительного уведомления в случае нарушения условий Соглашения.</p>
+                    <p>3.3.3. Проводить профилактические работы на Сайте с возможным временным приостановлением доступа к Сайту.</p>
+
+                    <p><strong>3.4. Администрация обязуется:</strong></p>
+                    <p>3.4.1. Принимать разумные усилия для обеспечения работоспособности Сайта и защиты учетных записей Пользователей.</p>
+                    <p>3.4.2. Обеспечивать конфиденциальность персональных данных Пользователей в соответствии с Политикой конфиденциальности.</p>
+                </div>
+
+                <div class="agreement-section">
+                    <h3>4. Интеллектуальная собственность и контент пользователя</h3>
+                    <p>4.1. Размещая на Сайте контент (тексты, фотографии, видео, иные материалы), Пользователь предоставляет Администрации неисключительную безвозмездную лицензию на его использование (воспроизведение, распространение, публичный показ, переработку) в рамках функционирования Сайта (например, для отображения в ленте новостей) без выплаты вознаграждения.</p>
+                    <p>4.2. Пользователь гарантирует, что размещаемый им контент не нарушает авторских прав и иных законных прав третьих лиц.</p>
+                    <p>4.3. Администрация вправе использовать фирменное наименование, товарные знаки и иные обозначения Пользователя (никнейм, аватар) в рекламных материалах, связанных с продвижением Сайта.</p>
+                </div>
+
+                <div class="agreement-section">
+                    <h3>5. Ответственность</h3>
+                    <p>5.1. Сайт предоставляется на условиях «как есть». Администрация не несет ответственности за несоответствие Сайта целям и ожиданиям Пользователя.</p>
+                    <p>5.2. Администрация не несет ответственности за действия Пользователей, связанные с размещением и использованием контента, а также за любые споры, возникающие между Пользователями.</p>
+                    <p>5.3. Администрация не несет ответственности за посещение и использование Пользователем внешних ресурсов (сторонних сайтов), ссылки на которые могут содержаться на Сайте.</p>
+                    <p>5.4. Совокупная ответственность Администрации ограничена 100 (ста) рублями или суммой, уплаченной Пользователем Администрации за последний месяц (если применимо).</p>
+                </div>
+
+                <div class="agreement-section">
+                    <h3>6. Персональные данные и конфиденциальность</h3>
+                    <p>6.1. Использование Сайта регулируется Политикой конфиденциальности, размещенной по адресу: http://127.0.0.1:5000/ps.</p>
+                    <p>6.2. Нажимая кнопку «Зарегистрироваться» или продолжая использование Сайта, Пользователь дает свое согласие на сбор, хранение и обработку своих персональных данных на условиях, указанных в Политике конфиденциальности.</p>
+                </div>
+
+                <div class="agreement-section">
+                    <h3>7. Заключительные положения</h3>
+                    <p>7.1. Настоящее Соглашение регулируется и толкуется в соответствии с законодательством Российской Федерации.</p>
+                    <p>7.2. Все споры, не урегулированные путем переговоров, подлежат рассмотрению в суде по месту нахождения Администрации Сайта.</p>
+                    <p>7.3. Если какое-либо положение Соглашения будет признано судом недействительным, это не влечет недействительности остальных его положений.</p>
+                </div>
+
+                <div class="agreement-date">
+                    <p>Настоящее Соглашение вступает в силу с 07.02.2026</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="copyright">
+            <i class="fas fa-crystal-ball"></i> 2026 VEGA · Социальная астрологическая сеть <i class="fas fa-sparkles"></i>
+        </div>
+    </footer>
+
+    <div class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </div>
+
+    <script>
+        // Theme toggle (for mood/theme switching)
+        const themeToggle = document.getElementById('themeToggle');
+
+        themeToggle.addEventListener('click', () => {
+            const root = document.documentElement;
+            const currentPrimary = getComputedStyle(root).getPropertyValue('--primary').trim();
+
+            if (currentPrimary === '#9d7be8') {
+                // Switch to darker purple theme
+                root.style.setProperty('--primary', '#7c4dff');
+                root.style.setProperty('--primary-dark', '#6a3de8');
+                root.style.setProperty('--secondary', '#b388ff');
+                root.style.setProperty('--card-bg', '#1e1a2b');
+                root.style.setProperty('--dark-light', '#231e33');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                // Switch back to default
+                root.style.setProperty('--primary', '#9d7be8');
+                root.style.setProperty('--primary-dark', '#7c5bc0');
+                root.style.setProperty('--secondary', '#c77dff');
+                root.style.setProperty('--card-bg', '#251c33');
+                root.style.setProperty('--dark-light', '#2a1f3a');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        });
+
+        // Toggle User Agreement
+        function toggleAgreement() {
+            const content = document.getElementById('agreementContent');
+            const arrow = document.getElementById('agreementArrow');
+
+            content.classList.toggle('show');
+            arrow.classList.toggle('rotate');
+        }
+
+        // Like button functionality
+        document.querySelectorAll('.post-action-button').forEach(button => {
+            button.addEventListener('click', function() {
+                if (this.querySelector('span').textContent === 'Нравится') {
+                    this.innerHTML = '<i class="fas fa-thumbs-up"></i><span>Понравилось</span>';
+                    this.style.color = 'var(--secondary)';
+                    this.style.background = 'rgba(157, 123, 232, 0.15)';
+                }
+            });
+        });
+
+        // Story hover effect
+        document.querySelectorAll('.story-card:not(.add-story)').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = '0 15px 30px rgba(157, 123, 232, 0.3)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 8px 20px var(--shadow)';
+            });
+        });
+
+        // Post button functionality
+        const postButton = document.querySelector('.post-button');
+        const postTextarea = document.querySelector('textarea');
+
+        postButton.addEventListener('click', function() {
+            if (postTextarea.value.trim() !== '') {
+                alert('✨ Ваш пост опубликован! Звезды благоволят вам ✨');
+                postTextarea.value = '';
+            } else {
+                alert('🌟 Пожалуйста, напишите что-нибудь...');
+            }
+        });
+
+        // Add zodiac icons animation
+        setInterval(() => {
+            document.querySelectorAll('.zodiac-icon, .birthday-icon, .event-icon, .social-icon').forEach(icon => {
+                icon.style.boxShadow = '0 5px 20px rgba(157, 123, 232, 0.5)';
+                setTimeout(() => {
+                    icon.style.boxShadow = '0 5px 15px rgba(157, 123, 232, 0.3)';
+                }, 500);
+            });
+        }, 3000);
+
+        // Smooth scroll for anchor links (optional, if you want in-page scrolling)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const targetId = this.getAttribute('href').substring(1);
+                const targetEl = document.getElementById(targetId);
+                if (targetEl) {
+                    e.preventDefault();
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

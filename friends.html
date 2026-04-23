@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VEGA — Друзья</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --bg: #0b0b12;
+      --card-bg: rgba(20,16,24,0.85);
+      --text: #e9e0f9;
+      --border: #2a1f35;
+      --shadow: rgba(0,0,0,.6);
+      --gradient: linear-gradient(135deg, #7a5cff 0%, #b36dff 100%);
+      --online: #22c55e;
+      --offline: #7a7a7a;
+      --typing: #69f0ae;
+      --overlay: rgba(0,0,0,.6);
+      --input-bg: rgba(255,255,255,.08);
+      --input-border: rgba(255,255,255,.15);
+    }
+
+    html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, Roboto, Arial; background: var(--bg); color: var(--text); }
+
+    /* Верхний фикс-логотип VEGA слева и кнопка выхода на главный экран */
+    .vega-top {
+      position: fixed; top: 12px; left: 12px; z-index: 1000;
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 999px; background: rgba(0,0,0,.25);
+      border: 1px solid var(--border); box-shadow: 0 6px 14px var(--shadow);
+    }
+    .vega-top .logo {
+      width: 34px; height: 34px; display:flex; align-items:center; justify-content:center;
+      border-radius: 8px; background: linear-gradient(135deg, #7a5cff 0%, #b36dff 100%);
+      box-shadow: 0 4px 12px rgba(123,99,232,.6);
+    }
+    .vega-top .logo svg { width: 20px; height: 20px; fill: #fff; }
+    .vega-top .title { font-weight: 800; font-size: 14px; color:#fff; }
+
+    .top-actions { display:flex; gap:8px; align-items:center; margin-left: auto; }
+
+    .btn-main { background: var(--gradient); color:#fff; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:700; }
+
+    /* Поиск (стиль не белый) */
+    .search-bar { display:flex; align-items:center; gap:8px; padding:8px 12px;
+                   background: rgba(255,255,255,.08); border:1px solid var(--border);
+                   border-radius:999px; width: min(720px, 92%); margin: 92px auto 12px;
+                   box-shadow: inset 0 2px 8px rgba(0,0,0,.3); }
+    .search-bar i { color:#ddd; }
+    .search-bar input { flex:1; border:none; outline:none; background: transparent; color:var(--text); padding:6px 6px; font-size:14px; }
+    .search-bar .btn { background: rgba(255,255,255,.14); color:white; border:none; padding:8px 12px; border-radius:999px; cursor:pointer; font-weight:700; }
+    .search-bar input::placeholder { color:#c7b6ce; opacity:.9; }
+
+    /* Контент списка друзей */
+    .container { display:flex; flex-direction:column; padding: 12px; gap:12px; }
+
+    .card { border:1px solid var(--border); border-radius:12px; background: var(--card-bg);
+            padding:12px; box-shadow: 0 6px 16px var(--shadow); }
+
+    .friend-item { display:flex; align-items:center; gap:12px; padding:10px; border-radius:10px;
+                   border:1px solid var(--border); background: rgba(255,255,255,.04); margin:6px 0; position:relative; }
+
+    .avatar { width:48px; height:48px; border-radius:50%; border:2px solid transparent; object-fit:cover; }
+    .friend-info { flex:1; display:flex; flex-direction:column; gap:4px; }
+    .name { font-weight:700; }
+    .meta { font-size: 12px; color: #c7b6ce; display:flex; align-items:center; gap:6px; }
+
+    .status-dot { width:10px; height:10px; border-radius:50%; display:inline-block; margin-right:6px; border:1px solid #000; }
+
+    .typing { color: var(--typing); margin-left:6px; font-size:12px; }
+
+    .actions { display:flex; gap:8px; align-items:center; }
+    .btn-ghost { background: rgba(255,255,255,.08); border:1px solid var(--border);
+                 color:#fff; padding:8px 12px; border-radius:8px; cursor:pointer; }
+    .btn { background: var(--gradient); color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; }
+
+    /* Модальное окно чата (для "Написать") */
+    .modal-backdrop { position: fixed; inset: 0; background: var(--overlay);
+                      display:none; align-items:flex-end; justify-content:center; padding: 0; z-index: 2000; }
+    .modal { width: min(720px, 92%); max-height: 60vh; overflow:auto;
+             background: #0f0f16; border:1px solid var(--border); border-radius:12px 12px 0 0;
+             box-shadow: 0 -6px 24px rgba(0,0,0,.5); padding: 12px; animation: slideUp .25s ease forwards; }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+
+    .composer { display:flex; flex-direction:column; gap:8px; padding:10px; border-radius:12px;
+                background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.08)); border:1px solid var(--border); }
+    .composer-header { display:flex; align-items:center; justify-content:space-between; padding-bottom:6px; border-bottom:1px solid var(--border); }
+    .composer-area { display:flex; gap:8px; align-items:flex-end; }
+    .composer textarea { width:100%; min-height: 90px; max-height: 220px; resize: vertical;
+                        padding:12px; border-radius:10px; border:1px solid var(--border);
+                        background: rgba(0,0,0,.25); color:var(--text); line-height:1.4; }
+    .composer-actions { display:flex; gap:8px; justify-content:flex-end; }
+
+    .chat-preview { padding:8px; border-radius:8px; border:1px solid var(--border);
+                    background: rgba(255,255,255,.04); max-height:120px; overflow:auto; }
+
+    @media (max-width: 700px) {
+      .friend-item { flex-direction:column; align-items:flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <!-- VEGA верхний фикс-логотип слева и кнопка выхода на главный экран -->
+  <div class="vega-top" aria-label="VEGA логотип и навигация">
+    <div class="logo" aria-label="Логотип VEGA" title="VEGA">
+      <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+          <stop stop-color="#7a5cff"/><stop stop-color="#b36dff"/></linearGradient></defs>
+        <circle cx="12" cy="12" r="8" fill="url(#g1)" opacity="0.25"/>
+        <path d="M12 4l2.4 4.9 5.4.8-3.9 3.8 1 5.5-5.9-3.3-5.9 3.3 1-5.5L4.2 9.7l5.4-.8L12 4z" fill="url(#g1)"/>
+      </svg>
+    </div>
+    <div class="title" style="font-weight:800; color:#fff; font-size:14px;">VEGA</div>
+    <div class="top-actions">
+      <button class="btn-main" id="goMain" title="На главный экран">На главный экран</button>
+    </div>
+  </div>
+
+  <!-- Поиск -->
+  <div class="search-bar" role="search" aria-label="Поиск друзей">
+    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+    <input id="searchInput" type="text" placeholder="Поиск друзей по имени или нику..." />
+    <button class="btn" id="clearSearch" title="Очистить поиск" style="padding:6px 10px;">Очистить</button>
+  </div>
+
+  <main class="container" id="friendsContainer" aria-label="Список друзей">
+    <!-- Форма добавления друга -->
+    <section class="card add-form" aria-label="Добавить друга" id="addFriendForm">
+      <div style="font-weight:700; margin-bottom:4px;">Добавить друга</div>
+      <div class="row" style="gap:8px; align-items:center;">
+        <input id="newFriendName" type="text" placeholder="Имя друга" style="flex:2;" />
+        <input id="newFriendNick" type="text" placeholder="Ник/псевдоним" style="flex:1;" />
+      </div>
+      <div class="row" style="gap:8px; align-items:center;">
+        <input id="newFriendAvatar" type="text" placeholder="URL аватара (опционально)" style="flex:2;" />
+        <button id="addFriendBtn" class="btn" title="Добавить в друзья" style="flex:1; white-space:nowrap;">Добавить в друзья</button>
+      </div>
+      <div style="color:#a9a9a9; font-size:12px; margin-top:4px;">
+        Пример: https://randomuser.me/api/portraits/men/45.jpg
+      </div>
+    </section>
+
+    <!-- Список друзей -->
+    <section id="list" aria-label="Список друзей" class="card" style="min-height:320px;">
+      <!-- Пример друга 1 -->
+      <div class="friend-item" data-id="1" data-online="true" data-typing="false">
+        <img class="avatar" src="https://randomuser.me/api/portraits/men/45.jpg" alt="Аватар друга 1">
+        <div class="friend-info">
+          <div class="name">Алексей Белый</div>
+          <div class="meta">
+            <span class="status-dot" style="background:#22c55e;" aria-label="Онлайн" title="Онлайн"></span>
+            <span class="last-seen" title="Последний визит: сейчас">В сети</span>
+            <span class="typing" style="display:none; color:#7cff6a;" aria-label="Печатает">пишет...</span>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-ghost" onclick="openChat(1)">Написать сообщение</button>
+          <button class="btn-ghost delete-btn" onclick="removeFriend(1)" title="Удалить из друзей">Удалить</button>
+        </div>
+      </div>
+
+      <!-- Пример друга 2 -->
+      <div class="friend-item" data-id="2" data-online="false" data-typing="false">
+        <img class="avatar" src="https://randomuser.me/api/portraits/women/32.jpg" alt="Аватар друга 2">
+        <div class="friend-info">
+          <div class="name">Мария Карпова</div>
+          <div class="meta">
+            <span class="status-dot" style="background:#777;" aria-label="Оффлайн" title="Оффлайн"></span>
+            <span class="last-seen" title="Последний визит: вчера 20:11">Был(а) недавно офлайн</span>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-ghost" onclick="openChat(2)">Написать сообщение</button>
+          <button class="btn-ghost delete-btn" onclick="removeFriend(2)" title="Удалить из друзей">Удалить</button>
+        </div>
+      </div>
+
+      <!-- Дополнительные элементы можно генерировать через JS -->
+    </section>
+  </main>
+
+  <!-- Модальное окно чата (композер) -->
+  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-label="Написать сообщение">
+      <div class="composer">
+        <div class="composer-header">
+          <strong>Новое сообщение</strong>
+          <button class="btn-ghost" id="closeComposer" style="padding:6px 10px;">Закрыть</button>
+        </div>
+        <div class="composer-area" style="align-items:flex-end;">
+          <textarea id="composerText" placeholder="Введите сообщение..." rows="3"></textarea>
+        </div>
+        <div class="composer-actions">
+          <span class="chat-preview" id="chatPreview" style="flex:1; height:60px; overflow:auto;"></span>
+          <button class="btn" id="sendComposer">Отправить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Элементы управления
+    const listEl = document.getElementById('list');
+    const searchInput = document.getElementById('searchInput');
+    const addFriendBtn = document.getElementById('addFriendBtn');
+    const newName = document.getElementById('newFriendName');
+    const newNick = document.getElementById('newFriendNick');
+    const newAvatar = document.getElementById('newFriendAvatar');
+    const clearSearch = document.getElementById('clearSearch');
+    const goMain = document.getElementById('goMain');
+
+    // Данные друзей
+    let friends = [
+      { id: 1, name: 'Алексей Белый', nick: 'alex_white', avatar: 'https://randomuser.me/api/portraits/men/45.jpg', online: true, typing: false, lastSeen: 'сейчас' },
+      { id: 2, name: 'Мария Карпова', nick: 'marya', avatar: 'https://randomuser.me/api/portraits/women/32.jpg', online: false, typing: false, lastSeen: 'вчера 20:11' }
+    ];
+
+    // Рендер списка
+    function renderList(filter = '') {
+      listEl.innerHTML = '';
+      const f = friends.filter(fr => {
+        if (!filter) return true;
+        const q = filter.toLowerCase();
+        return fr.name.toLowerCase().includes(q) || (fr.nick && fr.nick.toLowerCase().includes(q));
+      });
+
+      if (f.length === 0) {
+        const empty = document.createElement('div');
+        empty.style.padding = '12px';
+        empty.textContent = 'Нет друзей, соответствующих поиску.';
+        listEl.appendChild(empty);
+        return;
+      }
+
+      f.forEach(fr => {
+        const item = document.createElement('div');
+        item.className = 'friend-item';
+        item.dataset.id = fr.id;
+        item.dataset.online = fr.online;
+        item.dataset.typing = fr.typing;
+
+        const avatar = document.createElement('img');
+        avatar.className = 'avatar';
+        avatar.src = fr.avatar || 'https://via.placeholder.com/48';
+        avatar.alt = 'Аватар друга';
+
+        const status = document.createElement('span');
+        status.className = 'status-dot';
+        status.style.marginLeft = 'auto';
+        status.style.display = 'inline-block';
+        status.style.width = '10px'; status.style.height = '10px';
+        status.style.borderRadius = '50%';
+        status.style.background = fr.online ? '#22c55e' : '#777';
+        status.title = fr.online ? 'Онлайн' : 'Оффлайн';
+
+        const info = document.createElement('div');
+        info.className = 'friend-info';
+        const name = document.createElement('div');
+        name.className = 'name';
+        name.textContent = fr.name;
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        const lastSeen = document.createElement('span');
+        lastSeen.textContent = fr.online ? 'В сети' : `Последний визит: ${fr.lastSeen}`;
+        const typing = document.createElement('span');
+        typing.className = 'typing';
+        typing.style.color = '#7cff6a';
+        typing.style.display = fr.typing ? 'inline' : 'none';
+        typing.textContent = fr.typing ? 'пишет...' : '';
+        meta.appendChild(lastSeen);
+        meta.appendChild(typing);
+
+        info.appendChild(name);
+        info.appendChild(meta);
+
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+        const chatBtn = document.createElement('button');
+        chatBtn.className = 'btn-ghost';
+        chatBtn.textContent = 'Написать';
+        chatBtn.onclick = () => openChat(fr.id);
+
+        const del = document.createElement('button');
+        del.className = 'btn-ghost';
+        del.textContent = 'Удалить';
+        del.onclick = () => removeFriend(fr.id);
+
+        actions.appendChild(chatBtn);
+        actions.appendChild(del);
+
+        item.appendChild(avatar);
+        item.appendChild(info);
+        item.appendChild(status);
+        item.appendChild(actions);
+
+        listEl.appendChild(item);
+      });
+    }
+
+    function addFriendFromForm() {
+      const name = (newName.value||'').trim();
+      const nick = (newNick.value||'').trim();
+      const avatar = (newAvatar.value||'') .trim();
+      if (!name) return alert('Введите имя друга.');
+      const id = Math.max(0, ...friends.map(f => f.id)) + 1;
+      friends.push({ id, name, nick, avatar: avatar || 'https://randomuser.me/api/portraits/lego/1.jpg', online: Math.random() > 0.5, typing: false, lastSeen: 'только что' });
+      renderList(searchInput.value);
+      newName.value = ''; newNick.value=''; newAvatar.value='';
+    }
+
+    function removeFriend(id) {
+      const idx = friends.findIndex(f => f.id === id);
+      if (idx >= 0) {
+        if (confirm('Удалить этого друга из списка?')) {
+          friends.splice(idx, 1);
+          renderList(searchInput.value);
+        }
+      }
+    }
+
+    function openChat(id) {
+      const fr = friends.find(f => f.id === id);
+      if (!fr) return;
+      openComposer(fr);
+    }
+
+    // Поиск
+    searchInput.addEventListener('input', (e) => {
+      renderList(e.target.value);
+    });
+    clearSearch.addEventListener('click', () => {
+      searchInput.value = '';
+      renderList('');
+    });
+
+    // Добавление друга
+    addFriendBtn.addEventListener('click', addFriendFromForm);
+    newName.addEventListener('keydown', (e) => { if (e.key === 'Enter') addFriendFromForm(); });
+    newNick.addEventListener('keydown', (e) => { if (e.key === 'Enter') addFriendFromForm(); });
+
+    // Модальное окно чата
+    const backdrop = document.getElementById('modalBackdrop');
+    const closeComposer = document.getElementById('closeComposer');
+    const composerText = document.getElementById('composerText');
+    const chatPreview = document.getElementById('chatPreview');
+    const sendComposer = document.getElementById('sendComposer');
+
+    let currentChatFriend = null;
+
+    function openComposer(friend) {
+      currentChatFriend = friend;
+      composerText.value = '';
+      chatPreview.textContent = 'Написать другу: ' + friend.name;
+      backdrop.style.display = 'flex';
+      backdrop.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeComposerFn() {
+      backdrop.style.display = 'none';
+      backdrop.setAttribute('aria-hidden', 'true');
+      currentChatFriend = null;
+    }
+
+    closeComposer.addEventListener('click', closeComposerFn);
+    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeComposerFn(); });
+
+    sendComposer.addEventListener('click', () => {
+      if (!currentChatFriend) return;
+      const text = (composerText.value || '').trim();
+      if (text) {
+        alert('Сообщение отправлено другу "' + currentChatFriend.name + '":\n' + text);
+        closeComposerFn();
+      }
+    });
+
+    // Главная навигация вверху
+    if (goMain) {
+      goMain.addEventListener('click', () => {
+        // замените URL на реальный путь к главной странице вашего проекта
+        window.location.href = 'index.html';
+      });
+    }
+
+    // Онлайн/печать — демо
+    function fakeStatusCycle() {
+      friends = friends.map(f => ({
+        ...f,
+        online: Math.random() > 0.4,
+        typing: Math.random() < 0.2
+      }));
+      renderList(searchInput.value);
+    }
+    setInterval(fakeStatusCycle, 8000);
+
+    // Инициализация
+    renderList('');
+  </script>
+</body>
+</html>
