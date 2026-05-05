@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEGA - События</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #9d7be8;
+            --primary-dark: #7c5bc0;
+            --secondary: #c77dff;
+            --accent: #b8a2ff;
+            --dark: #1a142b;
+            --dark-light: #2a1f3a;
+            --card-bg: #251c33;
+            --card-hover: #322841;
+            --text-light: #f0e9ff;
+            --text-muted: #cbbae3;
+            --gray: #a08bb4;
+            --success: #8a9eff;
+            --warning: #ffb86b;
+            --danger: #ff6b8b;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --border-color: #3f3153;
+            --gradient: linear-gradient(135deg, #9d7be8 0%, #c77dff 100%);
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e1730 0%, #2a1f3a 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Декоративные элементы */
+        .bg-decoration {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-decoration-1 {
+            top: -150px;
+            right: -150px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(157, 123, 232, 0.08) 0%, transparent 70%);
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .bg-decoration-2 {
+            bottom: -100px;
+            left: -100px;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(199, 125, 255, 0.06) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-25px) rotate(5deg); }
+        }
+
+        /* Header */
+        header {
+            background: rgba(37, 28, 51, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+        .back-btn {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        .back-btn:hover {
+            color: var(--secondary);
+            transform: translateX(-3px);
+        }
+
+        /* Контейнер */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        /* Основной контент */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 25px;
+        }
+
+        /* Карточки */
+        .card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+
+        /* Календарь */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .calendar-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav-btn:hover {
+            background: var(--gradient);
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(157, 123, 232, 0.3);
+        }
+
+        .nav-btn.today-btn {
+            width: auto;
+            padding: 0 15px;
+            font-size: 13px;
+            font-weight: 600;
+            gap: 6px;
+        }
+
+        /* Сетка календаря */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
+
+        .weekday-header {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 10px 0;
+            letter-spacing: 1px;
+        }
+
+        .weekday-header.weekend {
+            color: var(--danger);
+        }
+
+        .day-cell {
+            aspect-ratio: 1;
+            border-radius: 14px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            position: relative;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-light);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid transparent;
+            min-width: 0;
+        }
+
+        .day-cell:hover {
+            background: rgba(157, 123, 232, 0.2);
+            border-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(157, 123, 232, 0.2);
+        }
+
+        .day-cell.empty {
+            cursor: default;
+            background: transparent;
+            border: none;
+        }
+        .day-cell.empty:hover {
+            background: transparent;
+            border-color: transparent;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .day-cell.today {
+            background: rgba(157, 123, 232, 0.25);
+            border: 2px solid var(--secondary);
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 0 20px rgba(157, 123, 232, 0.3);
+        }
+
+        .day-cell.selected {
+            background: var(--gradient);
+            color: white;
+            font-weight: 700;
+            border-color: transparent;
+            box-shadow: 0 8px 25px rgba(157, 123, 232, 0.4);
+            transform: scale(1.05);
+        }
+
+        /* Метки событий */
+        .event-markers {
+            display: flex;
+            gap: 3px;
+            margin-top: 4px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .event-marker {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+            color: white;
+            white-space: nowrap;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            letter-spacing: 0.3px;
+            animation: markerPop 0.3s ease-out;
+        }
+
+        .event-marker.holiday {
+            background: linear-gradient(135deg, #ff6b8b, #ff8e9e);
+            box-shadow: 0 2px 8px rgba(255, 107, 139, 0.3);
+        }
+
+        .event-marker.personal {
+            background: linear-gradient(135deg, #8a9eff, #9d7be8);
+            box-shadow: 0 2px 8px rgba(138, 158, 255, 0.3);
+        }
+
+        .event-marker.small {
+            padding: 3px 6px;
+            font-size: 9px;
+            border-radius: 8px;
+        }
+
+        @keyframes markerPop {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Сайдбар */
+        .sidebar-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-title i {
+            color: var(--secondary);
+            font-size: 20px;
+        }
+
+        /* Список событий */
+        .event-list-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 16px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(63, 49, 83, 0.3);
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .event-list-item:hover {
+            background: rgba(157, 123, 232, 0.1);
+            border-color: var(--secondary);
+            transform: translateX(3px);
+        }
+
+        .event-list-item.personal-event {
+            border-left: 3px solid var(--secondary);
+        }
+
+        .event-list-item.holiday-event {
+            border-left: 3px solid var(--danger);
+        }
+
+        .event-icon-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            flex-shrink: 0;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .event-list-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .event-list-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 3px;
+            color: var(--text-light);
+        }
+
+        .event-list-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .event-list-info .event-date-badge {
+            display: inline-block;
+            font-size: 11px;
+            background: rgba(157, 123, 232, 0.2);
+            padding: 3px 10px;
+            border-radius: 10px;
+            color: var(--secondary);
+            margin-top: 4px;
+        }
+
+        .event-delete-btn {
+            color: var(--danger);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 10px;
+            opacity: 0;
+            transition: all 0.3s;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .event-list-item:hover .event-delete-btn {
+            opacity: 1;
+        }
+
+        .event-delete-btn:hover {
+            background: rgba(255, 107, 139, 0.2);
+        }
+
+        /* Пустое состояние */
+        .empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            opacity: 0.3;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        /* Кнопки */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            width: 100%;
+            justify-content: center;
+            margin-top: 15px;
+            font-size: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-primary:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(157, 123, 232, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Модальное окно */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-dialog {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 35px;
+            max-width: 450px;
+            width: 90%;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6);
+            transform: scale(0.9);
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active .modal-dialog {
+            transform: scale(1);
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 13px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            color: var(--text-light);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 20px rgba(157, 123, 232, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23cbbae3' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+        }
+
+        .form-group select option {
+            background: var(--card-bg);
+            color: var(--text-light);
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .color-option {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .color-option:hover {
+            transform: scale(1.15);
+        }
+
+        .color-option.selected {
+            border-color: white;
+            box-shadow: 0 0 20px currentColor;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Алерты */
+        .alert {
+            padding: 14px 18px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert-success {
+            background: rgba(138, 158, 255, 0.12);
+            border: 1px solid rgba(138, 158, 255, 0.3);
+            color: #8a9eff;
+        }
+
+        .alert-error {
+            background: rgba(255, 107, 139, 0.12);
+            border: 1px solid rgba(255, 107, 139, 0.3);
+            color: #ff6b8b;
+        }
+
+        /* Тэги типов событий */
+        .event-type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .event-type-badge.holiday {
+            background: rgba(255, 107, 139, 0.2);
+            color: #ff6b8b;
+        }
+
+        .event-type-badge.personal {
+            background: rgba(138, 158, 255, 0.2);
+            color: #8a9eff;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .day-cell {
+                font-size: 12px;
+                border-radius: 10px;
+            }
+
+            .event-marker {
+                font-size: 8px;
+                padding: 1px 5px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Декоративные элементы -->
+    <div class="bg-decoration bg-decoration-1"></div>
+    <div class="bg-decoration bg-decoration-2"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <a href="/" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Назад
+            </a>
+            <a href="/" class="logo">VEGA</a>
+            <a href="/settings" style="color: var(--text-muted); text-decoration: none; font-size: 18px;">
+                <i class="fas fa-cog"></i>
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">События</h1>
+        <p class="page-subtitle">Календарь праздников и ваших личных событий</p>
+
+        <!-- Алерты -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="main-grid">
+            <!-- Календарь -->
+            <div class="card">
+                <div class="calendar-header">
+                    <div class="calendar-title">{{ calendar.month_name }} {{ calendar.year }}</div>
+                    <div class="calendar-nav">
+                        <a href="/events?year={{ prev_month[0] }}&month={{ prev_month[1] }}" class="nav-btn" title="Предыдущий месяц">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                        <a href="/events" class="nav-btn today-btn" title="Сегодня">
+                            <i class="fas fa-calendar-day"></i> Сегодня
+                        </a>
+                        <a href="/events?year={{ next_month[0] }}&month={{ next_month[1] }}" class="nav-btn" title="Следующий месяц">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Дни недели -->
+                <div class="calendar-grid">
+                    <div class="weekday-header">Пн</div>
+                    <div class="weekday-header">Вт</div>
+                    <div class="weekday-header">Ср</div>
+                    <div class="weekday-header">Чт</div>
+                    <div class="weekday-header">Пт</div>
+                    <div class="weekday-header weekend">Сб</div>
+                    <div class="weekday-header weekend">Вс</div>
+                </div>
+
+                <!-- Дни месяца -->
+                <div class="calendar-grid">
+                    {% for week in calendar.calendar %}
+                        {% for day in week %}
+                            {% if day == 0 %}
+                                <div class="day-cell empty"></div>
+                            {% else %}
+                                {% set date_str = calendar.year|string + '-' + '%02d'|format(calendar.month) + '-' + '%02d'|format(day) %}
+                                <div class="day-cell {% if day == calendar.today %}today{% endif %} {% if day == selected_day %}selected{% endif %}"
+                                     onclick="selectDate('{{ date_str }}')"
+                                     title="{{ day }} {{ calendar.month_name }}">
+                                    <span>{{ day }}</span>
+                                    {% if day in calendar.events %}
+                                    <div class="event-markers">
+                                        {% for event in calendar.events[day][:2] %}
+                                        <div class="event-marker {% if event.event_type == 'holiday' %}holiday{% else %}personal{% endif %} {% if calendar.events[day]|length > 2 %}small{% endif %}">
+                                            {{ event.title[:12] }}{% if event.title|length > 12 %}...{% endif %}
+                                        </div>
+                                        {% endfor %}
+                                        {% if calendar.events[day]|length > 2 %}
+                                        <div class="event-marker small" style="background: rgba(255,255,255,0.2);">
+                                            +{{ calendar.events[day]|length - 2 }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Сайдбар -->
+            <div>
+                <!-- События на выбранный день -->
+                <div class="sidebar-card">
+                    <div class="sidebar-title">
+                        {% if selected_date %}
+                            <i class="fas fa-calendar-check"></i> События {{ selected_date }}
+                        {% else %}
+                            <i class="fas fa-star"></i> Ближайшие события
+                        {% endif %}
+                    </div>
+
+                    {% if day_events %}
+                        {% for event in day_events %}
+                        <div class="event-list-item {% if event.event_type == 'personal' %}personal-event{% else %}holiday-event{% endif %}"
+                             {% if event.event_type == 'personal' %}onclick="editEvent({{ event.id }}, '{{ event.title }}', '{{ event.event_date }}', '{{ event.description or '' }}', '{{ event.color }}')"{% endif %}>
+                            <div class="event-icon-circle" style="background: {{ event.color }};">
+                                <i class="fas {{ event.icon }}"></i>
+                            </div>
+                            <div class="event-list-info">
+                                <h4>{{ event.title }}</h4>
+                                {% if event.description %}
+                                <p>{{ event.description }}</p>
+                                {% endif %}
+                                <span class="event-type-badge {{ event.event_type }}">
+                                    <i class="fas fa-{{ 'star' if event.event_type == 'holiday' else 'user' }}"></i>
+                                    {{ 'Праздник' if event.event_type == 'holiday' else 'Личное' }}
+                                </span>
+                            </div>
+                            {% if event.user_id == current_user.id %}
+                            <div class="event-delete-btn" onclick="event.stopPropagation(); deleteEvent({{ event.id }})" title="Удалить">
+                                <i class="fas fa-trash"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    {% elif selected_date %}
+                        <div class="empty-state">
+                            <i class="far fa-calendar"></i>
+                            <p>Нет событий на эту дату</p>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="far fa-hand-pointer"></i>
+                            <p>Выберите дату в календаре</p>
+                        </div>
+                    {% endif %}
+
+                    <button class="btn btn-primary" onclick="showAddEventModal()">
+                        <i class="fas fa-plus-circle"></i> Добавить событие
+                    </button>
+                </div>
+
+                <!-- Скоро -->
+                {% if upcoming_events and not selected_date %}
+                <div class="sidebar-card">
+                    <div class="sidebar-title">
+                        <i class="fas fa-clock"></i> Скоро
+                    </div>
+                    {% for event in upcoming_events[:5] %}
+                    <div class="event-list-item {% if event.event_type == 'personal' %}personal-event{% else %}holiday-event{% endif %}"
+                         onclick="selectDate('{{ event.event_date }}')">
+                        <div class="event-icon-circle" style="background: {{ event.color }};">
+                            <i class="fas {{ event.icon }}"></i>
+                        </div>
+                        <div class="event-list-info">
+                            <h4>{{ event.title }}</h4>
+                            <span class="event-date-badge">{{ event.event_date }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно добавления события -->
+    <div class="modal-overlay" id="addEventModal">
+        <div class="modal-dialog">
+            <div class="modal-title">
+                <i class="fas fa-calendar-plus"></i> Новое событие
+            </div>
+            <form method="POST" action="/add_event">
+                <div class="form-group">
+                    <label>Название события *</label>
+                    <input type="text" name="title" placeholder="День рождения, встреча, праздник..." required>
+                </div>
+                <div class="form-group">
+                    <label>Дата *</label>
+                    <input type="date" name="event_date" value="{{ selected_date or '' }}" required>
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea name="description" placeholder="Дополнительная информация о событии..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Цвет события</label>
+                    <div class="color-picker">
+                        <div class="color-option selected" style="background: #9d7be8;" onclick="selectColor('#9d7be8', this)"></div>
+                        <div class="color-option" style="background: #ff6b8b;" onclick="selectColor('#ff6b8b', this)"></div>
+                        <div class="color-option" style="background: #8a9eff;" onclick="selectColor('#8a9eff', this)"></div>
+                        <div class="color-option" style="background: #ffb86b;" onclick="selectColor('#ffb86b', this)"></div>
+                        <div class="color-option" style="background: #4ecdc4;" onclick="selectColor('#4ecdc4', this)"></div>
+                        <div class="color-option" style="background: #ffd93d;" onclick="selectColor('#ffd93d', this)"></div>
+                        <div class="color-option" style="background: #6c5ce7;" onclick="selectColor('#6c5ce7', this)"></div>
+                        <div class="color-option" style="background: #00cec9;" onclick="selectColor('#00cec9', this)"></div>
+                    </div>
+                    <input type="hidden" name="color" id="selectedColor" value="#9d7be8">
+                </div>
+                <input type="hidden" name="icon" value="fa-calendar-star">
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Добавить
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="hideAddEventModal()">
+                        <i class="fas fa-times"></i> Отмена
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Выбор даты
+        function selectDate(date) {
+            window.location.href = '/events?date=' + date;
+        }
+
+        // Модальное окно
+        function showAddEventModal() {
+            document.getElementById('addEventModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideAddEventModal() {
+            document.getElementById('addEventModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Выбор цвета
+        function selectColor(color, element) {
+            document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            document.getElementById('selectedColor').value = color;
+        }
+
+        // Удаление события
+        function deleteEvent(eventId) {
+            if (confirm('Вы уверены, что хотите удалить это событие?')) {
+                fetch('/delete_event/' + eventId, { method: 'POST' })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert(data.message || 'Ошибка при удалении');
+                        }
+                    });
+            }
+        }
+
+        // Закрытие модалки по клику на фон
+        document.getElementById('addEventModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideAddEventModal();
+            }
+        });
+
+        // Закрытие по Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                hideAddEventModal();
+            }
+        });
+
+        // Анимация появления
+        document.querySelectorAll('.event-list-item, .day-cell').forEach((el, i) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(10px)';
+            el.style.transition = 'all 0.4s ease';
+            setTimeout(() => {
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            }, i * 50);
+        });
+    </script>
+</body>
+</html>
