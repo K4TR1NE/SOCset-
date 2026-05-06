@@ -202,15 +202,14 @@ def index():
 
     user = auth.get_user_by_id(session['user_id'])
 
-    # Пробуем получить посты из БД
-    try:
-        posts_from_db = auth.get_posts()
-        if posts_from_db:
-            posts_list = posts_from_db
-        else:
-            posts_list = mock_posts
-    except:
-        posts_list = mock_posts
+    # Получаем посты из БД
+    posts_from_db = auth.get_posts()
+
+    # Если постов из БД меньше 3, добавляем мок-посты
+    if len(posts_from_db) < 3:
+        posts_list = posts_from_db + mock_posts[:3 - len(posts_from_db)]
+    else:
+        posts_list = posts_from_db
 
     notification_count = sum(1 for n in notifications if not n['read'])
 
@@ -334,12 +333,20 @@ def logout():
 def profile_page():
     """Страница профиля"""
     user = auth.get_user_by_id(session['user_id'])
+    stats = auth.get_user_stats(session['user_id'])
 
+    # Получаем посты пользователя
+    user_posts = auth.get_user_posts(session['user_id'])
+
+    # Если нет своих постов, показываем мок-посты
+    if not user_posts:
+        user_posts = mock_posts[:2]
+
+    # Гороскоп
     zodiac = user.get('zodiac', 'Лев')
-
     horoscope = {
         'name': zodiac,
-        'emoji': '♌' if zodiac == 'Лев' else '♓',
+        'emoji': '♌',
         'element': 'Огонь',
         'planet': 'Солнце',
         'date_range': '23 июля - 22 августа',
@@ -352,11 +359,15 @@ def profile_page():
         'compatibility': ['Овен', 'Стрелец', 'Близнецы']
     }
 
+    cities = ['Москва', 'Санкт-Петербург', 'Ижевск', 'Казань', 'Екатеринбург']
+
     return render_template('profile.html',
                            current_user=user,
                            user=user,
-                           posts=mock_posts[:2],
+                           posts=user_posts,
                            horoscope=horoscope,
+                           stats=stats,
+                           cities=cities,
                            notification_count=0)
 
 
@@ -401,7 +412,7 @@ def settings_page():
 @app.route('/create_post', methods=['POST'])
 @login_required
 def create_post():
-    """Создание поста"""
+    """Создание нового поста"""
     try:
         data = request.get_json() or {}
         content = data.get('content', '').strip()
@@ -416,7 +427,15 @@ def create_post():
             data.get('privacy', 'public')
         )
 
-        return jsonify({'success': True, 'message': 'Пост опубликован!', 'post_id': post_id})
+        if post_id:
+            return jsonify({
+                'success': True,
+                'message': 'Пост опубликован!',
+                'post_id': post_id
+            })
+        else:
+            return jsonify({'success': False, 'error': 'Ошибка при создании поста'}), 500
+
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 

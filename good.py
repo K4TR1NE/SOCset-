@@ -433,21 +433,31 @@ class VegaAuth:
         """Создание поста"""
         conn = self.get_connection()
         cursor = conn.cursor()
-        cursor.execute('''
-            INSERT INTO posts (author_id, content, image, privacy)
-            VALUES (?, ?, ?, ?)
-        ''', (user_id, content, image, privacy))
-        conn.commit()
-        post_id = cursor.lastrowid
-        conn.close()
-        return post_id
+        try:
+            cursor.execute('''
+                INSERT INTO posts (author_id, content, image, privacy)
+                VALUES (?, ?, ?, ?)
+            ''', (user_id, content, image, privacy))
+            conn.commit()
+            post_id = cursor.lastrowid
+            conn.close()
+            print(f"✅ Пост создан (ID: {post_id})")
+            return post_id
+        except Exception as e:
+            conn.close()
+            print(f"❌ Ошибка создания поста: {e}")
+            return None
 
     def get_posts(self, limit=20, offset=0):
-        """Получить посты"""
+        """Получить все посты с информацией об авторе"""
         conn = self.get_connection()
         cursor = conn.cursor()
         cursor.execute('''
-            SELECT posts.*, users.name as author_name, users.avatar as author_avatar, users.zodiac as author_zodiac
+            SELECT 
+                posts.*,
+                users.name as author_name,
+                users.avatar as author_avatar,
+                users.zodiac as author_zodiac
             FROM posts 
             JOIN users ON posts.author_id = users.id 
             ORDER BY posts.created_at DESC
@@ -455,10 +465,30 @@ class VegaAuth:
         ''', (limit, offset))
         posts = cursor.fetchall()
         conn.close()
-        return [dict(post) for post in posts]
+
+        # Преобразуем в нужный формат
+        posts_list = []
+        for post in posts:
+            posts_list.append({
+                'id': post['id'],
+                'author_id': post['author_id'],
+                'author': {
+                    'name': post['author_name'],
+                    'avatar': post['author_avatar'],
+                    'zodiac': post['author_zodiac'] if 'author_zodiac' in post.keys() else 'Лев'
+                },
+                'content': post['content'],
+                'image': post['image'],
+                'likes': post['likes'],
+                'comments_count': post['comments_count'],
+                'shares': post['shares'],
+                'created_at': post['created_at'],
+                'privacy': post['privacy']
+            })
+        return posts_list
 
     def get_user_posts(self, user_id, limit=10):
-        """Получить посты пользователя"""
+        """Получить посты конкретного пользователя"""
         conn = self.get_connection()
         cursor = conn.cursor()
         cursor.execute('''

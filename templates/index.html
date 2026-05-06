@@ -125,54 +125,75 @@
         /* Логотип VEGA */
         .logo {
             display: flex;
-            align-items: baseline;
-            gap: 1px;
+            align-items: center;
+            gap: 2px;
             text-decoration: none;
             flex-shrink: 0;
-            filter: drop-shadow(0 0 15px rgba(157, 123, 232, 0.5));
+            filter: drop-shadow(0 0 10px rgba(157, 123, 232, 0.5));
             transition: all 0.3s;
+            user-select: none;
         }
 
         .logo:hover {
-            filter: drop-shadow(0 0 25px rgba(199, 125, 255, 0.8));
-            transform: scale(1.05);
+            filter: drop-shadow(0 0 20px rgba(199, 125, 255, 0.8));
+            transform: scale(1.03);
         }
 
-        .logo-char {
-            display: inline-block;
-            transition: all 0.3s;
+        .logo-star {
+            font-size: 14px;
+            background: linear-gradient(135deg, #c77dff 0%, #b8a2ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            animation: starPulse 2s ease-in-out infinite;
         }
 
-        .logo:hover .logo-char {
-            transform: translateY(-2px);
+        .logo-star:last-child {
+            animation-delay: 1s;
+        }
+
+        @keyframes starPulse {
+            0%, 100% { opacity: 0.5; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.1); }
         }
 
         .logo-v {
-            font-size: 42px;
-            font-weight: 900;
-            background: linear-gradient(180deg, #f0e9ff 0%, #9d7be8 50%, #c77dff 100%);
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f0e9ff 0%, #9d7be8 50%, #c77dff 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             line-height: 1;
         }
 
-        .logo-equal {
-            font-size: 38px;
-            font-weight: 300;
-            background: linear-gradient(180deg, #c77dff 0%, #b8a2ff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1;
-            margin: 0 -2px;
-            opacity: 0.8;
+        .logo-e-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin: 0 3px;
+            justify-content: center;
+            height: 36px;
         }
+
+        .logo-e-bar {
+            display: block;
+            width: 20px;
+            height: 4px;
+            background: linear-gradient(90deg, #9d7be8, #c77dff);
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        .logo:hover .logo-e-bar:nth-child(1) { width: 24px; }
+        .logo:hover .logo-e-bar:nth-child(2) { width: 18px; }
+        .logo:hover .logo-e-bar:nth-child(3) { width: 22px; }
 
         .logo-g {
-            font-size: 42px;
-            font-weight: 900;
-            background: linear-gradient(180deg, #f0e9ff 0%, #c77dff 50%, #b8a2ff 100%);
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f0e9ff 0%, #c77dff 50%, #b8a2ff 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -180,15 +201,13 @@
         }
 
         .logo-lambda {
-            font-size: 42px;
-            font-weight: 700;
-            background: linear-gradient(180deg, #c77dff 0%, #b8a2ff 100%);
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #c77dff 0%, #b8a2ff 50%, #9d7be8 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             line-height: 1;
-            font-family: 'Georgia', 'Times New Roman', serif;
-            font-style: italic;
         }
 
         .search-bar {
@@ -196,11 +215,10 @@
             background: rgba(255, 255, 255, 0.08);
             border-radius: 30px;
             padding: 8px 20px;
-            width: 40%;
-            max-width: 500px;
+            width: 35%;
+            max-width: 400px;
             border: 1px solid var(--border-color);
             backdrop-filter: blur(5px);
-            margin: 0 auto;
         }
 
         .search-bar i {
@@ -877,11 +895,21 @@
             }
 
             .logo-v, .logo-g, .logo-lambda {
-                font-size: 32px;
+                font-size: 28px;
             }
 
-            .logo-equal {
-                font-size: 28px;
+            .logo-star {
+                font-size: 11px;
+            }
+
+            .logo-e-bars {
+                height: 28px;
+                gap: 4px;
+            }
+
+            .logo-e-bar {
+                width: 16px;
+                height: 3px;
             }
         }
     </style>
@@ -892,17 +920,25 @@
         <div class="header-content">
             <!-- Логотип VEGA -->
             <a href="/" class="logo">
-                <span class="logo-char logo-v">V</span>
-                <span class="logo-char logo-equal">=</span>
-                <span class="logo-char logo-g">G</span>
-                <span class="logo-char logo-lambda">Λ</span>
+                <span class="logo-star">✦</span>
+                <span class="logo-v">V</span>
+                <span class="logo-e-bars">
+                    <span class="logo-e-bar"></span>
+                    <span class="logo-e-bar"></span>
+                    <span class="logo-e-bar"></span>
+                </span>
+                <span class="logo-g">G</span>
+                <span class="logo-lambda">Λ</span>
+                <span class="logo-star">✦</span>
             </a>
 
+            <!-- Поиск -->
             <div class="search-bar">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="Поиск людей, гороскопов, событий...">
+                <input type="text" placeholder="Поиск...">
             </div>
 
+            <!-- Профиль -->
             <a href="/profile" class="user-profile">
                 <img src="{{ current_user.avatar }}" alt="Аватар" class="avatar">
                 <span>{{ current_user.name }}</span>
@@ -1157,23 +1193,64 @@
         });
 
         // Публикация поста
-        function publishPost() {
-            const textarea = document.querySelector('.post-input textarea');
-            if (textarea.value.trim() !== '') {
-                fetch('/create_post', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content: textarea.value, privacy: 'public' })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        textarea.value = '';
-                        location.reload();
-                    }
-                });
-            }
+function publishPost() {
+    const textarea = document.querySelector('.post-input textarea');
+    const content = textarea.value.trim();
+
+    if (content === '') {
+        alert('Напишите что-нибудь перед публикацией!');
+        return;
+    }
+
+    fetch('/create_post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: content, privacy: 'public' })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            textarea.value = '';
+            // Показываем уведомление
+            showNotification('Пост успешно опубликован! ✨');
+            // Перезагружаем через секунду
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            alert(data.error || 'Ошибка при публикации');
         }
+    })
+    .catch(error => {
+        console.error('Ошибка:', error);
+        alert('Ошибка соединения с сервером');
+    });
+}
+
+// Уведомление
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--gradient);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(157, 123, 232, 0.5);
+        z-index: 9999;
+        font-weight: 500;
+        animation: slideIn 0.3s ease-out;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+    `;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => notification.remove(), 300);
+    }, 2500);
+}
 
         // Лайк
         function likePost(postId) {
