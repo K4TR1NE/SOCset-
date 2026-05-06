@@ -6,516 +6,201 @@
     <title>VEGA - Друзья</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
 
         :root {
-            --primary: #9d7be8;
-            --primary-dark: #7c5bc0;
-            --secondary: #c77dff;
-            --accent: #b8a2ff;
-            --dark: #1a142b;
-            --dark-light: #2a1f3a;
-            --card-bg: #251c33;
-            --card-hover: #322841;
-            --text-light: #f0e9ff;
-            --text-muted: #cbbae3;
-            --gray: #a08bb4;
-            --success: #8a9eff;
-            --warning: #ffb86b;
-            --danger: #ff6b8b;
-            --shadow: rgba(0, 0, 0, 0.3);
-            --border-color: #3f3153;
-            --gradient: linear-gradient(135deg, #9d7be8 0%, #c77dff 100%);
+            --primary: #9d7be8; --secondary: #c77dff;
+            --dark: #1a142b; --card-bg: #251c33;
+            --text: #f0e9ff; --text-muted: #cbbae3;
+            --border: #3f3153; --gradient: linear-gradient(135deg, #9d7be8, #c77dff);
+            --success: #8a9eff; --danger: #ff6b8b;
         }
 
         body {
-            background: linear-gradient(135deg, #1e1730 0%, #2a1f3a 100%);
-            color: var(--text-light);
-            line-height: 1.6;
-            min-height: 100vh;
+            background: linear-gradient(135deg, #1e1730, #2a1f3a);
+            color: var(--text); min-height: 100vh;
         }
 
-        .container {
-            display: flex;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* Header */
         header {
-            background: rgba(37, 28, 51, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            padding: 0 20px;
-            border-bottom: 1px solid var(--border-color);
+            background: rgba(37, 28, 51, 0.95); backdrop-filter: blur(10px);
+            padding: 10px 20px; position: sticky; top: 0; z-index: 100;
+            border-bottom: 1px solid var(--border);
         }
 
         .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            max-width: 1400px;
-            margin: 0 auto;
+            max-width: 1200px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
         }
 
         .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 26px;
-            font-weight: 700;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 1px;
-            text-decoration: none;
+            display: flex; align-items: center; gap: 2px;
+            text-decoration: none; flex-shrink: 0;
+            filter: drop-shadow(0 0 10px rgba(157,123,232,0.5));
+            transition: all 0.3s;
         }
-
-        .logo i {
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 30px;
+        .logo:hover { filter: drop-shadow(0 0 20px rgba(199,125,255,0.8)); transform: scale(1.03); }
+        .logo-star {
+            font-size: 14px;
+            background: linear-gradient(135deg, #c77dff, #b8a2ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: starPulse 2s ease-in-out infinite;
         }
+        @keyframes starPulse {
+            0%,100%{opacity:0.5;transform:scale(0.8)} 50%{opacity:1;transform:scale(1.1)}
+        }
+        .logo-v, .logo-g, .logo-lambda { font-size: 36px; font-weight: 800; line-height: 1; }
+        .logo-v { background: linear-gradient(135deg, #f0e9ff, #9d7be8, #c77dff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-g { background: linear-gradient(135deg, #f0e9ff, #c77dff, #b8a2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-lambda { background: linear-gradient(135deg, #c77dff, #b8a2ff, #9d7be8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-e-bars {
+            display: flex; flex-direction: column; gap: 5px;
+            margin: 0 3px; justify-content: center; height: 36px;
+        }
+        .logo-e-bar {
+            width: 20px; height: 4px;
+            background: linear-gradient(90deg, #9d7be8, #c77dff);
+            border-radius: 2px; transition: all 0.3s;
+        }
+        .logo:hover .logo-e-bar:nth-child(1) { width: 24px; }
+        .logo:hover .logo-e-bar:nth-child(2) { width: 18px; }
+        .logo:hover .logo-e-bar:nth-child(3) { width: 22px; }
 
         .search-bar {
-            display: flex;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 30px;
-            padding: 8px 20px;
-            width: 40%;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(5px);
+            display: flex; background: rgba(255,255,255,0.08);
+            border-radius: 30px; padding: 8px 20px; width: 30%;
+            border: 1px solid var(--border);
         }
-
-        .search-bar i {
-            color: var(--text-muted);
-        }
-
+        .search-bar i { color: var(--text-muted); }
         .search-bar input {
-            border: none;
-            background: transparent;
-            width: 100%;
-            margin-left: 10px;
-            outline: none;
-            color: var(--text-light);
+            border: none; background: transparent; width: 100%;
+            margin-left: 10px; outline: none; color: var(--text);
         }
-
-        .search-bar input::placeholder {
-            color: var(--gray);
-        }
-
-        .nav-icons {
-            display: flex;
-            gap: 20px;
-            font-size: 20px;
-        }
-
-        .nav-icons a {
-            color: var(--text-muted);
-            transition: all 0.3s;
-            position: relative;
-            text-decoration: none;
-        }
-
-        .nav-icons a:hover {
-            color: var(--secondary);
-            transform: translateY(-2px);
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--gradient);
-            color: white;
-            font-size: 11px;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid var(--card-bg);
-        }
+        .search-bar input::placeholder { color: #6b5b8a; }
 
         .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(157, 123, 232, 0.15);
-            padding: 5px 15px 5px 5px;
-            border-radius: 30px;
-            border: 1px solid var(--border-color);
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(157,123,232,0.15); padding: 5px 15px 5px 5px;
+            border-radius: 30px; border: 1px solid var(--border);
+            cursor: pointer; text-decoration: none; color: var(--text);
+        }
+        .user-profile:hover { background: rgba(157,123,232,0.25); }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--secondary); }
+        .avatar-sm { width: 35px; height: 35px; }
+        .avatar-lg { width: 55px; height: 55px; border-radius: 16px; }
+
+        .container {
+            display: flex; max-width: 1200px; margin: 0 auto; padding: 20px; gap: 20px;
         }
 
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--secondary);
-            box-shadow: 0 0 10px rgba(157, 123, 232, 0.3);
-        }
-
-        .avatar-sm {
-            width: 35px;
-            height: 35px;
-        }
-
-        .avatar-lg {
-            width: 60px;
-            height: 60px;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            padding: 20px 15px;
-            position: sticky;
-            top: 80px;
-            height: calc(100vh - 80px);
-            overflow-y: auto;
-        }
-
+        /* Сайдбар */
+        .sidebar { width: 250px; flex-shrink: 0; }
         .sidebar-section {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 20px var(--shadow);
-            border: 1px solid var(--border-color);
+            background: var(--card-bg); border-radius: 16px; padding: 20px;
+            margin-bottom: 20px; border: 1px solid var(--border);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
-
         .sidebar-title {
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--text-light);
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-weight: 600; margin-bottom: 15px; color: var(--text);
+            font-size: 18px; display: flex; align-items: center; gap: 10px;
         }
-
-        .sidebar-title i {
-            color: var(--secondary);
-            font-size: 16px;
-        }
-
+        .sidebar-title i { color: var(--secondary); }
         .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px 15px;
-            border-radius: 12px;
-            margin-bottom: 5px;
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: all 0.3s;
+            display: flex; align-items: center; gap: 15px;
+            padding: 12px 15px; border-radius: 12px; margin-bottom: 5px;
+            color: var(--text-muted); text-decoration: none; transition: all 0.3s;
         }
+        .menu-item:hover { background: rgba(157,123,232,0.15); color: var(--secondary); transform: translateX(5px); }
+        .menu-item.active { background: var(--gradient); color: white; box-shadow: 0 5px 15px rgba(157,123,232,0.4); }
+        .menu-item i { width: 20px; text-align: center; }
 
-        .menu-item:hover {
-            background: rgba(157, 123, 232, 0.15);
-            color: var(--secondary);
-            transform: translateX(5px);
-        }
-
-        .menu-item.active {
-            background: var(--gradient);
-            color: white;
-            box-shadow: 0 5px 15px rgba(157, 123, 232, 0.4);
-        }
-
-        .menu-item i {
-            width: 20px;
-            text-align: center;
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-        }
-
+        /* Контент */
+        .main-content { flex: 1; min-width: 0; }
         .page-title {
-            font-size: 28px;
-            font-weight: 700;
-            background: var(--gradient);
-            -webkit-background-clip: text;
+            font-size: 28px; font-weight: 700; margin-bottom: 20px;
+            background: var(--gradient); -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
-        .friends-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px;
+        .tabs {
+            display: flex; gap: 8px; margin-bottom: 20px;
+            border-bottom: 2px solid var(--border); padding-bottom: 10px;
+        }
+        .tab-btn {
+            padding: 10px 22px; border: none; background: transparent;
+            color: var(--text-muted); cursor: pointer; font-size: 15px;
+            border-radius: 10px; transition: all 0.3s; font-weight: 500;
+        }
+        .tab-btn:hover { background: rgba(157,123,232,0.1); color: var(--secondary); }
+        .tab-btn.active { background: var(--gradient); color: white; }
+        .tab-badge {
+            background: var(--danger); color: white; padding: 2px 8px;
+            border-radius: 10px; font-size: 11px; margin-left: 5px;
         }
 
-        .tab-button {
-            padding: 10px 25px;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
+        .users-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px;
+        }
+
+        .user-card {
+            background: var(--card-bg); border-radius: 16px; padding: 20px;
+            border: 1px solid var(--border); box-shadow: 0 8px 20px rgba(0,0,0,0.3);
             transition: all 0.3s;
-            border-radius: 8px;
         }
-
-        .tab-button:hover {
-            background: rgba(157, 123, 232, 0.1);
-            color: var(--secondary);
+        .user-card:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(157,123,232,0.2); }
+        .user-card-header {
+            display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
         }
-
-        .tab-button.active {
-            background: var(--gradient);
-            color: white;
-        }
-
-        .friends-stats {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            flex: 1;
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 8px 20px var(--shadow);
-            border: 1px solid var(--border-color);
-        }
-
-        .stat-number {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--secondary);
-        }
-
-        .stat-label {
-            color: var(--text-muted);
-            margin-top: 5px;
-        }
-
-        .friends-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 15px;
-        }
-
-        .friend-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 15px;
-            box-shadow: 0 8px 20px var(--shadow);
-            border: 1px solid var(--border-color);
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .friend-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(157, 123, 232, 0.3);
-            border-color: var(--secondary);
-        }
-
-        .friend-card-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .friend-card .avatar {
-            width: 60px;
-            height: 60px;
-        }
-
-        .friend-info h4 {
-            font-weight: 600;
-            color: var(--text-light);
-        }
-
-        .friend-info p {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        .online-status {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-left: auto;
-        }
-
-        .online {
-            background: var(--success);
-            box-shadow: 0 0 10px var(--success);
-        }
-
-        .offline {
-            background: var(--gray);
-        }
-
-        .mutual-friends {
-            color: var(--text-muted);
-            font-size: 13px;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .friend-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
+        .user-info h4 { font-size: 15px; margin-bottom: 2px; }
+        .user-info p { font-size: 12px; color: var(--text-muted); }
+        .online-dot { width: 10px; height: 10px; border-radius: 50%; background: #4ecdc4; display: inline-block; margin-right: 4px; }
+        .offline-dot { width: 10px; height: 10px; border-radius: 50%; background: #666; display: inline-block; margin-right: 4px; }
 
         .btn {
-            padding: 8px 20px;
-            border-radius: 20px;
-            border: none;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            padding: 8px 18px; border-radius: 20px; border: none;
+            cursor: pointer; font-weight: 600; font-size: 13px;
+            transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px;
         }
+        .btn-add { background: var(--gradient); color: white; width: 100%; justify-content: center; margin-top: 10px; }
+        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(157,123,232,0.4); }
+        .btn-accept { background: var(--success); color: white; }
+        .btn-decline { background: rgba(255,107,139,0.15); color: var(--danger); border: 1px solid rgba(255,107,139,0.3); }
+        .btn-remove { background: rgba(255,107,139,0.1); color: var(--danger); }
+        .btn-sent { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border); cursor: default; }
+        .card-actions { display: flex; gap: 8px; margin-top: 10px; }
+        .card-actions .btn { flex: 1; justify-content: center; }
 
-        .btn-primary {
-            background: var(--gradient);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(157, 123, 232, 0.4);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-light);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-accept {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-decline {
-            background: var(--danger);
-            color: white;
-        }
-
-        /* Right Sidebar */
-        .right-sidebar {
-            width: 300px;
-            padding: 20px 15px;
-            position: sticky;
-            top: 80px;
-            height: calc(100vh - 80px);
-            overflow-y: auto;
-        }
-
-        .requests-section {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 8px 20px var(--shadow);
-            border: 1px solid var(--border-color);
-        }
-
-        .request-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .request-item:last-child {
-            border-bottom: none;
-        }
-
-        .request-info {
-            flex: 1;
-        }
-
-        .request-info h5 {
-            font-weight: 600;
-            color: var(--text-light);
-        }
-
-        .request-info p {
-            color: var(--text-muted);
-            font-size: 13px;
-        }
-
-        .request-actions {
-            display: flex;
-            gap: 5px;
-        }
-
-        @media (max-width: 1200px) {
-            .right-sidebar {
-                display: none;
-            }
-        }
+        .empty-state { text-align: center; padding: 40px; color: var(--text-muted); }
+        .empty-state i { font-size: 50px; margin-bottom: 15px; opacity: 0.3; }
 
         @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: static;
-            }
-
-            .friends-grid {
-                grid-template-columns: 1fr;
-            }
+            .container { flex-direction: column; padding: 10px; }
+            .sidebar { width: 100%; }
+            .sidebar-section { display: flex; flex-wrap: wrap; gap: 5px; padding: 10px; }
+            .sidebar-title { display: none; }
+            .menu-item { padding: 8px 12px; font-size: 13px; white-space: nowrap; }
+            .menu-item span { display: inline; }
+            .users-grid { grid-template-columns: 1fr; }
+            .search-bar { display: none; }
+            .logo-v, .logo-g, .logo-lambda { font-size: 28px; }
+            .logo-e-bars { height: 28px; gap: 4px; }
+            .logo-e-bar { width: 16px; height: 3px; }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header>
         <div class="header-content">
             <a href="/" class="logo">
-                <i class="fas fa-star"></i>
-                <span>VEGA</span>
+                <span class="logo-star">✦</span>
+                <span class="logo-v">V</span>
+                <span class="logo-e-bars">
+                    <span class="logo-e-bar"></span>
+                    <span class="logo-e-bar"></span>
+                    <span class="logo-e-bar"></span>
+                </span>
+                <span class="logo-g">G</span>
+                <span class="logo-lambda">Λ</span>
+                <span class="logo-star">✦</span>
             </a>
 
             <div class="search-bar">
@@ -523,250 +208,222 @@
                 <input type="text" placeholder="Поиск друзей...">
             </div>
 
-            <div class="nav-icons">
-                <a href="/"><i class="fas fa-home"></i></a>
-                <a href="/friends">
-                    <i class="fas fa-user-friends" style="color: var(--secondary);"></i>
-                    <span class="notification-badge">3</span>
-                </a>
-                <a href="#">
-                    <i class="fas fa-comment-dots"></i>
-                    <span class="notification-badge">5</span>
-                </a>
-                <a href="#">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge">{{ notification_count }}</span>
-                </a>
-            </div>
-
-            <div class="user-profile">
+            <a href="/profile" class="user-profile">
                 <img src="{{ current_user.avatar }}" alt="Аватар" class="avatar">
                 <span>{{ current_user.name }}</span>
-            </div>
+            </a>
         </div>
     </header>
 
     <div class="container">
-        <!-- Left Sidebar -->
+        <!-- Сайдбар -->
         <div class="sidebar">
-    <div class="sidebar-section">
-        <div class="sidebar-title">
-            <i class="fas fa-crystal-ball"></i> Меню
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="fas fa-crystal-ball"></i> Меню
+                </div>
+                <a href="/" class="menu-item">
+                    <i class="fas fa-home"></i><span>Лента</span>
+                </a>
+                <a href="/friends" class="menu-item active">
+                    <i class="fas fa-user-friends"></i><span>Друзья</span>
+                </a>
+                <a href="/communities" class="menu-item">
+                    <i class="fas fa-users"></i><span>Сообщества</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-images"></i><span>Фотографии</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-video"></i><span>Видео</span>
+                </a>
+                <a href="/events" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i><span>События</span>
+                </a>
+                <a href="/settings" class="menu-item">
+                    <i class="fas fa-cog"></i><span>Настройки</span>
+                </a>
+            </div>
         </div>
-        <a href="/" class="menu-item">
-            <i class="fas fa-home"></i>
-            <span>Лента</span>
-        </a>
-        <a href="/friends" class="menu-item {% if request.path == '/friends' %}active{% endif %}">
-            <i class="fas fa-user-friends"></i>
-            <span>Друзья</span>
-        </a>
-        <a href="/communities" class="menu-item {% if request.path == '/communities' %}active{% endif %}">
-            <i class="fas fa-users"></i>
-            <span>Сообщества</span>
-        </a>
-        <a href="#" class="menu-item">
-            <i class="fas fa-images"></i>
-            <span>Фотографии</span>
-        </a>
-        <a href="#" class="menu-item">
-            <i class="fas fa-video"></i>
-            <span>Видео</span>
-        </a>
-        <a href="#" class="menu-item">
-            <i class="fas fa-calendar-alt"></i>
-            <span>События</span>
-        </a>
-        <a href="/settings" class="menu-item {% if request.path == '/settings' %}active{% endif %}">
-            <i class="fas fa-cog"></i>
-            <span>Настройки</span>
-        </a>
-    </div>
-</div>
 
-        <!-- Main Content -->
+        <!-- Контент -->
         <div class="main-content">
-            <div class="page-header">
-                <h1 class="page-title">Друзья</h1>
-                <button class="btn btn-primary" onclick="findFriends()">
+            <h1 class="page-title">Друзья</h1>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('friends')">
+                    <i class="fas fa-users"></i> Друзья ({{ friends|length }})
+                </button>
+                <button class="tab-btn" onclick="switchTab('incoming')">
+                    <i class="fas fa-user-plus"></i> Входящие
+                    {% if incoming_requests|length > 0 %}
+                    <span class="tab-badge">{{ incoming_requests|length }}</span>
+                    {% endif %}
+                </button>
+                <button class="tab-btn" onclick="switchTab('find')">
                     <i class="fas fa-search"></i> Найти друзей
                 </button>
             </div>
 
-            <div class="friends-tabs">
-                <button class="tab-button active" onclick="switchTab('all')">Все друзья</button>
-                <button class="tab-button" onclick="switchTab('online')">Онлайн</button>
-                <button class="tab-button" onclick="switchTab('recent')">Недавно добавленные</button>
-            </div>
-
-            <div class="friends-stats">
-                <div class="stat-card">
-                    <div class="stat-number">{{ friends|length }}</div>
-                    <div class="stat-label">Всего друзей</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">{{ friends|selectattr('is_online')|list|length }}</div>
-                    <div class="stat-label">Онлайн</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">{{ friend_requests|length }}</div>
-                    <div class="stat-label">Заявки в друзья</div>
-                </div>
-            </div>
-
-            <div class="friends-grid">
-                {% for friend in friends %}
-                <div class="friend-card" data-status="{{ 'online' if friend.is_online else 'offline' }}">
-                    <div class="friend-card-header">
-                        <img src="{{ friend.user.avatar }}" alt="{{ friend.user.name }}" class="avatar">
-                        <span class="online-status {{ 'online' if friend.is_online else 'offline' }}"></span>
-                    </div>
-                    <div class="friend-info">
-                        <h4>{{ friend.user.name }}</h4>
-                        <p>{{ friend.zodiac }}</p>
-                    </div>
-                    <div class="mutual-friends">
-                        <i class="fas fa-user-friends"></i> {{ friend.mutual_friends }} общих друга
-                    </div>
-                    <p style="color: var(--text-muted); font-size: 12px; margin-top: 5px;">
-                        {% if friend.is_online %}
-                            <span style="color: var(--success);">● В сети</span>
-                        {% else %}
-                            Был(а) {{ friend.last_active }}
-                        {% endif %}
-                    </p>
-                    <div class="friend-actions">
-                        <button class="btn btn-secondary" onclick="sendMessage({{ friend.user.id }})">
-                            <i class="fas fa-envelope"></i> Написать
-                        </button>
-                        <button class="btn btn-secondary" onclick="viewProfile({{ friend.user.id }})">
-                            <i class="fas fa-user"></i> Профиль
-                        </button>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- Right Sidebar -->
-        <div class="right-sidebar">
-            <div class="requests-section">
-                <div class="sidebar-title">
-                    <i class="fas fa-user-plus"></i> Заявки в друзья
-                </div>
-
-                {% if friend_requests %}
-                    {% for request in friend_requests %}
-                    <div class="request-item">
-                        <img src="{{ request.avatar }}" alt="{{ request.name }}" class="avatar avatar-sm">
-                        <div class="request-info">
-                            <h5>{{ request.name }}</h5>
-                            <p>{{ request.mutual_friends }} общих друга · {{ request.zodiac }}</p>
+            <!-- Друзья -->
+            <div class="tab-content" id="friends-tab">
+                {% if friends %}
+                <div class="users-grid">
+                    {% for friend in friends %}
+                    <div class="user-card">
+                        <div class="user-card-header">
+                            <img src="{{ friend.avatar }}" alt="{{ friend.name }}" class="avatar-lg">
+                            <div class="user-info">
+                                <h4>{{ friend.name }}</h4>
+                                <p>{{ friend.zodiac or 'Лев' }} · {{ friend.city or 'Город не указан' }}</p>
+                                <p>
+                                    {% if friend.status == 'online' %}
+                                    <span class="online-dot"></span> В сети
+                                    {% else %}
+                                    <span class="offline-dot"></span> Не в сети
+                                    {% endif %}
+                                </p>
+                            </div>
                         </div>
-                        <div class="request-actions">
-                            <button class="btn btn-accept btn-sm" onclick="acceptRequest({{ request.id }})" title="Принять">
-                                <i class="fas fa-check"></i>
-                            </button>
-                            <button class="btn btn-decline btn-sm" onclick="declineRequest({{ request.id }})" title="Отклонить">
-                                <i class="fas fa-times"></i>
+                        <div class="card-actions">
+                            <button class="btn btn-remove" onclick="removeFriend({{ friend.id }})">
+                                <i class="fas fa-user-minus"></i> Удалить
                             </button>
                         </div>
                     </div>
                     {% endfor %}
+                </div>
                 {% else %}
-                    <p style="color: var(--text-muted); text-align: center; padding: 20px 0;">
-                        Нет входящих заявок
-                    </p>
+                <div class="empty-state">
+                    <i class="fas fa-user-friends"></i>
+                    <p>У вас пока нет друзей</p>
+                    <p style="font-size: 13px;">Перейдите во вкладку "Найти друзей"</p>
+                </div>
                 {% endif %}
             </div>
 
-            <div class="requests-section" style="margin-top: 20px;">
-                <div class="sidebar-title">
-                    <i class="fas fa-filter"></i> Фильтры
+            <!-- Входящие -->
+            <div class="tab-content" id="incoming-tab" style="display: none;">
+                {% if incoming_requests %}
+                <div class="users-grid">
+                    {% for req in incoming_requests %}
+                    <div class="user-card">
+                        <div class="user-card-header">
+                            <img src="{{ req.avatar }}" alt="{{ req.name }}" class="avatar-lg">
+                            <div class="user-info">
+                                <h4>{{ req.name }}</h4>
+                                <p>{{ req.zodiac or 'Лев' }} · {{ req.city or '' }}</p>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-accept" onclick="acceptRequest({{ req.request_id }})">
+                                <i class="fas fa-check"></i> Принять
+                            </button>
+                            <button class="btn btn-decline" onclick="declineRequest({{ req.request_id }})">
+                                <i class="fas fa-times"></i> Отклонить
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
-                <div style="padding: 10px 0;">
-                    <label style="display: block; margin-bottom: 10px; color: var(--text-muted);">
-                        <input type="checkbox" style="margin-right: 10px;"> Онлайн
-                    </label>
-                    <label style="display: block; margin-bottom: 10px; color: var(--text-muted);">
-                        <input type="checkbox" style="margin-right: 10px;"> Общие друзья
-                    </label>
-                    <label style="display: block; margin-bottom: 10px; color: var(--text-muted);">
-                        <input type="checkbox" style="margin-right: 10px;"> Недавно добавленные
-                    </label>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>Нет входящих заявок</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Найти -->
+            <div class="tab-content" id="find-tab" style="display: none;">
+                <div class="users-grid">
+                    {% for user_item in all_users %}
+                    <div class="user-card">
+                        <div class="user-card-header">
+                            <img src="{{ user_item.avatar }}" alt="{{ user_item.name }}" class="avatar-lg">
+                            <div class="user-info">
+                                <h4>{{ user_item.name }}</h4>
+                                <p>{{ user_item.zodiac or 'Лев' }} · {{ user_item.city or 'Город не указан' }}</p>
+                                <p>{{ user_item.friends_count }} друзей</p>
+                            </div>
+                        </div>
+                        {% if user_item.friend_status == 'none' %}
+                        <button class="btn btn-add" onclick="sendRequest({{ user_item.id }})">
+                            <i class="fas fa-user-plus"></i> Добавить в друзья
+                        </button>
+                        {% elif user_item.friend_status == 'friends' %}
+                        <button class="btn btn-sent" disabled>
+                            <i class="fas fa-check"></i> Друзья
+                        </button>
+                        {% elif user_item.friend_status == 'sent' %}
+                        <button class="btn btn-sent" disabled>
+                            <i class="fas fa-clock"></i> Заявка отправлена
+                        </button>
+                        {% elif user_item.friend_status == 'received' %}
+                        <button class="btn btn-accept" onclick="location.reload()">
+                            <i class="fas fa-reply"></i> Ответить на заявку
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Переключение вкладок
         function switchTab(tab) {
-            // Обновляем активную кнопку
-            document.querySelectorAll('.tab-button').forEach(btn => {
-                btn.classList.remove('active');
-            });
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
-
-            // Фильтруем друзей
-            const cards = document.querySelectorAll('.friend-card');
-            cards.forEach(card => {
-                if (tab === 'all') {
-                    card.style.display = 'block';
-                } else if (tab === 'online') {
-                    if (card.dataset.status === 'online') {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                }
-            });
+            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+            document.getElementById(tab + '-tab').style.display = 'block';
         }
 
-        // Принять заявку в друзья
-        function acceptRequest(requestId) {
-            alert('✅ Заявка принята! Теперь вы друзья ✨');
-            // Здесь будет API-запрос
+        async function sendRequest(userId) {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
+            try {
+                const res = await fetch('/send_friend_request/' + userId, { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Заявка отправлена';
+                    btn.style.background = 'rgba(255,255,255,0.05)';
+                    btn.style.color = 'var(--text-muted)';
+                    btn.style.border = '1px solid var(--border)';
+                    btn.style.cursor = 'default';
+                } else { alert(data.message); btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-plus"></i> Добавить в друзья'; }
+            } catch(e) { alert('Ошибка соединения'); btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-plus"></i> Добавить в друзья'; }
         }
 
-        // Отклонить заявку
-        function declineRequest(requestId) {
-            if (confirm('Отклонить заявку?')) {
-                alert('❌ Заявка отклонена');
-                // Здесь будет API-запрос
-            }
+        async function acceptRequest(requestId) {
+            try {
+                const res = await fetch('/accept_friend_request/' + requestId, { method: 'POST' });
+                const data = await res.json();
+                if (data.success) location.reload();
+                else alert(data.message);
+            } catch(e) { alert('Ошибка соединения'); }
         }
 
-        // Написать сообщение
-        function sendMessage(userId) {
-            alert('💬 Открыть чат с пользователем ' + userId);
+        async function declineRequest(requestId) {
+            if (!confirm('Отклонить заявку?')) return;
+            try {
+                const res = await fetch('/decline_friend_request/' + requestId, { method: 'POST' });
+                const data = await res.json();
+                if (data.success) location.reload();
+                else alert(data.message);
+            } catch(e) { alert('Ошибка соединения'); }
         }
 
-        // Просмотр профиля
-        function viewProfile(userId) {
-            window.location.href = '/profile/' + userId;
+        async function removeFriend(friendId) {
+            if (!confirm('Удалить из друзей?')) return;
+            try {
+                const res = await fetch('/remove_friend/' + friendId, { method: 'POST' });
+                const data = await res.json();
+                if (data.success) location.reload();
+                else alert(data.message);
+            } catch(e) { alert('Ошибка соединения'); }
         }
-
-        // Найти друзей
-        function findFriends() {
-            const searchQuery = document.querySelector('.search-bar input').value;
-            if (searchQuery) {
-                window.location.href = '/search?q=' + encodeURIComponent(searchQuery);
-            } else {
-                alert('🔍 Введите имя для поиска');
-            }
-        }
-
-        // Анимация карточек
-        document.querySelectorAll('.friend-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-5px)';
-            });
-
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-            });
-        });
     </script>
 </body>
 </html>

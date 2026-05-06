@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='%239d7be8'/><stop offset='100%' stop-color='%23c77dff'/></linearGradient></defs><text x='10' y='85' font-size='80' font-weight='900' font-family='Arial' fill='url(%23g)'>V</text><text x='55' y='40' font-size='30' fill='%23ffd93d'>✦</text></svg>">
+<meta name="theme-color" content="#9d7be8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VEGA - Настройки</title>
@@ -607,6 +609,145 @@
             color: var(--secondary);
         }
 
+        /* Кнопка выхода */
+.logout-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-logout {
+    width: 100%;
+    padding: 14px;
+    background: rgba(255, 107, 139, 0.15);
+    color: var(--danger);
+    border: 1px solid rgba(255, 107, 139, 0.3);
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-logout:hover {
+    background: rgba(255, 107, 139, 0.25);
+    border-color: var(--danger);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 107, 139, 0.3);
+}
+
+.btn-logout:active {
+    transform: scale(0.98);
+}
+
+.btn-logout i {
+    font-size: 16px;
+}
+
+/* Модальное окно подтверждения */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-dialog {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    transform: scale(0.9);
+    transition: all 0.3s;
+}
+
+.modal-overlay.active .modal-dialog {
+    transform: scale(1);
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-title i {
+    color: var(--danger);
+    font-size: 24px;
+}
+
+.modal-text {
+    color: var(--text-muted);
+    margin-bottom: 25px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.modal-actions .btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-cancel {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-light);
+    border: 1px solid var(--border-color);
+}
+
+.btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.btn-confirm-logout {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-confirm-logout:hover {
+    background: #ff5070;
+    box-shadow: 0 5px 20px rgba(255, 107, 139, 0.4);
+}
+
         /* Team Detailed */
 .team-detailed {
     display: flex;
@@ -754,6 +895,110 @@
                 grid-template-columns: 1fr;
             }
         }
+        /* Логотип */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    text-decoration: none;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 10px rgba(157, 123, 232, 0.5));
+    transition: all 0.3s;
+    user-select: none;
+}
+
+.logo:hover {
+    filter: drop-shadow(0 0 20px rgba(199, 125, 255, 0.8));
+    transform: scale(1.03);
+}
+
+.logo-star {
+    font-size: 14px;
+    background: linear-gradient(135deg, #c77dff 0%, #b8a2ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    animation: starPulse 2s ease-in-out infinite;
+}
+
+.logo-star:last-child {
+    animation-delay: 1s;
+}
+
+@keyframes starPulse {
+    0%, 100% { opacity: 0.5; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.1); }
+}
+
+.logo-v {
+    font-size: 36px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #f0e9ff 0%, #9d7be8 50%, #c77dff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+}
+
+.logo-e-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 0 3px;
+    justify-content: center;
+    height: 36px;
+}
+
+.logo-e-bar {
+    display: block;
+    width: 20px;
+    height: 4px;
+    background: linear-gradient(90deg, #9d7be8, #c77dff);
+    border-radius: 2px;
+    transition: all 0.3s;
+}
+
+.logo:hover .logo-e-bar:nth-child(1) { width: 24px; }
+.logo:hover .logo-e-bar:nth-child(2) { width: 18px; }
+.logo:hover .logo-e-bar:nth-child(3) { width: 22px; }
+
+.logo-g {
+    font-size: 36px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #f0e9ff 0%, #c77dff 50%, #b8a2ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+}
+
+.logo-lambda {
+    font-size: 36px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #c77dff 0%, #b8a2ff 50%, #9d7be8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+}
+
+@media (max-width: 768px) {
+    .logo-v, .logo-g, .logo-lambda {
+        font-size: 28px;
+    }
+    .logo-star {
+        font-size: 11px;
+    }
+    .logo-e-bars {
+        height: 28px;
+        gap: 4px;
+    }
+    .logo-e-bar {
+        width: 16px;
+        height: 3px;
+    }
+}
     </style>
 </head>
 <body>
@@ -761,9 +1006,17 @@
     <header>
         <div class="header-content">
             <a href="/" class="logo">
-                <i class="fas fa-star"></i>
-                <span>VEGA</span>
-            </a>
+    <span class="logo-star">✦</span>
+    <span class="logo-v">V</span>
+    <span class="logo-e-bars">
+        <span class="logo-e-bar"></span>
+        <span class="logo-e-bar"></span>
+        <span class="logo-e-bar"></span>
+    </span>
+    <span class="logo-g">G</span>
+    <span class="logo-lambda">Λ</span>
+    <span class="logo-star">✦</span>
+</a>
 
             <div class="search-bar">
                 <i class="fas fa-search"></i>
@@ -804,7 +1057,7 @@
             <i class="fas fa-video"></i>
             <span>Видео</span>
         </a>
-        <a href="#" class="menu-item">
+        <a href="/events" class="menu-item">
             <i class="fas fa-calendar-alt"></i>
             <span>События</span>
         </a>
@@ -1056,6 +1309,20 @@
                         Сменить
                     </button>
                 </div>
+
+                <!-- Выход из аккаунта -->
+<div class="settings-card">
+    <div class="settings-card-title">
+        <i class="fas fa-sign-out-alt"></i> Выход
+    </div>
+    <div class="settings-card-desc">Выйти из текущего аккаунта</div>
+
+    <div class="logout-section">
+        <button class="btn-logout" onclick="showLogoutModal()">
+            <i class="fas fa-sign-out-alt"></i> Выйти из аккаунта
+        </button>
+    </div>
+</div>
 
                 <div class="setting-item">
                     <div class="setting-info">
@@ -1331,6 +1598,56 @@
             // Здесь будет смена темы
             console.log('Тема изменена на:', theme);
         }
+        // Показать модальное окно выхода
+function showLogoutModal() {
+    document.getElementById('logoutModal').classList.add('active');
+}
+
+// Скрыть модальное окно выхода
+function hideLogoutModal() {
+    document.getElementById('logoutModal').classList.remove('active');
+}
+
+// Подтверждение выхода
+function confirmLogout() {
+    window.location.href = '/logout';
+}
+
+// Закрытие модального окна по клику на фон
+document.getElementById('logoutModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        hideLogoutModal();
+    }
+});
+
+// Закрытие по клавише Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        hideLogoutModal();
+    }
+});
     </script>
+
+<!-- Модальное окно подтверждения выхода -->
+<div class="modal-overlay" id="logoutModal">
+    <div class="modal-dialog">
+        <div class="modal-title">
+            <i class="fas fa-sign-out-alt"></i>
+            Выход из аккаунта
+        </div>
+        <div class="modal-text">
+            Вы уверены, что хотите выйти? Вам нужно будет снова ввести логин и пароль для входа в систему.
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-cancel" onclick="hideLogoutModal()">
+                <i class="fas fa-times"></i> Отмена
+            </button>
+            <button class="btn btn-confirm-logout" onclick="confirmLogout()">
+                <i class="fas fa-sign-out-alt"></i> Выйти
+            </button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
