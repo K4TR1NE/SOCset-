@@ -1,922 +1,321 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='%239d7be8'/><stop offset='100%' stop-color='%23c77dff'/></linearGradient></defs><text x='10' y='85' font-size='80' font-weight='900' font-family='Arial' fill='url(%23g)'>V</text><text x='55' y='40' font-size='30' fill='%23ffd93d'>✦</text></svg>">
+    <meta name="theme-color" content="#9d7be8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VEGA - Настройки</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
         :root {
-            --primary: #9d7be8;
-            --primary-dark: #7c5bc0;
-            --secondary: #c77dff;
-            --accent: #b8a2ff;
-            --dark: #1a142b;
-            --dark-light: #2a1f3a;
-            --card-bg: #251c33;
-            --card-hover: #322841;
-            --text-light: #f0e9ff;
-            --text-muted: #cbbae3;
-            --gray: #a08bb4;
-            --success: #8a9eff;
-            --warning: #ffb86b;
-            --danger: #ff6b8b;
-            --shadow: rgba(0, 0, 0, 0.3);
-            --border-color: #3f3153;
-            --gradient: linear-gradient(135deg, #9d7be8 0%, #c77dff 100%);
+            --primary: #9d7be8; --secondary: #c77dff; --dark: #1a142b; --card-bg: #251c33;
+            --text: #f0e9ff; --text-muted: #cbbae3; --border: #3f3153;
+            --gradient: linear-gradient(135deg, #9d7be8, #c77dff);
+            --danger: #ff6b8b; --success: #8a9eff;
         }
 
         body {
-            background: linear-gradient(135deg, #1e1730 0%, #2a1f3a 100%);
-            color: var(--text-light);
-            line-height: 1.6;
-            min-height: 100vh;
+            background: linear-gradient(135deg, #1e1730, #2a1f3a);
+            color: var(--text); min-height: 100vh;
         }
 
-        .container {
-            display: flex;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header */
         header {
-            background: rgba(37, 28, 51, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--border-color);
+            background: rgba(37, 28, 51, 0.95); backdrop-filter: blur(10px);
+            padding: 10px 20px; position: sticky; top: 0; z-index: 100;
+            border-bottom: 1px solid var(--border);
         }
 
         .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            max-width: 1400px;
-            margin: 0 auto;
+            max-width: 1000px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
         }
 
         .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 26px;
-            font-weight: 700;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 1px;
-            text-decoration: none;
-            flex-shrink: 0;
+            display: flex; align-items: center; gap: 2px;
+            text-decoration: none; flex-shrink: 0;
+            filter: drop-shadow(0 0 10px rgba(157,123,232,0.5));
+            transition: all 0.3s; user-select: none;
+        }
+        .logo:hover { filter: drop-shadow(0 0 20px rgba(199,125,255,0.8)); transform: scale(1.03); }
+        .logo-star { font-size: 14px; background: linear-gradient(135deg, #c77dff, #b8a2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: starPulse 2s ease-in-out infinite; }
+        .logo-star:last-child { animation-delay: 1s; }
+        @keyframes starPulse { 0%,100%{opacity:0.5;transform:scale(0.8)} 50%{opacity:1;transform:scale(1.1)} }
+        .logo-v, .logo-g, .logo-lambda { font-size: 32px; font-weight: 800; line-height: 1; }
+        .logo-v { background: linear-gradient(135deg, #f0e9ff, #9d7be8, #c77dff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-g { background: linear-gradient(135deg, #f0e9ff, #c77dff, #b8a2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-lambda { background: linear-gradient(135deg, #c77dff, #b8a2ff, #9d7be8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-e-bars { display: flex; flex-direction: column; gap: 5px; margin: 0 3px; justify-content: center; height: 32px; }
+        .logo-e-bar { width: 18px; height: 4px; background: linear-gradient(90deg, #9d7be8, #c77dff); border-radius: 2px; transition: all 0.3s; }
+        .logo:hover .logo-e-bar:nth-child(1) { width: 22px; }
+        .logo:hover .logo-e-bar:nth-child(2) { width: 16px; }
+        .logo:hover .logo-e-bar:nth-child(3) { width: 20px; }
+
+        .container {
+            display: flex; max-width: 1000px; margin: 0 auto; padding: 20px; gap: 20px;
         }
 
-        .logo i {
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 30px;
-        }
-
-        .search-bar {
-            display: flex;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 30px;
-            padding: 8px 20px;
-            width: 40%;
-            max-width: 500px;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(5px);
-            margin: 0 auto;
-        }
-
-        .search-bar i {
-            color: var(--text-muted);
-        }
-
-        .search-bar input {
-            border: none;
-            background: transparent;
-            width: 100%;
-            margin-left: 10px;
-            outline: none;
-            color: var(--text-light);
-        }
-
-        .search-bar input::placeholder {
-            color: var(--gray);
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(157, 123, 232, 0.15);
-            padding: 5px 15px 5px 5px;
-            border-radius: 30px;
-            border: 1px solid var(--border-color);
-            flex-shrink: 0;
-            cursor: pointer;
-            text-decoration: none;
-            color: var(--text-light);
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--secondary);
-            box-shadow: 0 0 10px rgba(157, 123, 232, 0.3);
-        }
-
-        .avatar-sm {
-            width: 35px;
-            height: 35px;
-        }
-
-        .avatar-lg {
-            width: 100px;
-            height: 100px;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 280px;
-            padding: 20px 0;
-            position: sticky;
-            top: 80px;
-            height: calc(100vh - 80px);
-            overflow-y: auto;
-        }
-
+        .sidebar { width: 220px; flex-shrink: 0; position: sticky; top: 80px; height: fit-content; }
         .sidebar-section {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 20px var(--shadow);
-            border: 1px solid var(--border-color);
+            background: var(--card-bg); border-radius: 16px; padding: 18px;
+            border: 1px solid var(--border); box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
-
         .sidebar-title {
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--text-light);
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-weight: 600; margin-bottom: 12px; color: var(--text);
+            font-size: 16px; display: flex; align-items: center; gap: 10px;
         }
-
-        .sidebar-title i {
-            color: var(--secondary);
-            font-size: 16px;
-        }
-
+        .sidebar-title i { color: var(--secondary); }
         .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px 15px;
-            border-radius: 12px;
-            margin-bottom: 5px;
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: all 0.3s;
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 12px; border-radius: 10px; margin-bottom: 3px;
+            color: var(--text-muted); text-decoration: none; transition: all 0.3s;
+            font-size: 14px;
         }
+        .menu-item:hover { background: rgba(157,123,232,0.15); color: var(--secondary); transform: translateX(3px); }
+        .menu-item.active { background: var(--gradient); color: white; }
+        .menu-item i { width: 18px; text-align: center; }
 
-        .menu-item:hover {
-            background: rgba(157, 123, 232, 0.15);
-            color: var(--secondary);
-            transform: translateX(5px);
-        }
-
-        .menu-item.active {
-            background: var(--gradient);
-            color: white;
-            box-shadow: 0 5px 15px rgba(157, 123, 232, 0.4);
-        }
-
-        .menu-item i {
-            width: 20px;
-            text-align: center;
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            padding: 20px;
-            min-width: 0;
-            max-width: 800px;
-        }
+        .main-content { flex: 1; min-width: 0; }
 
         .page-title {
-            font-size: 28px;
-            font-weight: 700;
-            background: var(--gradient);
-            -webkit-background-clip: text;
+            font-size: 26px; font-weight: 700; margin-bottom: 20px;
+            background: var(--gradient); -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 25px;
         }
 
         /* Settings Card */
         .settings-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 20px var(--shadow);
-            border: 1px solid var(--border-color);
+            background: var(--card-bg); border-radius: 16px; padding: 20px;
+            margin-bottom: 15px; border: 1px solid var(--border);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
-
         .settings-card-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-light);
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-size: 16px; font-weight: 600; color: var(--text);
+            margin-bottom: 4px; display: flex; align-items: center; gap: 10px;
         }
+        .settings-card-title i { color: var(--secondary); width: 20px; text-align: center; }
+        .settings-card-desc { color: var(--text-muted); font-size: 12px; margin-bottom: 15px; padding-left: 30px; }
 
-        .settings-card-title i {
-            color: var(--secondary);
-            width: 24px;
-            text-align: center;
-        }
-
-        .settings-card-desc {
-            color: var(--text-muted);
-            font-size: 13px;
-            margin-bottom: 20px;
-            padding-left: 34px;
-        }
-
-        /* Setting Item */
         .setting-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 0;
-            border-bottom: 1px solid rgba(63, 49, 83, 0.3);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 0; border-bottom: 1px solid rgba(63,49,83,0.3);
         }
+        .setting-item:last-child { border-bottom: none; }
 
-        .setting-item:last-child {
-            border-bottom: none;
-        }
+        .setting-info { flex: 1; }
+        .setting-label { font-weight: 500; color: var(--text); font-size: 14px; }
+        .setting-desc { color: var(--text-muted); font-size: 11px; margin-top: 2px; }
 
-        .setting-info {
-            flex: 1;
-        }
-
-        .setting-label {
-            font-weight: 500;
-            color: var(--text-light);
-            font-size: 15px;
-        }
-
-        .setting-desc {
-            color: var(--text-muted);
-            font-size: 12px;
-            margin-top: 2px;
-        }
-
-        /* Toggle Switch */
+        /* Toggle */
         .toggle {
-            position: relative;
-            width: 50px;
-            height: 26px;
-            flex-shrink: 0;
-            margin-left: 15px;
+            position: relative; width: 46px; height: 24px; flex-shrink: 0; margin-left: 15px;
         }
-
-        .toggle input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
+        .toggle input { opacity: 0; width: 0; height: 0; }
         .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 26px;
-            transition: 0.3s;
-            border: 1px solid var(--border-color);
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.1); border-radius: 24px;
+            transition: 0.3s; border: 1px solid var(--border);
         }
-
         .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 2px;
-            bottom: 2px;
-            background: white;
-            border-radius: 50%;
-            transition: 0.3s;
+            position: absolute; content: ""; height: 18px; width: 18px;
+            left: 2px; bottom: 2px; background: white; border-radius: 50%; transition: 0.3s;
         }
-
-        .toggle input:checked + .toggle-slider {
-            background: var(--gradient);
-            border-color: transparent;
-        }
-
-        .toggle input:checked + .toggle-slider:before {
-            transform: translateX(24px);
-        }
+        .toggle input:checked + .toggle-slider { background: var(--gradient); border-color: transparent; }
+        .toggle input:checked + .toggle-slider:before { transform: translateX(22px); }
 
         /* Select */
         .setting-select {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            color: var(--text-light);
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-size: 14px;
-            cursor: pointer;
-            outline: none;
-            min-width: 150px;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            color: var(--text); padding: 8px 14px; border-radius: 8px;
+            font-size: 13px; cursor: pointer; outline: none; min-width: 140px;
         }
+        .setting-select option { background: var(--card-bg); color: var(--text); }
 
-        .setting-select option {
-            background: var(--card-bg);
-            color: var(--text-light);
-        }
-
-        /* Button */
+        /* Buttons */
         .btn {
-            padding: 10px 25px;
-            border-radius: 30px;
-            border: none;
-            cursor: pointer;
-            font-weight: 500;
+            padding: 8px 18px; border-radius: 8px; border: none;
+            cursor: pointer; font-weight: 600; font-size: 13px;
+            transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-primary { background: var(--gradient); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(157,123,232,0.4); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,107,139,0.4); }
+        .btn-secondary {
+            background: rgba(255,255,255,0.08); color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover { background: rgba(157,123,232,0.15); }
+
+        /* Сообщества кнопка */
+        .communities-btn {
+            display: flex; align-items: center; gap: 10px;
+            width: 100%; padding: 14px 18px;
+            background: rgba(157,123,232,0.1); border: 1px solid rgba(157,123,232,0.3);
+            border-radius: 14px; color: var(--secondary); text-decoration: none;
+            font-weight: 600; font-size: 14px; transition: all 0.3s;
+        }
+        .communities-btn:hover {
+            background: rgba(157,123,232,0.2); border-color: var(--secondary);
+            transform: translateY(-2px); box-shadow: 0 8px 20px rgba(157,123,232,0.2);
+        }
+        .communities-btn i { font-size: 18px; }
+        .communities-btn .arrow { margin-left: auto; }
+
+        /* Выход */
+        .logout-section { margin-top: 25px; padding-top: 0; }
+        .btn-logout {
+            width: 100%; padding: 10px; background: rgba(255,107,139,0.08);
+            color: var(--danger); border: 1px solid rgba(255,107,139,0.2);
+            border-radius: 10px; font-size: 13px; font-weight: 600;
+            cursor: pointer; transition: all 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-logout:hover {
+            background: rgba(255,107,139,0.18); border-color: rgba(255,107,139,0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Модалка */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); display: flex; align-items: center;
+            justify-content: center; z-index: 9999; opacity: 0; visibility: hidden;
             transition: all 0.3s;
-            font-size: 14px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
         }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-dialog {
+            background: var(--card-bg); border-radius: 20px; padding: 28px;
+            max-width: 380px; width: 90%; border: 1px solid var(--border);
+            transform: scale(0.9); transition: all 0.3s;
+        }
+        .modal-overlay.active .modal-dialog { transform: scale(1); }
+        .modal-title {
+            font-size: 18px; font-weight: 600; color: var(--text);
+            margin-bottom: 8px; display: flex; align-items: center; gap: 10px;
+        }
+        .modal-title i { color: var(--danger); font-size: 22px; }
+        .modal-text { color: var(--text-muted); margin-bottom: 20px; font-size: 13px; line-height: 1.5; }
+        .modal-actions { display: flex; gap: 10px; }
+        .modal-actions .btn { flex: 1; padding: 11px; border-radius: 10px; justify-content: center; }
+        .btn-cancel { background: rgba(255,255,255,0.1); color: var(--text); border: 1px solid var(--border); }
+        .btn-cancel:hover { background: rgba(255,255,255,0.15); }
+        .btn-confirm-logout { background: var(--danger); color: white; }
+        .btn-confirm-logout:hover { background: #ff5070; }
 
-        .btn-danger {
-            background: var(--danger);
-            color: white;
+        /* Блок О нас */
+        .about-section {
+            margin-top: 15px; background: var(--card-bg); border-radius: 16px;
+            padding: 18px 20px; border: 1px solid var(--border);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
-
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 107, 139, 0.4);
+        .about-link {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px 0; color: var(--text-muted); text-decoration: none;
+            transition: all 0.3s; font-size: 13px;
         }
-
-        .btn-primary {
-            background: var(--gradient);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(157, 123, 232, 0.4);
-        }
-
-        /* Divider */
-        .section-divider {
-            text-align: center;
-            padding: 30px 0;
-            position: relative;
-        }
-
-        .section-divider::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            width: 100%;
-            height: 1px;
-            background: var(--border-color);
-        }
-
-        .section-divider span {
-            position: relative;
-            background: linear-gradient(135deg, #1e1730 0%, #2a1f3a 100%);
-            padding: 0 20px;
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        /* Footer Info Cards */
-        .info-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .info-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 8px 20px var(--shadow);
-        }
-
-        .info-card-title {
-            font-weight: 600;
-            color: var(--text-light);
-            margin-bottom: 15px;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .info-card-title i {
-            color: var(--secondary);
-        }
-
-        .info-link {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 0;
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: all 0.3s;
-            font-size: 14px;
-        }
-
-        .info-link:hover {
-            color: var(--secondary);
-            transform: translateX(5px);
-        }
-
-        .info-link i {
-            width: 16px;
-            text-align: center;
-            color: var(--secondary);
-            font-size: 12px;
-        }
-
-        .info-link .badge {
-            margin-left: auto;
-            background: var(--gradient);
-            color: white;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-        }
-
-        /* Social Cards */
-        .social-mini {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .social-mini-link {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 10px;
-            text-decoration: none;
-            color: var(--text-light);
-            transition: all 0.3s;
-            font-size: 14px;
-        }
-
-        .social-mini-link:hover {
-            background: rgba(157, 123, 232, 0.15);
-        }
-
-        .social-mini-icon {
-            width: 35px;
-            height: 35px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-
-        .social-mini-icon.tg {
-            background: linear-gradient(135deg, #0088cc, #5d8bf4);
-        }
-
-        .social-mini-icon.vk {
-            background: linear-gradient(135deg, #4a76a8, #6d8eb0);
-        }
-
-        /* Agreement */
-        .agreement-block {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 25px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 8px 20px var(--shadow);
-        }
-
-        .agreement-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .agreement-header h2 {
-            font-size: 20px;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            flex: 1;
-        }
-
-        .agreement-header i {
-            font-size: 20px;
-            color: var(--secondary);
-            transition: transform 0.3s;
-        }
-
-        .agreement-header i.rotate {
-            transform: rotate(180deg);
-        }
-
-        .agreement-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-out;
-            color: var(--text-muted);
-            line-height: 1.6;
-            font-size: 14px;
-        }
-
-        .agreement-content.show {
-            max-height: 3000px;
-        }
-
-        .agreement-content h3 {
-            color: var(--secondary);
-            font-size: 16px;
-            margin: 15px 0 10px;
-        }
-
-        .agreement-content p {
-            margin-bottom: 8px;
-            padding-left: 15px;
-        }
-
-        .agreement-content ul {
-            padding-left: 35px;
-            margin: 10px 0;
-        }
-
-        .agreement-content li {
-            margin-bottom: 5px;
-        }
+        .about-link:hover { color: var(--secondary); transform: translateX(3px); }
+        .about-link i { width: 16px; text-align: center; color: var(--secondary); font-size: 12px; }
 
         .copyright {
-            text-align: center;
-            padding: 30px 0;
-            color: var(--text-muted);
-            font-size: 14px;
+            text-align: center; padding: 20px 0 5px;
+            color: var(--text-muted); font-size: 12px;
         }
-
-        .copyright i {
-            color: var(--secondary);
-        }
-
-        /* Team Detailed */
-.team-detailed {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.team-detailed-item {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 20px;
-    transition: all 0.3s;
-}
-
-.team-detailed-item:hover {
-    background: rgba(157, 123, 232, 0.08);
-    border-color: var(--secondary);
-    transform: translateY(-2px);
-}
-
-.team-detailed-header {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 15px;
-}
-
-.team-mini-avatar {
-    width: 55px;
-    height: 55px;
-    border-radius: 16px;
-    object-fit: cover;
-    border: 2px solid var(--secondary);
-    box-shadow: 0 5px 15px rgba(157, 123, 232, 0.3);
-    flex-shrink: 0;
-}
-
-.team-mini-name {
-    font-weight: 600;
-    color: var(--text-light);
-    font-size: 16px;
-    background: var(--gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.team-mini-role {
-    color: var(--secondary);
-    font-size: 13px;
-    font-weight: 500;
-    display: inline-block;
-    background: rgba(157, 123, 232, 0.2);
-    padding: 3px 12px;
-    border-radius: 12px;
-    margin-top: 3px;
-}
-
-.team-detailed-desc {
-    color: var(--text-muted);
-    font-size: 14px;
-    line-height: 1.6;
-    margin-bottom: 15px;
-    padding-left: 5px;
-}
-
-.team-skills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.skill-tag {
-    background: rgba(157, 123, 232, 0.15);
-    color: var(--secondary);
-    padding: 5px 12px;
-    border-radius: 15px;
-    font-size: 12px;
-    border: 1px solid rgba(157, 123, 232, 0.3);
-    transition: all 0.3s;
-}
-
-.skill-tag:hover {
-    background: rgba(157, 123, 232, 0.3);
-    transform: translateY(-1px);
-    box-shadow: 0 3px 10px rgba(157, 123, 232, 0.2);
-}
-
-@media (max-width: 768px) {
-    .team-detailed-header {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .team-detailed-desc {
-        text-align: center;
-    }
-
-    .team-skills {
-        justify-content: center;
-    }
-}
+        .copyright i { color: var(--secondary); }
 
         @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-                padding: 0;
-            }
-
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: static;
-                padding: 10px;
-            }
-
-            .sidebar-section {
-                display: flex;
-                overflow-x: auto;
-                gap: 10px;
-                padding: 10px;
-            }
-
-            .menu-item {
-                white-space: nowrap;
-                flex-shrink: 0;
-            }
-
-            .menu-item span,
-            .sidebar-title {
-                display: none;
-            }
-
-            .main-content {
-                padding: 10px;
-                max-width: 100%;
-            }
-
-            .search-bar {
-                display: none;
-            }
-
-            .info-cards {
-                grid-template-columns: 1fr;
-            }
+            .container { flex-direction: column; padding: 10px; }
+            .sidebar { width: 100%; position: static; }
+            .sidebar-section { display: flex; flex-wrap: wrap; gap: 5px; padding: 10px; }
+            .sidebar-title { display: none; }
+            .menu-item { padding: 8px 12px; font-size: 13px; white-space: nowrap; }
+            .menu-item span { display: inline; }
+            .logo-v, .logo-g, .logo-lambda { font-size: 26px; }
+            .logo-e-bars { height: 26px; gap: 4px; }
+            .logo-e-bar { width: 14px; height: 3px; }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header>
         <div class="header-content">
             <a href="/" class="logo">
-                <i class="fas fa-star"></i>
-                <span>VEGA</span>
-            </a>
-
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Поиск...">
-            </div>
-
-            <a href="/profile" class="user-profile">
-                <img src="{{ current_user.avatar }}" alt="Аватар" class="avatar">
-                <span>{{ current_user.name }}</span>
+                <span class="logo-star">✦</span>
+                <span class="logo-v">V</span>
+                <span class="logo-e-bars">
+                    <span class="logo-e-bar"></span><span class="logo-e-bar"></span><span class="logo-e-bar"></span>
+                </span>
+                <span class="logo-g">G</span>
+                <span class="logo-lambda">Λ</span>
+                <span class="logo-star">✦</span>
             </a>
         </div>
     </header>
 
     <div class="container">
-        <!-- Left Sidebar -->
+        <!-- Сайдбар -->
         <div class="sidebar">
-    <div class="sidebar-section">
-        <div class="sidebar-title">
-            <i class="fas fa-crystal-ball"></i> Меню
+            <div class="sidebar-section">
+                <div class="sidebar-title"><i class="fas fa-crystal-ball"></i> Меню</div>
+                <a href="/" class="menu-item"><i class="fas fa-home"></i><span>Лента</span></a>
+                <a href="/friends" class="menu-item"><i class="fas fa-user-friends"></i><span>Друзья</span></a>
+                <a href="/communities" class="menu-item"><i class="fas fa-users"></i><span>Сообщества</span></a>
+                <a href="/gallery" class="menu-item"><i class="fas fa-images"></i><span>Галерея</span></a>
+                <a href="/chat" class="menu-item"><i class="fas fa-comments"></i><span>Чат</span></a>
+                <a href="/events" class="menu-item"><i class="fas fa-calendar-alt"></i><span>События</span></a>
+                <a href="/settings" class="menu-item active"><i class="fas fa-cog"></i><span>Настройки</span></a>
+            </div>
         </div>
-        <a href="/" class="menu-item">
-            <i class="fas fa-home"></i>
-            <span>Лента</span>
-        </a>
-        <a href="/friends" class="menu-item {% if request.path == '/friends' %}active{% endif %}">
-            <i class="fas fa-user-friends"></i>
-            <span>Друзья</span>
-        </a>
-        <a href="/communities" class="menu-item {% if request.path == '/communities' %}active{% endif %}">
-            <i class="fas fa-users"></i>
-            <span>Сообщества</span>
-        </a>
-        <a href="#" class="menu-item">
-            <i class="fas fa-images"></i>
-            <span>Фотографии</span>
-        </a>
-        <a href="#" class="menu-item">
-            <i class="fas fa-video"></i>
-            <span>Видео</span>
-        </a>
-        <a href="#" class="menu-item">
-            <i class="fas fa-calendar-alt"></i>
-            <span>События</span>
-        </a>
-        <a href="/settings" class="menu-item {% if request.path == '/settings' %}active{% endif %}">
-            <i class="fas fa-cog"></i>
-            <span>Настройки</span>
-        </a>
-    </div>
-</div>
 
-        <!-- Main Content -->
+        <!-- Контент -->
         <div class="main-content">
             <h1 class="page-title">Настройки</h1>
 
-            <!-- ========== ОСНОВНЫЕ НАСТРОЙКИ ========== -->
-
             <!-- Уведомления -->
             <div class="settings-card">
-                <div class="settings-card-title">
-                    <i class="fas fa-bell"></i> Уведомления
-                </div>
-                <div class="settings-card-desc">Настройте, какие уведомления вы хотите получать</div>
-
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <div class="setting-label">Push-уведомления</div>
-                        <div class="setting-desc">Мгновенные уведомления в браузере</div>
-                    </div>
-                    <label class="toggle">
-                        <input type="checkbox" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
+                <div class="settings-card-title"><i class="fas fa-bell"></i> Уведомления</div>
+                <div class="settings-card-desc">Какие уведомления вы хотите получать</div>
 
                 <div class="setting-item">
                     <div class="setting-info">
                         <div class="setting-label">Новые сообщения</div>
-                        <div class="setting-desc">Уведомлять о новых личных сообщениях</div>
+                        <div class="setting-desc">Уведомлять о личных сообщениях</div>
                     </div>
-                    <label class="toggle">
-                        <input type="checkbox" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
+                    <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
                 </div>
-
                 <div class="setting-item">
                     <div class="setting-info">
                         <div class="setting-label">Заявки в друзья</div>
                         <div class="setting-desc">Когда кто-то хочет добавить вас в друзья</div>
                     </div>
-                    <label class="toggle">
-                        <input type="checkbox" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
+                    <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
                 </div>
-
                 <div class="setting-item">
                     <div class="setting-info">
-                        <div class="setting-label">Комментарии</div>
-                        <div class="setting-desc">Когда кто-то комментирует ваши посты</div>
+                        <div class="setting-label">Комментарии и лайки</div>
+                        <div class="setting-desc">Когда кто-то взаимодействует с вашими постами</div>
                     </div>
-                    <label class="toggle">
-                        <input type="checkbox" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
+                    <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
                 </div>
-
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <div class="setting-label">Лайки</div>
-                        <div class="setting-desc">Когда кто-то оценивает ваши записи</div>
-                    </div>
-                    <label class="toggle">
-                        <input type="checkbox">
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
-
                 <div class="setting-item">
                     <div class="setting-info">
                         <div class="setting-label">Гороскоп на сегодня</div>
                         <div class="setting-desc">Ежедневный гороскоп по утрам</div>
                     </div>
-                    <label class="toggle">
-                        <input type="checkbox" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <div class="setting-label">Звук уведомлений</div>
-                        <div class="setting-desc">Воспроизводить звук при получении уведомления</div>
-                    </div>
-                    <label class="toggle">
-                        <input type="checkbox">
-                        <span class="toggle-slider"></span>
-                    </label>
+                    <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
                 </div>
             </div>
 
             <!-- Приватность -->
             <div class="settings-card">
-                <div class="settings-card-title">
-                    <i class="fas fa-shield-alt"></i> Приватность
-                </div>
+                <div class="settings-card-title"><i class="fas fa-shield-alt"></i> Приватность</div>
                 <div class="settings-card-desc">Кто может видеть ваш профиль и контент</div>
 
                 <div class="setting-item">
                     <div class="setting-info">
                         <div class="setting-label">Видимость профиля</div>
-                        <div class="setting-desc">Кто может просматривать вашу страницу</div>
                     </div>
                     <select class="setting-select">
                         <option>Все пользователи</option>
@@ -924,72 +323,38 @@
                         <option>Только я</option>
                     </select>
                 </div>
-
                 <div class="setting-item">
                     <div class="setting-info">
                         <div class="setting-label">Кто может писать сообщения</div>
-                        <div class="setting-desc">Личные сообщения от других пользователей</div>
-                    </div>
-                    <select class="setting-select">
-                        <option>Все пользователи</option>
-                        <option>Друзья и друзья друзей</option>
-                        <option>Только друзья</option>
-                    </select>
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <div class="setting-label">Кто видит список друзей</div>
                     </div>
                     <select class="setting-select">
                         <option>Все пользователи</option>
                         <option>Только друзья</option>
-                        <option>Только я</option>
                     </select>
                 </div>
-
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <div class="setting-label">Кто видит мои фото</div>
-                    </div>
-                    <select class="setting-select">
-                        <option>Все пользователи</option>
-                        <option>Только друзья</option>
-                        <option>Только я</option>
-                    </select>
-                </div>
-
                 <div class="setting-item">
                     <div class="setting-info">
                         <div class="setting-label">Онлайн-статус</div>
                         <div class="setting-desc">Показывать, когда вы в сети</div>
                     </div>
-                    <label class="toggle">
-                        <input type="checkbox" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
+                    <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
                 </div>
             </div>
 
             <!-- Оформление -->
             <div class="settings-card">
-                <div class="settings-card-title">
-                    <i class="fas fa-palette"></i> Оформление
-                </div>
+                <div class="settings-card-title"><i class="fas fa-palette"></i> Оформление</div>
                 <div class="settings-card-desc">Настройте внешний вид сайта</div>
 
                 <div class="setting-item">
                     <div class="setting-info">
                         <div class="setting-label">Тема</div>
-                        <div class="setting-desc">Светлая или темная тема</div>
                     </div>
                     <select class="setting-select" onchange="changeTheme(this.value)">
-                        <option value="dark">Темная (по умолчанию)</option>
+                        <option value="dark">Темная</option>
                         <option value="light">Светлая</option>
-                        <option value="purple">Фиолетовая</option>
                     </select>
                 </div>
-
                 <div class="setting-item">
                     <div class="setting-info">
                         <div class="setting-label">Размер шрифта</div>
@@ -1000,337 +365,82 @@
                         <option>Большой</option>
                     </select>
                 </div>
-
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <div class="setting-label">Анимации</div>
-                        <div class="setting-desc">Плавные переходы и эффекты</div>
-                    </div>
-                    <label class="toggle">
-                        <input type="checkbox" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Язык и регион -->
-            <div class="settings-card">
-                <div class="settings-card-title">
-                    <i class="fas fa-globe"></i> Язык и регион
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <div class="setting-label">Язык интерфейса</div>
-                    </div>
-                    <select class="setting-select">
-                        <option>Русский</option>
-                        <option>English</option>
-                    </select>
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <div class="setting-label">Часовой пояс</div>
-                    </div>
-                    <select class="setting-select">
-                        <option>Москва (GMT+3)</option>
-                        <option>Ижевск (GMT+4)</option>
-                        <option>Калининград (GMT+2)</option>
-                    </select>
-                </div>
             </div>
 
             <!-- Безопасность -->
             <div class="settings-card">
-                <div class="settings-card-title">
-                    <i class="fas fa-lock"></i> Безопасность
-                </div>
+                <div class="settings-card-title"><i class="fas fa-lock"></i> Безопасность</div>
 
                 <div class="setting-item">
                     <div class="setting-info">
                         <div class="setting-label">Сменить пароль</div>
-                        <div class="setting-desc">Последний раз меняли: 3 месяца назад</div>
+                        <div class="setting-desc">Последний раз меняли: недавно</div>
                     </div>
-                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 13px;">
-                        Сменить
-                    </button>
+                    <button class="btn btn-primary btn-sm">Сменить</button>
                 </div>
-
                 <div class="setting-item">
                     <div class="setting-info">
                         <div class="setting-label">Двухфакторная аутентификация</div>
                         <div class="setting-desc">Дополнительная защита аккаунта</div>
                     </div>
-                    <label class="toggle">
-                        <input type="checkbox">
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <div class="setting-label">Активные сессии</div>
-                        <div class="setting-desc">Управление устройствами, где выполнен вход</div>
-                    </div>
-                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 13px;">
-                        <i class="fas fa-list"></i> Посмотреть
-                    </button>
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <div class="setting-label" style="color: var(--danger);">Удалить аккаунт</div>
-                        <div class="setting-desc">Все данные будут безвозвратно удалены</div>
-                    </div>
-                    <button class="btn btn-danger" style="padding: 8px 15px; font-size: 13px;">
-                        <i class="fas fa-trash"></i> Удалить
-                    </button>
+                    <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
                 </div>
             </div>
 
-            <!-- Разделитель -->
-            <div class="section-divider">
-                <span>Информация</span>
-            </div>
+            <!-- Мои сообщества -->
+            <a href="/communities" class="communities-btn">
+                <i class="fas fa-users"></i>
+                <span>Мои сообщества</span>
+                <i class="fas fa-chevron-right arrow"></i>
+            </a>
 
-            <!-- ========== ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ (бывший футер) ========== -->
-
-            <div class="info-cards">
-                <!-- О проекте -->
-                <div class="info-card">
-                    <div class="info-card-title">
-                        <i class="fas fa-info-circle"></i> О проекте
-                    </div>
-                    <a href="#" class="info-link">
-                        <i class="fas fa-star"></i> О проекте VEGA
-                    </a>
-                    <a href="#" class="info-link">
-                        <i class="fas fa-briefcase"></i> Вакансии
-                        <span class="badge">3</span>
-                    </a>
-                    <a href="#" class="info-link">
-                        <i class="fas fa-ad"></i> Реклама
-                    </a>
-                    <a href="#" class="info-link">
-                        <i class="fas fa-question-circle"></i> Помощь
-                    </a>
-                </div>
-
-                <!-- Конфиденциальность -->
-                <div class="info-card">
-                    <div class="info-card-title">
-                        <i class="fas fa-shield-alt"></i> Конфиденциальность
-                    </div>
-                    <a href="#" class="info-link">
-                        <i class="fas fa-lock"></i> Политика конфиденциальности
-                    </a>
-                    <a href="#" class="info-link">
-                        <i class="fas fa-file-contract"></i> Условия использования
-                    </a>
-                    <a href="#" class="info-link">
-                        <i class="fas fa-user-shield"></i> Настройки конфиденциальности
-                    </a>
-                    <a href="#" class="info-link">
-                        <i class="fas fa-cookie-bite"></i> Файлы cookie
-                    </a>
-                </div>
-
-                <!-- Контакты -->
-                <div class="info-card">
-                    <div class="info-card-title">
-                        <i class="fas fa-envelope"></i> Контакты
-                    </div>
-                    <a href="#" class="info-link">
-                        <i class="fas fa-headset"></i> Служба поддержки
-                        <span class="badge">24/7</span>
-                    </a>
-                    <a href="#" class="info-link">
-                        <i class="fas fa-newspaper"></i> Пресс-центр
-                    </a>
-                    <a href="#" class="info-link">
-                        <i class="fas fa-code"></i> Разработчикам
-                    </a>
-                    <a href="#" class="info-link">
-                        <i class="fas fa-handshake"></i> Партнеры
-                    </a>
-                </div>
-
-                <!-- Мы в соцсетях -->
-                <div class="info-card">
-                    <div class="info-card-title">
-                        <i class="fas fa-share-alt"></i> Мы в соцсетях
-                    </div>
-                    <div class="social-mini">
-                        <a href="https://t.me/K4TR1NE" target="_blank" class="social-mini-link">
-                            <div class="social-mini-icon tg"><i class="fab fa-telegram"></i></div>
-                            <span>@K4TR1NE</span>
-                        </a>
-                        <a href="https://t.me/ArtemiyVadimch" target="_blank" class="social-mini-link">
-                            <div class="social-mini-icon tg"><i class="fab fa-telegram"></i></div>
-                            <span>@ArtemiyVadimch</span>
-                        </a>
-                        <a href="https://t.me/G1h0sts" target="_blank" class="social-mini-link">
-                            <div class="social-mini-icon tg"><i class="fab fa-telegram"></i></div>
-                            <span>@G1h0sts</span>
-                        </a>
-                        <a href="https://vk.ru/gregoreu" target="_blank" class="social-mini-link">
-                            <div class="social-mini-icon vk"><i class="fab fa-vk"></i></div>
-                            <span>vk.ru/gregoreu</span>
-                        </a>
-                        <a href="https://vk.ru/jamkar" target="_blank" class="social-mini-link">
-                            <div class="social-mini-icon vk"><i class="fab fa-vk"></i></div>
-                            <span>vk.ru/jamkar</span>
-                        </a>
-                        <a href="https://vk.ru/id617362202" target="_blank" class="social-mini-link">
-                            <div class="social-mini-icon vk"><i class="fab fa-vk"></i></div>
-                            <span>vk.ru/id617362202</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- О команде -->
-<div class="info-card" style="margin-bottom: 20px;">
-    <div class="info-card-title">
-        <i class="fas fa-users"></i> О команде
-    </div>
-    <div class="team-detailed">
-        <!-- Максим -->
-        <div class="team-detailed-item">
-            <div class="team-detailed-header">
-                <img src="/static/images/team/maxim.jpg" alt="Овчинников Максим" class="team-mini-avatar">
-                <div>
-                    <div class="team-mini-name">Овчинников Максим Александрович</div>
-                    <div class="team-mini-role">Главный разработчик</div>
-                </div>
-            </div>
-            <p class="team-detailed-desc">
-                Основатель и ведущий разработчик проекта VEGA. Отвечает за архитектуру приложения,
-                серверную логику и интеграцию всех компонентов системы. Создал основную структуру
-                социальной сети и реализовал ключевые функции: ленту новостей, систему друзей и сообществ.
-            </p>
-            <div class="team-skills">
-                <span class="skill-tag">Python</span>
-                <span class="skill-tag">Flask</span>
-                <span class="skill-tag">Backend</span>
-                <span class="skill-tag">Базы данных</span>
-                <span class="skill-tag">Архитектура</span>
-            </div>
-        </div>
-
-        <!-- Семён -->
-        <div class="team-detailed-item">
-            <div class="team-detailed-header">
-                <img src="/static/images/team/semen.jpg" alt="Трефилов Семён" class="team-mini-avatar">
-                <div>
-                    <div class="team-mini-name">Трефилов Семён Андреевич</div>
-                    <div class="team-mini-role">Frontend-разработчик</div>
-                </div>
-            </div>
-            <p class="team-detailed-desc">
-                Дизайнер и разработчик пользовательских интерфейсов. Создал уникальный дизайн
-                в астрологической тематике, разработал адаптивную верстку и внедрил интерактивные
-                элементы. Отвечает за визуальное оформление всех страниц социальной сети.
-            </p>
-            <div class="team-skills">
-                <span class="skill-tag">HTML/CSS</span>
-                <span class="skill-tag">JavaScript</span>
-                <span class="skill-tag">UI/UX</span>
-                <span class="skill-tag">Адаптивная верстка</span>
-                <span class="skill-tag">Дизайн</span>
-            </div>
-        </div>
-
-        <!-- Артемий -->
-        <div class="team-detailed-item">
-            <div class="team-detailed-header">
-                <img src="/static/images/team/artemiy.jpg" alt="Возисов Артемий" class="team-mini-avatar">
-                <div>
-                    <div class="team-mini-name">Возисов Артемий Вадимович</div>
-                    <div class="team-mini-role">Full-stack разработчик</div>
-                </div>
-            </div>
-            <p class="team-detailed-desc">
-                Разработчик полного цикла. Отвечает за интеграцию frontend и backend компонентов,
-                тестирование и отладку приложения. Реализовал функционал уведомлений,
-                систему историй и пользовательские настройки. Обеспечивает стабильную работу
-                всех сервисов социальной сети.
-            </p>
-            <div class="team-skills">
-                <span class="skill-tag">JavaScript</span>
-                <span class="skill-tag">Python</span>
-                <span class="skill-tag">API</span>
-                <span class="skill-tag">Тестирование</span>
-                <span class="skill-tag">DevOps</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-            <!-- Пользовательское соглашение -->
-            <div class="agreement-block">
-                <div class="agreement-header" onclick="toggleAgreement()">
-                    <h2>📜 Пользовательское соглашение</h2>
-                    <i class="fas fa-chevron-down" id="agreementArrow"></i>
-                </div>
-                <div class="agreement-content" id="agreementContent">
-                    <p><strong>г. Ижевск, 07.02.2026</strong></p>
-                    <p>Настоящий документ «Пользовательское соглашение» (далее — Соглашение) представляет собой предложение Vega (далее — «Администрация») заключить договор на изложенных ниже условиях с любым физическим лицом, использующим Сайт (далее — «Пользователь»).</p>
-
-                    <h3>1. Общие положения</h3>
-                    <p>1.1. Настоящее Соглашение регулирует отношения между Администрацией сайта и Пользователем.</p>
-                    <p>1.2. Текст Соглашения является публичной офертой в соответствии со ст. 437 ГК РФ.</p>
-                    <p>1.3. Фактом начала использования Сайта Пользователь выражает свое согласие с условиями Соглашения.</p>
-                    <p>1.4. Администрация имеет право вносить изменения в Соглашение в одностороннем порядке.</p>
-
-                    <h3>2. Статус Сторон и регистрация</h3>
-                    <p>2.1. Администрация Сайта — лицо, обладающее правами администрирования Сайта.</p>
-                    <p>2.2. Пользователь — дееспособное физическое лицо, достигшее возраста, допустимого для акцепта Соглашения.</p>
-                    <p>2.3. Регистрация на Сайте является бесплатной и добровольной.</p>
-                    <p>2.4. При регистрации Пользователь обязан предоставить достоверную информацию.</p>
-                    <p>2.5. Пользователь обязуется не передавать третьим лицам свои логин и пароль.</p>
-
-                    <h3>3. Права и обязанности Сторон</h3>
-                    <p><strong>3.1. Пользователь имеет право:</strong></p>
-                    <p>3.1.1. Бесплатно пользоваться основными сервисами Сайта.</p>
-                    <p>3.1.2. Получать информацию о работе Сайта.</p>
-                    <p>3.1.3. Обращаться к Администрации с вопросами и предложениями.</p>
-                    <p><strong>3.2. Пользователь обязуется:</strong></p>
-                    <p>3.2.1. Не размещать на Сайте незаконные материалы.</p>
-                    <p>3.2.2. Не использовать Сайт для распространения спама.</p>
-                    <p>3.2.3. Не выдавать себя за другого человека.</p>
-                    <p>3.2.4. Не нарушать работоспособность Сайта.</p>
-
-                    <h3>4. Ответственность</h3>
-                    <p>4.1. Сайт предоставляется на условиях «как есть».</p>
-                    <p>4.2. Администрация не несет ответственности за действия Пользователей.</p>
-
-                    <h3>5. Заключительные положения</h3>
-                    <p>5.1. Настоящее Соглашение регулируется законодательством РФ.</p>
-                    <p>5.2. Все споры подлежат рассмотрению в суде по месту нахождения Администрации.</p>
-                </div>
+            <!-- О нас -->
+            <div class="about-section">
+                <a href="/settings#about" class="about-link"><i class="fas fa-info-circle"></i> О проекте VEGA</a>
+                <a href="/settings#team" class="about-link"><i class="fas fa-user-astronaut"></i> Команда</a>
+                <a href="/settings#privacy" class="about-link"><i class="fas fa-file-contract"></i> Политика конфиденциальности</a>
+                <a href="/settings#terms" class="about-link"><i class="fas fa-gavel"></i> Условия использования</a>
+                <a href="/settings#contacts" class="about-link"><i class="fas fa-envelope"></i> Контакты</a>
             </div>
 
             <!-- Копирайт -->
             <div class="copyright">
-                <i class="fas fa-crystal-ball"></i> 2026 VEGA · Социальная астрологическая сеть <i class="fas fa-sparkles"></i>
+                <i class="fas fa-crystal-ball"></i> 2026 VEGA <i class="fas fa-sparkles"></i>
+            </div>
+
+            <!-- Выход -->
+            <div class="logout-section">
+                <button class="btn-logout" onclick="showLogoutModal()">
+                    <i class="fas fa-sign-out-alt"></i> Выйти из аккаунта
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно -->
+    <div class="modal-overlay" id="logoutModal">
+        <div class="modal-dialog">
+            <div class="modal-title"><i class="fas fa-sign-out-alt"></i> Выход из аккаунта</div>
+            <div class="modal-text">Вы уверены, что хотите выйти? Вам нужно будет снова ввести логин и пароль.</div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="hideLogoutModal()"><i class="fas fa-times"></i> Отмена</button>
+                <button class="btn btn-confirm-logout" onclick="confirmLogout()"><i class="fas fa-sign-out-alt"></i> Выйти</button>
             </div>
         </div>
     </div>
 
     <script>
-        function toggleAgreement() {
-            const content = document.getElementById('agreementContent');
-            const arrow = document.getElementById('agreementArrow');
-            content.classList.toggle('show');
-            arrow.classList.toggle('rotate');
-        }
+        function showLogoutModal() { document.getElementById('logoutModal').classList.add('active'); }
+        function hideLogoutModal() { document.getElementById('logoutModal').classList.remove('active'); }
+        function confirmLogout() { window.location.href = '/logout'; }
+        function changeTheme(t) { console.log('Тема:', t); }
 
-        function changeTheme(theme) {
-            // Здесь будет смена темы
-            console.log('Тема изменена на:', theme);
-        }
+        document.getElementById('logoutModal').addEventListener('click', function(e) {
+            if (e.target === this) hideLogoutModal();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') hideLogoutModal();
+        });
     </script>
 </body>
 </html>

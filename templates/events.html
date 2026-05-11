@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEGA - События</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        :root {
+            --primary: #9d7be8; --secondary: #c77dff;
+            --dark: #1a142b; --card-bg: #251c33;
+            --text: #f0e9ff; --text-muted: #cbbae3;
+            --border: #3f3153; --gradient: linear-gradient(135deg, #9d7be8, #c77dff);
+            --success: #8a9eff; --danger: #ff6b8b; --warning: #ffb86b;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e1730, #2a1f3a);
+            color: var(--text); min-height: 100vh;
+        }
+
+        header {
+            background: rgba(37, 28, 51, 0.95); backdrop-filter: blur(10px);
+            padding: 10px 20px; position: sticky; top: 0; z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-content {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .logo {
+            display: flex; align-items: center; gap: 2px;
+            text-decoration: none; flex-shrink: 0;
+            filter: drop-shadow(0 0 10px rgba(157,123,232,0.5));
+            transition: all 0.3s;
+        }
+        .logo:hover { filter: drop-shadow(0 0 20px rgba(199,125,255,0.8)); transform: scale(1.03); }
+        .logo-star {
+            font-size: 14px;
+            background: linear-gradient(135deg, #c77dff, #b8a2ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: starPulse 2s ease-in-out infinite;
+        }
+        @keyframes starPulse {
+            0%,100%{opacity:0.5;transform:scale(0.8)} 50%{opacity:1;transform:scale(1.1)}
+        }
+        .logo-v, .logo-g, .logo-lambda { font-size: 36px; font-weight: 800; line-height: 1; }
+        .logo-v { background: linear-gradient(135deg, #f0e9ff, #9d7be8, #c77dff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-g { background: linear-gradient(135deg, #f0e9ff, #c77dff, #b8a2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-lambda { background: linear-gradient(135deg, #c77dff, #b8a2ff, #9d7be8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-e-bars {
+            display: flex; flex-direction: column; gap: 5px;
+            margin: 0 3px; justify-content: center; height: 36px;
+        }
+        .logo-e-bar {
+            width: 20px; height: 4px;
+            background: linear-gradient(90deg, #9d7be8, #c77dff);
+            border-radius: 2px; transition: all 0.3s;
+        }
+        .logo:hover .logo-e-bar:nth-child(1) { width: 24px; }
+        .logo:hover .logo-e-bar:nth-child(2) { width: 18px; }
+        .logo:hover .logo-e-bar:nth-child(3) { width: 22px; }
+
+        .search-bar {
+            display: flex; background: rgba(255,255,255,0.08);
+            border-radius: 30px; padding: 8px 20px; width: 30%;
+            border: 1px solid var(--border);
+        }
+        .search-bar i { color: var(--text-muted); }
+        .search-bar input {
+            border: none; background: transparent; width: 100%;
+            margin-left: 10px; outline: none; color: var(--text);
+        }
+
+        .user-profile {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(157,123,232,0.15); padding: 5px 15px 5px 5px;
+            border-radius: 30px; border: 1px solid var(--border);
+            cursor: pointer; text-decoration: none; color: var(--text);
+        }
+        .user-profile:hover { background: rgba(157,123,232,0.25); }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--secondary); }
+
+        .container {
+            display: flex; max-width: 1200px; margin: 0 auto; padding: 20px; gap: 20px;
+        }
+
+        /* Сайдбар */
+        .sidebar { width: 250px; flex-shrink: 0; }
+        .sidebar-section {
+            background: var(--card-bg); border-radius: 16px; padding: 20px;
+            margin-bottom: 20px; border: 1px solid var(--border);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        .sidebar-title {
+            font-weight: 600; margin-bottom: 15px; color: var(--text);
+            font-size: 18px; display: flex; align-items: center; gap: 10px;
+        }
+        .sidebar-title i { color: var(--secondary); }
+        .menu-item {
+            display: flex; align-items: center; gap: 15px;
+            padding: 12px 15px; border-radius: 12px; margin-bottom: 5px;
+            color: var(--text-muted); text-decoration: none; transition: all 0.3s;
+        }
+        .menu-item:hover { background: rgba(157,123,232,0.15); color: var(--secondary); transform: translateX(5px); }
+        .menu-item.active { background: var(--gradient); color: white; box-shadow: 0 5px 15px rgba(157,123,232,0.4); }
+        .menu-item i { width: 20px; text-align: center; }
+
+        /* Контент */
+        .main-content { flex: 1; min-width: 0; }
+        .page-title {
+            font-size: 28px; font-weight: 700; margin-bottom: 5px;
+            background: var(--gradient); -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .page-subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
+
+        .card {
+            background: var(--card-bg); border-radius: 20px; padding: 25px;
+            border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+
+        .calendar-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+        }
+        .calendar-title { font-size: 22px; font-weight: 700; }
+        .calendar-nav { display: flex; gap: 8px; }
+        .nav-btn {
+            width: 38px; height: 38px; border-radius: 10px;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            color: var(--text); cursor: pointer; display: flex;
+            align-items: center; justify-content: center; text-decoration: none;
+            transition: all 0.3s; font-size: 14px;
+        }
+        .nav-btn:hover { background: var(--gradient); border-color: transparent; transform: translateY(-2px); }
+        .nav-btn.today-btn { width: auto; padding: 0 15px; font-size: 13px; font-weight: 600; gap: 6px; }
+
+        .calendar-grid {
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+        }
+        .weekday {
+            text-align: center; color: var(--text-muted);
+            font-size: 11px; font-weight: 700; padding: 8px 0;
+        }
+        .weekday.weekend { color: var(--danger); }
+
+        .day-cell {
+            aspect-ratio: 1; border-radius: 12px; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; transition: all 0.3s;
+            font-size: 14px; background: rgba(255,255,255,0.02);
+        }
+        .day-cell:hover { background: rgba(157,123,232,0.2); transform: translateY(-2px); }
+        .day-cell.empty { cursor: default; }
+        .day-cell.empty:hover { background: transparent; transform: none; }
+        .day-cell.today { background: rgba(157,123,232,0.3); font-weight: 700; border: 2px solid var(--secondary); }
+        .day-cell.selected { background: var(--gradient); color: white; font-weight: 700; }
+
+        .event-markers { display: flex; gap: 2px; margin-top: 3px; flex-wrap: wrap; justify-content: center; }
+        .event-marker {
+            padding: 2px 6px; border-radius: 8px; font-size: 9px;
+            font-weight: 600; color: white; white-space: nowrap;
+        }
+        .event-marker.holiday { background: #ff6b8b; }
+        .event-marker.personal { background: #8a9eff; }
+
+        .event-list-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px; border-radius: 14px; margin-bottom: 8px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(63,49,83,0.3);
+            transition: all 0.3s;
+        }
+        .event-list-item:hover { background: rgba(157,123,232,0.1); }
+        .event-icon-circle {
+            width: 44px; height: 44px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 18px; flex-shrink: 0;
+        }
+        .event-info { flex: 1; }
+        .event-info h4 { font-size: 14px; margin-bottom: 2px; }
+        .event-info p { font-size: 12px; color: var(--text-muted); }
+
+        .btn {
+            padding: 10px 22px; border-radius: 12px; border: none;
+            cursor: pointer; font-weight: 600; font-size: 14px;
+            transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-primary {
+            background: var(--gradient); color: white; width: 100%;
+            justify-content: center; margin-top: 10px;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(157,123,232,0.4); }
+        .btn-secondary { background: rgba(255,255,255,0.08); color: var(--text); border: 1px solid var(--border); }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); display: flex; align-items: center;
+            justify-content: center; z-index: 999; opacity: 0; visibility: hidden;
+            transition: all 0.3s;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-dialog {
+            background: var(--card-bg); border-radius: 20px; padding: 30px;
+            max-width: 420px; width: 90%; border: 1px solid var(--border);
+            transform: scale(0.9); transition: all 0.3s;
+        }
+        .modal-overlay.active .modal-dialog { transform: scale(1); }
+        .modal-title { font-size: 20px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; color: var(--text-muted); font-size: 12px; margin-bottom: 5px; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; padding: 11px 14px; background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border); border-radius: 10px;
+            color: var(--text); font-size: 14px; outline: none;
+        }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--secondary); }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-actions .btn { flex: 1; justify-content: center; }
+
+        .empty-state { text-align: center; padding: 30px; color: var(--text-muted); }
+        .empty-state i { font-size: 40px; margin-bottom: 10px; opacity: 0.3; }
+
+        @media (max-width: 768px) {
+            .container { flex-direction: column; padding: 10px; }
+            .sidebar { width: 100%; }
+            .sidebar-section { display: flex; flex-wrap: wrap; gap: 5px; padding: 10px; }
+            .sidebar-title { display: none; }
+            .menu-item { padding: 8px 12px; font-size: 13px; white-space: nowrap; }
+            .menu-item span { display: inline; }
+            .day-cell { font-size: 12px; border-radius: 8px; }
+            .search-bar { display: none; }
+            .logo-v, .logo-g, .logo-lambda { font-size: 28px; }
+            .logo-e-bars { height: 28px; gap: 4px; }
+            .logo-e-bar { width: 16px; height: 3px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="/" class="logo">
+                <span class="logo-star">✦</span>
+                <span class="logo-v">V</span>
+                <span class="logo-e-bars">
+                    <span class="logo-e-bar"></span>
+                    <span class="logo-e-bar"></span>
+                    <span class="logo-e-bar"></span>
+                </span>
+                <span class="logo-g">G</span>
+                <span class="logo-lambda">Λ</span>
+                <span class="logo-star">✦</span>
+            </a>
+
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Поиск событий...">
+            </div>
+
+            <a href="/profile" class="user-profile">
+                <img src="{{ current_user.avatar }}" alt="Аватар" class="avatar">
+                <span>{{ current_user.name }}</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Сайдбар -->
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="fas fa-crystal-ball"></i> Меню
+                </div>
+                <a href="/" class="menu-item">
+                    <i class="fas fa-home"></i><span>Лента</span>
+                </a>
+                <a href="/friends" class="menu-item">
+                    <i class="fas fa-user-friends"></i><span>Друзья</span>
+                </a>
+                <a href="/communities" class="menu-item">
+                    <i class="fas fa-users"></i><span>Сообщества</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-images"></i><span>Фотографии</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-video"></i><span>Видео</span>
+                </a>
+                <a href="/events" class="menu-item active">
+                    <i class="fas fa-calendar-alt"></i><span>События</span>
+                </a>
+                <a href="/settings" class="menu-item">
+                    <i class="fas fa-cog"></i><span>Настройки</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Контент -->
+        <div class="main-content">
+            <h1 class="page-title">События</h1>
+            <p class="page-subtitle">Календарь праздников и ваших личных событий</p>
+
+            <div class="card">
+                <div class="calendar-header">
+                    <div class="calendar-title">{{ calendar.month_name }} {{ calendar.year }}</div>
+                    <div class="calendar-nav">
+                        <a href="/events?year={{ prev_month[0] }}&month={{ prev_month[1] }}" class="nav-btn">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                        <a href="/events" class="nav-btn today-btn">
+                            <i class="fas fa-calendar-day"></i> Сегодня
+                        </a>
+                        <a href="/events?year={{ next_month[0] }}&month={{ next_month[1] }}" class="nav-btn">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="calendar-grid">
+                    <div class="weekday">Пн</div><div class="weekday">Вт</div>
+                    <div class="weekday">Ср</div><div class="weekday">Чт</div>
+                    <div class="weekday">Пт</div>
+                    <div class="weekday weekend">Сб</div><div class="weekday weekend">Вс</div>
+                </div>
+
+                <div class="calendar-grid">
+                    {% for week in calendar.calendar %}
+                        {% for day in week %}
+                            {% if day == 0 %}
+                                <div class="day-cell empty"></div>
+                            {% else %}
+                                {% set date_str = calendar.year|string + '-' + '%02d'|format(calendar.month) + '-' + '%02d'|format(day) %}
+                                <div class="day-cell {% if day == calendar.today %}today{% endif %} {% if day == selected_day %}selected{% endif %}"
+                                     onclick="selectDate('{{ date_str }}')">
+                                    {{ day }}
+                                    {% if day in calendar.events %}
+                                    <div class="event-markers">
+                                        {% for event in calendar.events[day][:2] %}
+                                        <div class="event-marker {{ event.event_type }}">
+                                            {{ event.title[:8] }}{% if event.title|length > 8 %}..{% endif %}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="sidebar-title">
+                    {% if selected_date %}
+                    <i class="fas fa-calendar-check"></i> События {{ selected_date }}
+                    {% else %}
+                    <i class="fas fa-star"></i> Выберите дату
+                    {% endif %}
+                </div>
+
+                {% if day_events %}
+                    {% for event in day_events %}
+                    <div class="event-list-item">
+                        <div class="event-icon-circle" style="background: {{ event.color or '#9d7be8' }};">
+                            <i class="fas {{ event.icon or 'fa-star' }}"></i>
+                        </div>
+                        <div class="event-info">
+                            <h4>{{ event.title }}</h4>
+                            <p>{{ event.description or '' }}</p>
+                            <span style="font-size: 11px; background: rgba(157,123,232,0.2); padding: 2px 8px; border-radius: 8px; color: var(--secondary);">
+                                {{ 'Праздник' if event.event_type == 'holiday' else 'Личное' }}
+                            </span>
+                        </div>
+                        {% if event.user_id == current_user.id %}
+                        <button class="nav-btn" onclick="event.stopPropagation(); deleteEvent({{ event.id }})" style="color: var(--danger);">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="empty-state">
+                    <i class="far fa-calendar"></i>
+                    <p>{% if selected_date %}Нет событий{% else %}Нажмите на дату в календаре{% endif %}</p>
+                </div>
+                {% endif %}
+
+                <button class="btn btn-primary" onclick="showAddEventModal()">
+                    <i class="fas fa-plus-circle"></i> Добавить событие
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно -->
+    <div class="modal-overlay" id="addEventModal">
+        <div class="modal-dialog">
+            <div class="modal-title"><i class="fas fa-calendar-plus"></i> Новое событие</div>
+            <form method="POST" action="/add_event">
+                <div class="form-group">
+                    <label>Название *</label>
+                    <input type="text" name="title" placeholder="День рождения, встреча..." required>
+                </div>
+                <div class="form-group">
+                    <label>Дата *</label>
+                    <input type="date" name="event_date" value="{{ selected_date or '' }}" required>
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea name="description" placeholder="Подробности..."></textarea>
+                </div>
+                <input type="hidden" name="color" value="#9d7be8">
+                <input type="hidden" name="icon" value="fa-calendar-star">
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Добавить</button>
+                    <button type="button" class="btn btn-secondary" onclick="hideAddEventModal()">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function selectDate(date) {
+            window.location.href = '/events?date=' + date;
+        }
+
+        function showAddEventModal() {
+            document.getElementById('addEventModal').classList.add('active');
+        }
+
+        function hideAddEventModal() {
+            document.getElementById('addEventModal').classList.remove('active');
+        }
+
+        async function deleteEvent(eventId) {
+            if (!confirm('Удалить событие?')) return;
+            try {
+                const res = await fetch('/delete_event/' + eventId, { method: 'POST' });
+                const data = await res.json();
+                if (data.success) location.reload();
+            } catch(e) { alert('Ошибка'); }
+        }
+
+        document.getElementById('addEventModal').addEventListener('click', function(e) {
+            if (e.target === this) hideAddEventModal();
+        });
+    </script>
+</body>
+</html>

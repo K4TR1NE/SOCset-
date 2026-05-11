@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEGA - Галерея</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+        :root{--primary:#9d7be8;--secondary:#c77dff;--dark:#1a142b;--card-bg:#251c33;--text:#f0e9ff;--text-muted:#cbbae3;--border:#3f3153;--gradient:linear-gradient(135deg,#9d7be8,#c77dff)}
+        body{background:linear-gradient(135deg,#1e1730,#2a1f3a);color:var(--text);min-height:100vh}
+        header{background:rgba(37,28,51,0.95);padding:10px 20px;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border)}
+        .header-content{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+        .logo{display:flex;align-items:center;gap:2px;text-decoration:none;filter:drop-shadow(0 0 10px rgba(157,123,232,0.5))}
+        .logo-star{font-size:14px;background:linear-gradient(135deg,#c77dff,#b8a2ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:starPulse 2s infinite}
+        @keyframes starPulse{0%,100%{opacity:.5;transform:scale(.8)}50%{opacity:1;transform:scale(1.1)}}
+        .logo-v,.logo-g,.logo-lambda{font-size:36px;font-weight:800;line-height:1}
+        .logo-v{background:linear-gradient(135deg,#f0e9ff,#9d7be8,#c77dff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .logo-g{background:linear-gradient(135deg,#f0e9ff,#c77dff,#b8a2ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .logo-lambda{background:linear-gradient(135deg,#c77dff,#b8a2ff,#9d7be8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .logo-e-bars{display:flex;flex-direction:column;gap:5px;margin:0 3px;height:36px;justify-content:center}
+        .logo-e-bar{width:20px;height:4px;background:linear-gradient(90deg,#9d7be8,#c77dff);border-radius:2px}
+        .user-profile{display:flex;align-items:center;gap:10px;background:rgba(157,123,232,.15);padding:5px 15px 5px 5px;border-radius:30px;border:1px solid var(--border);text-decoration:none;color:var(--text)}
+        .avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--secondary)}
+
+        .container{display:flex;max-width:1200px;margin:0 auto;padding:20px;gap:20px}
+        .sidebar{width:250px;flex-shrink:0}
+        .sidebar-section{background:var(--card-bg);border-radius:16px;padding:18px;margin-bottom:15px;border:1px solid var(--border)}
+        .sidebar-title{font-weight:600;margin-bottom:12px;color:var(--text);font-size:16px;display:flex;align-items:center;gap:10px}
+        .sidebar-title i{color:var(--secondary)}
+        .menu-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;margin-bottom:3px;color:var(--text-muted);text-decoration:none;transition:all .3s;font-size:14px}
+        .menu-item:hover{background:rgba(157,123,232,.15);color:var(--secondary);transform:translateX(3px)}
+        .menu-item.active{background:var(--gradient);color:white}
+
+        .main-content{flex:1}
+        .page-title{font-size:28px;font-weight:700;margin-bottom:20px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+        .tabs{display:flex;gap:8px;margin-bottom:20px;border-bottom:2px solid var(--border);padding-bottom:10px}
+        .tab-btn{padding:10px 22px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;font-size:15px;border-radius:10px;transition:all .3s}
+        .tab-btn:hover{background:rgba(157,123,232,.1);color:var(--secondary)}
+        .tab-btn.active{background:var(--gradient);color:white}
+        .tab-content{display:none}
+        .tab-content.active{display:block}
+
+        .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px}
+        .gallery-item{background:var(--card-bg);border-radius:16px;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:all .3s}
+        .gallery-item:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(157,123,232,.3)}
+        .gallery-item img,.gallery-item video{width:100%;height:200px;object-fit:cover}
+        .gallery-item-info{padding:12px}
+        .gallery-item-info p{font-size:12px;color:var(--text-muted)}
+
+        .empty-state{text-align:center;padding:50px;color:var(--text-muted)}
+        .empty-state i{font-size:60px;margin-bottom:15px;opacity:.3}
+
+        /* Модалка */
+        .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.9);z-index:999;align-items:center;justify-content:center}
+        .modal.active{display:flex}
+        .modal img,.modal video{max-width:90%;max-height:90%;border-radius:10px}
+        .modal-close{position:absolute;top:20px;right:20px;color:white;font-size:30px;cursor:pointer}
+
+        @media(max-width:768px){
+            .container{flex-direction:column}
+            .sidebar{width:100%}
+            .sidebar-section{display:flex;flex-wrap:wrap;gap:5px;padding:10px}
+            .sidebar-title{display:none}
+            .menu-item{padding:8px 12px;font-size:13px;white-space:nowrap}
+            .logo-v,.logo-g,.logo-lambda{font-size:28px}
+            .logo-e-bars{height:28px;gap:4px}
+            .logo-e-bar{width:16px;height:3px}
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="/" class="logo">
+                <span class="logo-star">✦</span><span class="logo-v">V</span>
+                <span class="logo-e-bars"><span class="logo-e-bar"></span><span class="logo-e-bar"></span><span class="logo-e-bar"></span></span>
+                <span class="logo-g">G</span><span class="logo-lambda">Λ</span><span class="logo-star">✦</span>
+            </a>
+            <a href="/profile" class="user-profile">
+                <img src="{{ current_user.avatar }}" alt="Аватар" class="avatar">
+                <span>{{ current_user.name }}</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title"><i class="fas fa-crystal-ball"></i> Меню</div>
+                <a href="/" class="menu-item"><i class="fas fa-home"></i><span>Лента</span></a>
+                <a href="/friends" class="menu-item"><i class="fas fa-user-friends"></i><span>Друзья</span></a>
+                <a href="/communities" class="menu-item"><i class="fas fa-users"></i><span>Сообщества</span></a>
+                <a href="/gallery" class="menu-item active"><i class="fas fa-images"></i><span>Галерея</span></a>
+                <a href="/chat" class="menu-item"><i class="fas fa-comments"></i><span>Чат</span></a>
+                <a href="/events" class="menu-item"><i class="fas fa-calendar-alt"></i><span>События</span></a>
+                <a href="/settings" class="menu-item"><i class="fas fa-cog"></i><span>Настройки</span></a>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <h1 class="page-title">Галерея</h1>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('photos')"><i class="fas fa-image"></i> Фото ({{ photos|length }})</button>
+                <button class="tab-btn" onclick="switchTab('videos')"><i class="fas fa-video"></i> Видео ({{ videos|length }})</button>
+                <button class="tab-btn" onclick="switchTab('all')"><i class="fas fa-th"></i> Все ({{ all_items|length }})</button>
+            </div>
+
+            <div class="tab-content active" id="photos-tab">
+                {% if photos %}
+                <div class="gallery-grid">
+                    {% for item in photos %}
+                    <div class="gallery-item" onclick="openMedia('{{ item.file_path }}', 'image')">
+                        <img src="{{ item.file_path }}" alt="Фото">
+                        <div class="gallery-item-info">
+                            <p>{{ item.caption or 'Без описания' }}</p>
+                            <p style="font-size:10px;opacity:.7;">{{ item.created_at[:10] }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state"><i class="fas fa-image"></i><p>Нет фото</p></div>
+                {% endif %}
+            </div>
+
+            <div class="tab-content" id="videos-tab">
+                {% if videos %}
+                <div class="gallery-grid">
+                    {% for item in videos %}
+                    <div class="gallery-item" onclick="openMedia('{{ item.file_path }}', 'video')">
+                        <video><source src="{{ item.file_path }}"></video>
+                        <div class="gallery-item-info">
+                            <p>{{ item.caption or 'Без описания' }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state"><i class="fas fa-video"></i><p>Нет видео</p></div>
+                {% endif %}
+            </div>
+
+            <div class="tab-content" id="all-tab">
+                {% if all_items %}
+                <div class="gallery-grid">
+                    {% for item in all_items %}
+                    <div class="gallery-item" onclick="openMedia('{{ item.file_path }}', '{{ item.file_type }}')">
+                        {% if item.file_type == 'image' %}
+                        <img src="{{ item.file_path }}" alt="Фото">
+                        {% else %}
+                        <video><source src="{{ item.file_path }}"></video>
+                        {% endif %}
+                        <div class="gallery-item-info">
+                            <p>{{ item.caption or 'Без описания' }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state"><i class="fas fa-images"></i><p>Галерея пуста</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка просмотра -->
+    <div class="modal" id="mediaModal" onclick="closeMedia()">
+        <span class="modal-close">&times;</span>
+        <img id="modalImage" src="" style="display:none;">
+        <video id="modalVideo" controls style="display:none;"></video>
+    </div>
+
+    <script>
+        function switchTab(tab){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));document.getElementById(tab+'-tab').classList.add('active')}
+        function openMedia(path,type){const m=document.getElementById('mediaModal');m.classList.add('active');if(type==='image'){document.getElementById('modalImage').src=path;document.getElementById('modalImage').style.display='block';document.getElementById('modalVideo').style.display='none'}else{document.getElementById('modalVideo').querySelector('source').src=path;document.getElementById('modalVideo').load();document.getElementById('modalVideo').style.display='block';document.getElementById('modalImage').style.display='none'}}
+        function closeMedia(){document.getElementById('mediaModal').classList.remove('active')}
+    </script>
+</body>
+</html>

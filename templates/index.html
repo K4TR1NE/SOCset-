@@ -6,1165 +6,276 @@
     <title>VEGA - Астрологическая сеть</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
         :root {
-            --primary: #9d7be8;
-            --primary-dark: #7c5bc0;
-            --secondary: #c77dff;
-            --accent: #b8a2ff;
-            --dark: #1a142b;
-            --dark-light: #2a1f3a;
-            --card-bg: #251c33;
-            --card-hover: #322841;
-            --text-light: #f0e9ff;
-            --text-muted: #cbbae3;
-            --gray: #a08bb4;
-            --success: #8a9eff;
-            --warning: #ffb86b;
-            --danger: #ff6b8b;
-            --shadow: rgba(0, 0, 0, 0.3);
-            --border-color: #3f3153;
+            --primary: #9d7be8; --secondary: #c77dff; --accent: #b8a2ff;
+            --dark: #1a142b; --dark-light: #2a1f3a; --card-bg: #251c33;
+            --text-light: #f0e9ff; --text-muted: #cbbae3; --gray: #a08bb4;
+            --success: #8a9eff; --warning: #ffb86b; --danger: #ff6b8b;
+            --shadow: rgba(0, 0, 0, 0.3); --border-color: #3f3153;
             --gradient: linear-gradient(135deg, #9d7be8 0%, #c77dff 100%);
-            --zodiac-glow: rgba(157, 123, 232, 0.3);
         }
 
-        /* Светлая тема */
         body.light-theme {
             background: linear-gradient(135deg, #f5f0ff 0%, #e8e0f0 100%);
-            --dark: #f5f0ff;
-            --dark-light: #e8e0f0;
-            --card-bg: #ffffff;
-            --card-hover: #f0e8ff;
-            --text-light: #2d1f4e;
-            --text-muted: #6b5b8a;
-            --gray: #8b7baa;
-            --border-color: #d4c8e8;
-            --shadow: rgba(157, 123, 232, 0.15);
-        }
-
-        body.light-theme .sidebar-section,
-        body.light-theme .post,
-        body.light-theme .create-post,
-        body.light-theme .right-sidebar > div {
-            background: #ffffff;
-            border: 1px solid #d4c8e8;
-        }
-
-        body.light-theme header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-        }
-
-        body.light-theme .search-bar {
-            background: rgba(157, 123, 232, 0.08);
-        }
-
-        body.light-theme .search-bar input {
-            color: #2d1f4e;
-        }
-
-        body.light-theme .post-input textarea {
-            background: rgba(157, 123, 232, 0.05);
-            color: #2d1f4e;
-        }
-
-        body.light-theme .menu-item:hover {
-            background: rgba(157, 123, 232, 0.1);
-        }
-
-        body.light-theme .friend-item:hover {
-            background: rgba(157, 123, 232, 0.08);
-        }
-
-        body.light-theme .post-action:hover,
-        body.light-theme .post-action-button:hover {
-            background: rgba(157, 123, 232, 0.1);
-        }
-
-        body {
-            background: linear-gradient(135deg, #1e1730 0%, #2a1f3a 100%);
-            color: var(--text-light);
-            line-height: 1.6;
-            min-height: 100vh;
-            transition: background 0.5s, color 0.5s;
-        }
-
-        .container {
-            display: flex;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* Header */
-        header {
-            background: rgba(37, 28, 51, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            padding: 0 20px;
-            border-bottom: 1px solid var(--border-color);
-            transition: background 0.5s;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 26px;
-            font-weight: 700;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 1px;
-            text-decoration: none;
-            flex-shrink: 0;
-        }
-
-        .logo i {
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 30px;
-        }
-
-        .search-bar {
-            display: flex;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 30px;
-            padding: 8px 20px;
-            width: 40%;
-            max-width: 500px;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(5px);
-            margin: 0 auto;
-        }
-
-        .search-bar i {
-            color: var(--text-muted);
-        }
-
-        .search-bar input {
-            border: none;
-            background: transparent;
-            width: 100%;
-            margin-left: 10px;
-            outline: none;
-            color: var(--text-light);
-        }
-
-        .search-bar input::placeholder {
-            color: var(--gray);
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(157, 123, 232, 0.15);
-            padding: 5px 15px 5px 5px;
-            border-radius: 30px;
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            text-decoration: none;
-            color: var(--text-light);
-            flex-shrink: 0;
-            transition: all 0.3s;
-        }
-
-        .user-profile:hover {
-            background: rgba(157, 123, 232, 0.25);
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--secondary);
-            box-shadow: 0 0 10px var(--zodiac-glow);
-        }
-
-        .user-profile span {
-            color: var(--text-light);
-            font-weight: 500;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            padding: 20px 15px;
-            position: sticky;
-            top: 80px;
-            height: calc(100vh - 80px);
-            overflow-y: auto;
-        }
-
-        .sidebar::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        .sidebar::-webkit-scrollbar-track {
-            background: var(--dark-light);
-        }
-
-        .sidebar::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-
-        .sidebar-section {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 20px var(--shadow);
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(5px);
-            transition: background 0.5s, border 0.5s;
-        }
-
-        .sidebar-title {
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--text-light);
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .sidebar-title i {
-            color: var(--secondary);
-            font-size: 16px;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px 15px;
-            border-radius: 12px;
-            margin-bottom: 5px;
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .menu-item:hover {
-            background: rgba(157, 123, 232, 0.15);
-            color: var(--secondary);
-            transform: translateX(5px);
-        }
-
-        .menu-item.active {
-            background: var(--gradient);
-            color: white;
-            box-shadow: 0 5px 15px rgba(157, 123, 232, 0.4);
-        }
-
-        .menu-item i {
-            width: 20px;
-            text-align: center;
-        }
-
-        .friend-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .friend-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px;
-            border-radius: 12px;
-            transition: all 0.3s;
-        }
-
-        .friend-item:hover {
-            background: rgba(157, 123, 232, 0.1);
-        }
-
-        .friend-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--border-color);
-        }
-
-        .friend-name {
-            font-weight: 500;
-            color: var(--text-light);
-        }
-
-        .friend-status {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-left: auto;
-        }
-
-        .online {
-            background-color: var(--success);
-            box-shadow: 0 0 10px var(--success);
-        }
-
-        .offline {
-            background-color: var(--gray);
-        }
-
-        /* Horoscope in sidebar */
-        .horoscope-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px 0;
-        }
-
-        .zodiac-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #9d7be8 0%, #c77dff 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            box-shadow: 0 5px 15px rgba(157, 123, 232, 0.3);
-            font-size: 20px;
-        }
-
-        .zodiac-info {
-            flex: 1;
-        }
-
-        .zodiac-sign {
-            font-weight: 600;
-            color: var(--text-light);
-            margin-bottom: 3px;
-        }
-
-        .zodiac-date {
-            color: var(--text-muted);
-            font-size: 13px;
-        }
-
-        .zodiac-prediction {
-            color: var(--secondary);
-            font-size: 12px;
-            margin-top: 3px;
-            font-style: italic;
-        }
-
-        .horoscope-badge {
-            display: inline-block;
-            background: rgba(157, 123, 232, 0.2);
-            padding: 5px 10px;
-            border-radius: 20px;
-            color: var(--secondary);
-            font-size: 12px;
-            margin-top: 10px;
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            min-width: 0;
-        }
-
-        /* Story Section */
-        .story-section {
-            display: flex;
-            gap: 15px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-        }
-
-        .story-section::-webkit-scrollbar {
-            height: 5px;
-        }
-
-        .story-section::-webkit-scrollbar-track {
-            background: var(--dark-light);
-            border-radius: 10px;
-        }
-
-        .story-section::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-
-        .story-card {
-            min-width: 120px;
-            height: 200px;
-            border-radius: 16px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 8px 20px var(--shadow);
-            cursor: pointer;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s;
-        }
-
-        .story-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(157, 123, 232, 0.3);
-        }
-
-        .story-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s;
-        }
-
-        .story-card:hover img {
-            transform: scale(1.1);
-        }
-
-        .story-card.add-story {
-            background: var(--card-bg);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border: 2px dashed var(--primary);
-        }
-
-        .add-story i {
-            font-size: 30px;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-        }
-
-        .add-story span {
-            color: var(--text-muted);
-        }
-
-        .story-author {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            color: white;
-            font-weight: 500;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-            background: rgba(0, 0, 0, 0.3);
-            padding: 5px 10px;
-            border-radius: 20px;
-            backdrop-filter: blur(5px);
-            font-size: 13px;
-        }
-
-        /* Create Post */
-        .create-post {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 8px 20px var(--shadow);
-            border: 1px solid var(--border-color);
-            transition: background 0.5s;
-        }
-
-        .post-input {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .post-input textarea {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 12px 20px;
-            resize: none;
-            height: 50px;
-            font-size: 16px;
-            outline: none;
-            color: var(--text-light);
-            transition: all 0.3s;
-        }
-
-        .post-input textarea::placeholder {
-            color: var(--gray);
-        }
-
-        .post-input textarea:focus {
-            border-color: var(--secondary);
-            box-shadow: 0 0 15px rgba(157, 123, 232, 0.2);
-        }
-
-        .post-actions {
-            display: flex;
-            justify-content: space-between;
-            padding-top: 15px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .post-actions-left {
-            display: flex;
-            gap: 10px;
-        }
-
-        .post-action {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 15px;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: var(--text-muted);
-        }
-
-        .post-action:hover {
-            background: rgba(157, 123, 232, 0.15);
-            color: var(--secondary);
-        }
-
-        .post-action i {
-            font-size: 18px;
-        }
-
+            --dark: #f5f0ff; --card-bg: #ffffff; --text-light: #2d1f4e;
+            --text-muted: #6b5b8a; --border-color: #d4c8e8; --shadow: rgba(157,123,232,0.15);
+        }
+        body.light-theme .sidebar-section, body.light-theme .post, body.light-theme .create-post, body.light-theme .right-sidebar>div { background: #fff; border-color: #d4c8e8; }
+        body.light-theme header { background: rgba(255,255,255,0.95); }
+        body.light-theme .search-bar { background: rgba(157,123,232,0.08); }
+        body.light-theme .search-bar input { color: #2d1f4e; }
+        body.light-theme .post-input textarea { background: rgba(157,123,232,0.05); color: #2d1f4e; }
+
+        body { background: linear-gradient(135deg, #1e1730, #2a1f3a); color: var(--text-light); min-height: 100vh; transition: background 0.5s; }
+        .container { display: flex; max-width: 1400px; margin: 0 auto; }
+
+        header { background: rgba(37,28,51,0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; padding: 0 20px; border-bottom: 1px solid var(--border-color); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; max-width: 1400px; margin: 0 auto; }
+
+        .logo { display: flex; align-items: center; gap: 2px; text-decoration: none; flex-shrink: 0; filter: drop-shadow(0 0 10px rgba(157,123,232,0.5)); transition: all 0.3s; }
+        .logo:hover { filter: drop-shadow(0 0 20px rgba(199,125,255,0.8)); transform: scale(1.03); }
+        .logo-star { font-size: 14px; background: linear-gradient(135deg, #c77dff, #b8a2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: starPulse 2s infinite; }
+        .logo-star:last-child { animation-delay: 1s; }
+        @keyframes starPulse { 0%,100%{opacity:0.5;transform:scale(0.8)} 50%{opacity:1;transform:scale(1.1)} }
+        .logo-v, .logo-g, .logo-lambda { font-size: 36px; font-weight: 800; line-height: 1; }
+        .logo-v { background: linear-gradient(135deg, #f0e9ff, #9d7be8, #c77dff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-g { background: linear-gradient(135deg, #f0e9ff, #c77dff, #b8a2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-lambda { background: linear-gradient(135deg, #c77dff, #b8a2ff, #9d7be8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-e-bars { display: flex; flex-direction: column; gap: 5px; margin: 0 3px; height: 36px; justify-content: center; }
+        .logo-e-bar { width: 20px; height: 4px; background: linear-gradient(90deg, #9d7be8, #c77dff); border-radius: 2px; transition: all 0.3s; }
+        .logo:hover .logo-e-bar:nth-child(1) { width: 24px; }
+        .logo:hover .logo-e-bar:nth-child(2) { width: 18px; }
+        .logo:hover .logo-e-bar:nth-child(3) { width: 22px; }
+
+        .search-bar { display: flex; background: rgba(255,255,255,0.08); border-radius: 30px; padding: 8px 20px; width: 35%; max-width: 400px; border: 1px solid var(--border-color); margin: 0 auto; }
+        .search-bar i { color: var(--text-muted); }
+        .search-bar input { border: none; background: transparent; width: 100%; margin-left: 10px; outline: none; color: var(--text-light); }
+        .search-bar input::placeholder { color: var(--gray); }
+
+        .user-profile { display: flex; align-items: center; gap: 10px; background: rgba(157,123,232,0.15); padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid var(--border-color); text-decoration: none; color: var(--text-light); flex-shrink: 0; }
+        .user-profile:hover { background: rgba(157,123,232,0.25); }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--secondary); }
+
+        .sidebar { width: 250px; padding: 20px 15px; position: sticky; top: 75px; height: calc(100vh - 75px); overflow-y: auto; }
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        .sidebar-section { background: var(--card-bg); border-radius: 16px; padding: 18px; margin-bottom: 15px; border: 1px solid var(--border-color); }
+        .sidebar-title { font-weight: 600; margin-bottom: 12px; font-size: 16px; display: flex; align-items: center; gap: 10px; }
+        .sidebar-title i { color: var(--secondary); }
+        .menu-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; margin-bottom: 3px; color: var(--text-muted); text-decoration: none; transition: all 0.3s; font-size: 14px; }
+        .menu-item:hover { background: rgba(157,123,232,0.15); color: var(--secondary); transform: translateX(3px); }
+        .menu-item.active { background: var(--gradient); color: white; }
+        .menu-item i { width: 18px; text-align: center; }
+
+        .friend-list { display: flex; flex-direction: column; gap: 6px; }
+        .friend-item { display: flex; align-items: center; gap: 8px; padding: 6px; border-radius: 10px; }
+        .friend-item:hover { background: rgba(157,123,232,0.1); }
+        .friend-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border-color); }
+        .friend-name { font-weight: 500; font-size: 14px; }
+        .friend-status { width: 8px; height: 8px; border-radius: 50%; margin-left: auto; }
+        .online { background: var(--success); box-shadow: 0 0 8px var(--success); }
+        .offline { background: var(--gray); }
+
+        .main-content { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+        .create-post { background: var(--card-bg); border-radius: 16px; padding: 20px; border: 1px solid var(--border-color); }
+        .post-input { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .post-input textarea { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); border-radius: 20px; padding: 12px 20px; resize: none; height: 50px; font-size: 16px; outline: none; color: var(--text-light); }
+        .post-input textarea::placeholder { color: var(--gray); }
+        .post-input textarea:focus { border-color: var(--secondary); }
+        #previewContainer { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+        .preview-item { position: relative; width: 80px; height: 80px; border-radius: 10px; overflow: hidden; border: 2px solid var(--secondary); }
+        .preview-item img, .preview-item video { width: 100%; height: 100%; object-fit: cover; }
+        .preview-remove { position: absolute; top: 2px; right: 2px; background: var(--danger); color: #fff; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; }
+        .post-actions { display: flex; justify-content: space-between; padding-top: 15px; border-top: 1px solid var(--border-color); }
+        .post-actions-left { display: flex; gap: 10px; }
+        .post-action { display: flex; align-items: center; gap: 8px; padding: 8px 15px; border-radius: 30px; cursor: pointer; color: var(--text-muted); }
+        .post-action:hover { background: rgba(157,123,232,0.15); color: var(--secondary); }
         .photo-action i { color: var(--success); }
-        .video-action i { color: var(--primary); }
-        .event-action i { color: var(--warning); }
+        .post-button { background: var(--gradient); color: #fff; border: none; padding: 10px 30px; border-radius: 30px; font-weight: 600; cursor: pointer; font-size: 15px; }
+        .post-button:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(157,123,232,0.4); }
 
-        .post-button {
-            background: var(--gradient);
-            color: white;
-            border: none;
-            padding: 8px 30px;
-            border-radius: 30px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
+        .feed { display: flex; flex-direction: column; gap: 20px; }
+        .post { background: var(--card-bg); border-radius: 16px; padding: 20px; border: 1px solid var(--border-color); }
+        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .post-author { display: flex; align-items: center; gap: 10px; }
+        .post-author-info h4 { font-weight: 600; }
+        .post-author-info p { color: var(--text-muted); font-size: 14px; }
+        .post-content { margin-bottom: 15px; line-height: 1.6; }
+        .post-media { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        .post-media img, .post-media video { width: 100%; max-height: 500px; object-fit: contain; border-radius: 12px; border: 1px solid var(--border-color); background: #000; }
+        .post-media img:hover { cursor: pointer; opacity: 0.9; }
+        .post-stats { display: flex; justify-content: space-between; padding: 10px 0; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 14px; }
+        .post-actions-buttons { display: flex; justify-content: space-around; padding-top: 10px; }
+        .post-action-button { display: flex; align-items: center; gap: 8px; padding: 8px 20px; border-radius: 30px; cursor: pointer; color: var(--text-muted); border: none; background: transparent; font-size: 14px; }
+        .post-action-button:hover { background: rgba(157,123,232,0.15); color: var(--secondary); }
 
-        .post-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(157, 123, 232, 0.4);
-        }
+        .right-sidebar { width: 280px; padding: 20px 15px; position: sticky; top: 75px; height: calc(100vh - 75px); overflow-y: auto; }
+        .right-sidebar::-webkit-scrollbar { width: 4px; }
+        .right-sidebar::-webkit-scrollbar-track { background: transparent; }
+        .right-sidebar::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        .events { background: var(--card-bg); border-radius: 16px; padding: 18px; border: 1px solid var(--border-color); }
+        .event-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border-color); cursor: pointer; }
+        .event-item:last-child { border-bottom: none; }
+        .event-item:hover { background: rgba(157,123,232,0.05); border-radius: 8px; padding: 10px 8px; }
+        .event-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; font-size: 16px; }
+        .event-info { flex: 1; }
+        .event-name { font-weight: 600; font-size: 14px; }
+        .event-date { color: var(--text-muted); font-size: 12px; }
 
-        /* Feed */
-        .feed {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+        .theme-toggle-btn { position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px; border-radius: 50%; background: var(--gradient); color: #fff; border: none; cursor: pointer; font-size: 22px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 25px rgba(157,123,232,0.5); z-index: 999; }
+        .theme-toggle-btn:hover { transform: scale(1.1); }
 
-        .post {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 8px 20px var(--shadow);
-            border: 1px solid var(--border-color);
-            transition: background 0.5s;
-        }
-
-        .post-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .post-author {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .post-author-info h4 {
-            font-weight: 600;
-            color: var(--text-light);
-        }
-
-        .post-author-info p {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        .post-content {
-            margin-bottom: 15px;
-            line-height: 1.6;
-            color: var(--text-light);
-        }
-
-        .post-image {
-            width: 100%;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            border: 1px solid var(--border-color);
-        }
-
-        .post-stats {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-top: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        .post-actions-buttons {
-            display: flex;
-            justify-content: space-around;
-            padding-top: 10px;
-        }
-
-        .post-action-button {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 20px;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: var(--text-muted);
-            border: none;
-            background: transparent;
-            font-size: 14px;
-        }
-
-        .post-action-button:hover {
-            background: rgba(157, 123, 232, 0.15);
-            color: var(--secondary);
-        }
-
-        /* Right Sidebar */
-        .right-sidebar {
-            width: 300px;
-            padding: 20px 15px;
-            position: sticky;
-            top: 80px;
-            height: calc(100vh - 80px);
-            overflow-y: auto;
-        }
-
-        .right-sidebar::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        .right-sidebar::-webkit-scrollbar-track {
-            background: var(--dark-light);
-        }
-
-        .right-sidebar::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-
-        .birthdays, .events {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 20px var(--shadow);
-            border: 1px solid var(--border-color);
-            transition: background 0.5s;
-        }
-
-        .birthday-item, .event-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .birthday-item:last-child, .event-item:last-child {
-            border-bottom: none;
-        }
-
-        .birthday-icon, .event-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #9d7be8 0%, #c77dff 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            box-shadow: 0 5px 15px rgba(157, 123, 232, 0.3);
-            flex-shrink: 0;
-        }
-
-        .event-icon {
-            background: linear-gradient(135deg, #c77dff 0%, #b8a2ff 100%);
-        }
-
-        .birthday-info, .event-info {
-            flex: 1;
-        }
-
-        .birthday-name, .event-name {
-            font-weight: 600;
-            color: var(--text-light);
-            margin-bottom: 3px;
-        }
-
-        .birthday-date, .event-date {
-            color: var(--text-muted);
-            font-size: 13px;
-        }
-
-        /* Theme toggle button */
-        .theme-toggle-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            background: var(--gradient);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            cursor: pointer;
-            font-size: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 25px rgba(157, 123, 232, 0.5);
-            z-index: 999;
-            transition: all 0.3s;
-        }
-
-        .theme-toggle-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 12px 35px rgba(157, 123, 232, 0.7);
-        }
-
-        .theme-toggle-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* Responsive */
-        @media (max-width: 1200px) {
-            .right-sidebar {
-                display: none;
-            }
-
-            .sidebar {
-                width: 80px;
-            }
-
-            .menu-item span, .sidebar-title, .friend-name {
-                display: none;
-            }
-
-            .menu-item {
-                justify-content: center;
-            }
-
-            .search-bar {
-                width: 30%;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: static;
-                display: flex;
-                overflow-x: auto;
-                padding: 10px;
-                gap: 10px;
-            }
-
-            .sidebar-section {
-                min-width: 200px;
-                margin-bottom: 0;
-            }
-
-            .search-bar {
-                display: none;
-            }
-
-            .post-actions-buttons span {
-                display: none;
-            }
-
-            .user-profile span {
-                display: none;
-            }
-
-            .main-content {
-                padding: 10px;
-            }
-        }
+        @media(max-width:1200px){.right-sidebar{display:none}.sidebar{width:70px}.menu-item span,.sidebar-title,.friend-name{display:none}.menu-item{justify-content:center;padding:12px}.search-bar{width:30%}}
+        @media(max-width:768px){.container{flex-direction:column}.sidebar{width:100%;height:auto;position:static;display:flex;overflow-x:auto;padding:10px;gap:10px}.sidebar-section{min-width:180px;margin-bottom:0}.menu-item span,.friend-name{display:inline}.sidebar-title{display:none}.search-bar{display:none}.post-actions-buttons span{display:none}.user-profile span{display:none}.main-content{padding:10px}.logo-v,.logo-g,.logo-lambda{font-size:28px}.logo-e-bars{height:28px;gap:4px}.logo-e-bar{width:16px;height:3px}}
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header>
         <div class="header-content">
             <a href="/" class="logo">
-                <i class="fas fa-star"></i>
-                <span>VEGA</span>
+                <span class="logo-star">✦</span><span class="logo-v">V</span>
+                <span class="logo-e-bars"><span class="logo-e-bar"></span><span class="logo-e-bar"></span><span class="logo-e-bar"></span></span>
+                <span class="logo-g">G</span><span class="logo-lambda">Λ</span><span class="logo-star">✦</span>
             </a>
-
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Поиск людей, гороскопов, событий...">
-            </div>
-
+            <div class="search-bar"><i class="fas fa-search"></i><input type="text" placeholder="Поиск..."></div>
             <a href="/profile" class="user-profile">
-                <img src="{{ current_user.avatar }}" alt="Аватар" class="avatar">
-                <span>{{ current_user.name }}</span>
+                <img src="{{ current_user.avatar }}" class="avatar"><span>{{ current_user.name }}</span>
             </a>
         </div>
     </header>
 
     <div class="container">
-        <!-- Left Sidebar -->
         <div class="sidebar">
             <div class="sidebar-section">
-                <div class="sidebar-title">
-                    <i class="fas fa-crystal-ball"></i> Меню
-                </div>
-                <a href="/" class="menu-item active">
-                    <i class="fas fa-home"></i>
-                    <span>Лента</span>
-                </a>
-                <a href="/friends" class="menu-item">
-                    <i class="fas fa-user-friends"></i>
-                    <span>Друзья</span>
-                </a>
-                <a href="/communities" class="menu-item">
-                    <i class="fas fa-users"></i>
-                    <span>Сообщества</span>
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-images"></i>
-                    <span>Фотографии</span>
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-video"></i>
-                    <span>Видео</span>
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>События</span>
-                </a>
-                <a href="/settings" class="menu-item">
-                    <i class="fas fa-cog"></i>
-                    <span>Настройки</span>
-                </a>
+                <div class="sidebar-title"><i class="fas fa-crystal-ball"></i> Меню</div>
+                <a href="/" class="menu-item active"><i class="fas fa-home"></i><span>Лента</span></a>
+                <a href="/friends" class="menu-item"><i class="fas fa-user-friends"></i><span>Друзья</span></a>
+                <a href="/communities" class="menu-item"><i class="fas fa-users"></i><span>Сообщества</span></a>
+                <a href="/gallery" class="menu-item"><i class="fas fa-images"></i><span>Галерея</span></a>
+                <a href="/chat" class="menu-item"><i class="fas fa-comments"></i><span>Чат</span></a>
+                <a href="/events" class="menu-item"><i class="fas fa-calendar-alt"></i><span>События</span></a>
+                <a href="/settings" class="menu-item"><i class="fas fa-cog"></i><span>Настройки</span></a>
             </div>
-
             <div class="sidebar-section">
-                <div class="sidebar-title">
-                    <i class="fas fa-moon"></i> Друзья онлайн
-                </div>
+                <div class="sidebar-title"><i class="fas fa-user-friends"></i> Друзья<a href="/friends" style="margin-left:auto;font-size:11px;color:var(--secondary);text-decoration:none;">Все</a></div>
                 <div class="friend-list">
-                    {% for friend in online_friends %}
-                    <div class="friend-item">
-                        <img src="{{ friend.avatar }}" alt="Друг" class="friend-avatar">
-                        <div class="friend-name">{{ friend.name }}</div>
-                        <div class="friend-status online"></div>
-                    </div>
-                    {% endfor %}
-                    {% for friend in offline_friends %}
-                    <div class="friend-item">
-                        <img src="{{ friend.avatar }}" alt="Друг" class="friend-avatar">
-                        <div class="friend-name">{{ friend.name }}</div>
-                        <div class="friend-status offline"></div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <div class="sidebar-section">
-                <div class="sidebar-title">
-                    <i class="fas fa-sun"></i> Гороскоп на сегодня
-                </div>
-                <div class="horoscope-item">
-                    <div class="zodiac-icon">
-                        <i class="fas fa-lion"></i>
-                    </div>
-                    <div class="zodiac-info">
-                        <div class="zodiac-sign">Лев</div>
-                        <div class="zodiac-date">23.07 - 22.08</div>
-                        <div class="zodiac-prediction">Удачный день для начинаний</div>
-                    </div>
-                </div>
-                <div class="horoscope-badge">
-                    <i class="fas fa-sparkles"></i> Ваш знак - Лев
+                    {% for f in online_friends %}<div class="friend-item"><img src="{{ f.avatar }}" class="friend-avatar"><span class="friend-name">{{ f.name }}</span><span class="friend-status online"></span></div>{% endfor %}
+                    {% for f in offline_friends %}<div class="friend-item"><img src="{{ f.avatar }}" class="friend-avatar"><span class="friend-name">{{ f.name }}</span><span class="friend-status offline"></span></div>{% endfor %}
                 </div>
             </div>
         </div>
 
-        <!-- Main Content -->
         <div class="main-content">
-            <!-- Stories -->
-            <div class="story-section">
-                <div class="story-card add-story">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>История</span>
-                </div>
-                {% for story in stories %}
-                <div class="story-card">
-                    <img src="{{ story.image }}" alt="История">
-                    <div class="story-author">{{ story.author.name }}</div>
-                </div>
-                {% endfor %}
-            </div>
-
-            <!-- Create Post -->
             <div class="create-post">
-                <div class="post-input">
-                    <img src="{{ current_user.avatar }}" alt="Аватар" class="avatar">
-                    <textarea placeholder="Что вам подсказывают звезды, {{ current_user.name }}?"></textarea>
-                </div>
-                <div class="post-actions">
-                    <div class="post-actions-left">
-                        <div class="post-action photo-action">
-                            <i class="fas fa-image"></i>
-                            <span>Фото</span>
-                        </div>
-                        <div class="post-action video-action">
-                            <i class="fas fa-video"></i>
-                            <span>Видео</span>
-                        </div>
-                        <div class="post-action event-action">
-                            <i class="fas fa-star"></i>
-                            <span>Гороскоп</span>
-                        </div>
+                <form id="postForm" enctype="multipart/form-data">
+                    <div class="post-input">
+                        <img src="{{ current_user.avatar }}" class="avatar">
+                        <textarea name="content" placeholder="Что вам подсказывают звезды, {{ current_user.name }}?"></textarea>
                     </div>
-                    <button class="post-button" onclick="publishPost()">Опубликовать</button>
-                </div>
+                    <div id="previewContainer"></div>
+                    <div class="post-actions">
+                        <div class="post-actions-left">
+                            <label class="post-action photo-action" style="cursor:pointer;">
+                                <i class="fas fa-image"></i><span>Фото/Видео</span>
+                                <input type="file" name="media" accept="image/*,video/*" multiple style="display:none;" onchange="previewFiles(this)">
+                            </label>
+                        </div>
+                        <button type="button" class="post-button" onclick="publishPost()">Опубликовать</button>
+                    </div>
+                </form>
             </div>
 
-            <!-- Feed -->
             <div class="feed">
                 {% for post in posts %}
                 <div class="post">
                     <div class="post-header">
                         <div class="post-author">
-                            <img src="{{ post.author.avatar }}" alt="Автор" class="avatar">
-                            <div class="post-author-info">
-                                <h4>{{ post.author.name }}</h4>
-                                <p>{{ post.created_at[:10] }} ·
-                                    {% if post.privacy == 'public' %}
-                                    <i class="fas fa-globe-europe"></i>
-                                    {% else %}
-                                    <i class="fas fa-user-friends"></i>
-                                    {% endif %}
-                                </p>
-                            </div>
+                            <img src="{{ post.author.avatar }}" class="avatar">
+                            <div class="post-author-info"><h4>{{ post.author.name }}</h4><p>{{ post.created_at[:10] if post.created_at else '' }}</p></div>
                         </div>
-                        <i class="fas fa-ellipsis-h" style="color: var(--text-muted); cursor: pointer;"></i>
+                        <i class="fas fa-ellipsis-h" style="color:var(--text-muted);cursor:pointer;"></i>
                     </div>
-
-                    <div class="post-content">
-                        <p>{{ post.content }}</p>
+                    {% if post.content %}<div class="post-content"><p>{{ post.content }}</p></div>{% endif %}
+                    {% if post.files %}
+                    <div class="post-media">
+                        {% for file in post.files %}
+                            {% if file.endswith('.mp4') or file.endswith('.webm') or file.endswith('.avi') or file.endswith('.mov') %}
+                            <video controls><source src="{{ file }}"></video>
+                            {% else %}
+                            <img src="{{ file }}" alt="Фото" onclick="window.open('{{ file }}','_blank')">
+                            {% endif %}
+                        {% endfor %}
                     </div>
-
-                    {% if post.image %}
-                    <img src="{{ post.image }}" alt="Пост" class="post-image">
                     {% endif %}
-
                     <div class="post-stats">
-                        <div class="post-likes">
-                            <i class="fas fa-thumbs-up" style="color: var(--success);"></i> {{ post.likes }}
-                        </div>
-                        <div class="post-comments">
-                            {{ post.comments_count }} комментариев
-                        </div>
-                        <div class="post-shares">
-                            {{ post.shares }} репостов
-                        </div>
+                        <span><i class="fas fa-thumbs-up" style="color:var(--success);"></i> {{ post.likes or 0 }}</span>
+                        <span>{{ post.comments_count or 0 }} комментариев</span>
+                        <span>{{ post.shares or 0 }} репостов</span>
                     </div>
-
                     <div class="post-actions-buttons">
-                        <button class="post-action-button" onclick="likePost({{ post.id }})">
-                            <i class="far fa-thumbs-up"></i>
-                            <span>Нравится</span>
-                        </button>
-                        <button class="post-action-button" onclick="commentPost({{ post.id }})">
-                            <i class="far fa-comment"></i>
-                            <span>Комментировать</span>
-                        </button>
-                        <button class="post-action-button" onclick="sharePost({{ post.id }})">
-                            <i class="fas fa-star"></i>
-                            <span>Поделиться</span>
-                        </button>
+                        <button class="post-action-button" onclick="likePost({{ post.id }})"><i class="far fa-thumbs-up"></i><span>Нравится</span></button>
+                        <button class="post-action-button" onclick="commentPost({{ post.id }})"><i class="far fa-comment"></i><span>Комментировать</span></button>
+                        <button class="post-action-button" onclick="sharePost({{ post.id }})"><i class="fas fa-share"></i><span>Поделиться</span></button>
                     </div>
                 </div>
                 {% endfor %}
             </div>
         </div>
 
-        <!-- Right Sidebar -->
         <div class="right-sidebar">
-            <div class="birthdays">
-                <div class="sidebar-title">
-                    <i class="fas fa-cake-candles"></i> Дни рождения
-                </div>
-                {% for birthday in birthdays %}
-                <div class="birthday-item">
-                    <div class="birthday-icon">
-                        <i class="fas fa-birthday-cake"></i>
-                    </div>
-                    <div class="birthday-info">
-                        <div class="birthday-name">{{ birthday.name }}</div>
-                        <div class="birthday-date">{{ birthday.date }}</div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-
             <div class="events">
-                <div class="sidebar-title">
-                    <i class="fas fa-calendar-check"></i> События
-                </div>
-                {% for event in events %}
-                <div class="event-item">
-                    <div class="event-icon">
-                        <i class="fas fa-{{ event.icon }}"></i>
-                    </div>
-                    <div class="event-info">
-                        <div class="event-name">{{ event.name }}</div>
-                        <div class="event-date">{{ event.date }} · {{ event.attendees }} чел.</div>
-                    </div>
+                <div class="sidebar-title"><i class="fas fa-calendar-check"></i> События<a href="/events" style="margin-left:auto;font-size:11px;color:var(--secondary);text-decoration:none;">Все</a></div>
+                {% for e in events %}
+                <div class="event-item" onclick="location.href='/events?date={{ e.date }}'">
+                    <div class="event-icon" style="background:{{ e.color or '#9d7be8' }};"><i class="fas fa-{{ e.icon or 'star' }}"></i></div>
+                    <div class="event-info"><div class="event-name">{{ e.name }}</div><div class="event-date">{{ e.date }}</div></div>
                 </div>
                 {% endfor %}
             </div>
         </div>
     </div>
 
-    <!-- Кнопка смены темы -->
-    <button class="theme-toggle-btn" id="themeToggle" title="Сменить тему">
-        <i class="fas fa-moon"></i>
-    </button>
+    <button class="theme-toggle-btn" id="themeToggle"><i class="fas fa-moon"></i></button>
 
     <script>
-        // Переключение темы
-        const themeToggle = document.getElementById('themeToggle');
-        const body = document.body;
+        const tb = document.getElementById('themeToggle'), bd = document.body;
+        if (localStorage.getItem('vega-theme') === 'light') { bd.classList.add('light-theme'); tb.innerHTML = '<i class="fas fa-sun"></i>'; }
+        tb.addEventListener('click', () => { bd.classList.toggle('light-theme'); const l = bd.classList.contains('light-theme'); tb.innerHTML = l ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>'; localStorage.setItem('vega-theme', l ? 'light' : 'dark'); });
 
-        // Проверяем сохраненную тему
-        const savedTheme = localStorage.getItem('vega-theme');
-        if (savedTheme === 'light') {
-            body.classList.add('light-theme');
-            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-        }
-
-        themeToggle.addEventListener('click', () => {
-            body.classList.toggle('light-theme');
-
-            if (body.classList.contains('light-theme')) {
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-                localStorage.setItem('vega-theme', 'light');
-            } else {
-                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-                localStorage.setItem('vega-theme', 'dark');
-            }
-        });
-
-        // Публикация поста
-        function publishPost() {
-            const textarea = document.querySelector('.post-input textarea');
-            if (textarea.value.trim() !== '') {
-                fetch('/create_post', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        content: textarea.value,
-                        privacy: 'public'
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        textarea.value = '';
-                        location.reload();
-                    }
-                });
-            }
-        }
-
-        // Лайк поста
-        function likePost(postId) {
-            fetch('/like_post/' + postId, { method: 'POST' })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    }
-                });
-        }
-
-        // Комментарий
-        function commentPost(postId) {
-            fetch('/add_comment/' + postId, { method: 'POST' })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    }
-                });
-        }
-
-        // Поделиться
-        function sharePost(postId) {
-            fetch('/share_post/' + postId, { method: 'POST' })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    }
-                });
-        }
-
-        // Анимация иконок
-        setInterval(() => {
-            document.querySelectorAll('.zodiac-icon, .birthday-icon, .event-icon').forEach(icon => {
-                icon.style.boxShadow = '0 5px 25px rgba(157, 123, 232, 0.6)';
-                setTimeout(() => {
-                    icon.style.boxShadow = '0 5px 15px rgba(157, 123, 232, 0.3)';
-                }, 500);
+        let selFiles = [];
+        function previewFiles(inp) {
+            const c = document.getElementById('previewContainer'); c.innerHTML = '';
+            selFiles = Array.from(inp.files);
+            selFiles.forEach((f, i) => {
+                const r = new FileReader();
+                r.onload = e => {
+                    const d = document.createElement('div'); d.className = 'preview-item';
+                    d.innerHTML = (f.type.startsWith('image/') ? `<img src="${e.target.result}">` : `<video src="${e.target.result}"></video>`) + `<span class="preview-remove" onclick="removeFile(${i})">&times;</span>`;
+                    c.appendChild(d);
+                };
+                r.readAsDataURL(f);
             });
-        }, 3000);
+        }
+        function removeFile(i) { selFiles.splice(i,1); document.querySelector('input[name=media]').value=''; document.getElementById('previewContainer').innerHTML=''; selFiles.forEach((f,j)=>{const r=new FileReader();r.onload=e=>{const d=document.createElement('div');d.className='preview-item';d.innerHTML=(f.type.startsWith('image/')?`<img src="${e.target.result}">`:`<video src="${e.target.result}"></video>`)+`<span class="preview-remove" onclick="removeFile(${j})">&times;</span>`;document.getElementById('previewContainer').appendChild(d);};r.readAsDataURL(f);}); }
+
+        function publishPost() {
+            const fd = new FormData();
+            fd.append('content', document.querySelector('textarea[name=content]').value);
+            selFiles.forEach(f => fd.append('media', f));
+            const btn = document.querySelector('.post-button'); btn.textContent = '...'; btn.disabled = true;
+            fetch('/create_post', { method: 'POST', body: fd }).then(r => r.json()).then(d => {
+                if (d.success) { document.querySelector('textarea[name=content]').value=''; document.getElementById('previewContainer').innerHTML=''; selFiles=[]; document.querySelector('input[name=media]').value=''; location.reload(); }
+                else { alert(d.error); btn.textContent = 'Опубликовать'; btn.disabled = false; }
+            });
+        }
+
+        function likePost(id) { fetch('/like_post/'+id,{method:'POST'}).then(()=>location.reload()); }
+        function commentPost(id) { fetch('/add_comment/'+id,{method:'POST'}).then(()=>location.reload()); }
+        function sharePost(id) { fetch('/share_post/'+id,{method:'POST'}).then(()=>location.reload()); }
     </script>
 </body>
 </html>

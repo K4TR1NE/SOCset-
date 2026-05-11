@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEGA - Чат</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+        :root{--primary:#9d7be8;--secondary:#c77dff;--dark:#1a142b;--card-bg:#251c33;--text:#f0e9ff;--text-muted:#cbbae3;--border:#3f3153;--gradient:linear-gradient(135deg,#9d7be8,#c77dff)}
+        body{background:linear-gradient(135deg,#1e1730,#2a1f3a);color:var(--text);min-height:100vh}
+        header{background:rgba(37,28,51,0.95);padding:10px 20px;border-bottom:1px solid var(--border)}
+        .header-content{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+        .logo{display:flex;align-items:center;gap:2px;text-decoration:none}
+        .logo-star{font-size:14px;background:linear-gradient(135deg,#c77dff,#b8a2ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .logo-v,.logo-g,.logo-lambda{font-size:36px;font-weight:800;line-height:1}
+        .logo-v{background:linear-gradient(135deg,#f0e9ff,#9d7be8,#c77dff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .logo-g{background:linear-gradient(135deg,#f0e9ff,#c77dff,#b8a2ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .logo-lambda{background:linear-gradient(135deg,#c77dff,#b8a2ff,#9d7be8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .logo-e-bars{display:flex;flex-direction:column;gap:5px;margin:0 3px;height:36px;justify-content:center}
+        .logo-e-bar{width:20px;height:4px;background:linear-gradient(90deg,#9d7be8,#c77dff);border-radius:2px}
+
+        .container{display:flex;max-width:1200px;margin:0 auto;padding:20px;gap:20px}
+        .sidebar{width:250px;flex-shrink:0}
+        .sidebar-section{background:var(--card-bg);border-radius:16px;padding:18px;border:1px solid var(--border)}
+        .sidebar-title{font-weight:600;margin-bottom:12px;color:var(--text);font-size:16px}
+        .menu-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;margin-bottom:3px;color:var(--text-muted);text-decoration:none;transition:all .3s;font-size:14px}
+        .menu-item:hover{background:rgba(157,123,232,.15);color:var(--secondary)}
+        .menu-item.active{background:var(--gradient);color:white}
+
+        .main-content{flex:1;display:flex;align-items:center;justify-content:center}
+        .empty-state{text-align:center;color:var(--text-muted)}
+        .empty-state i{font-size:80px;margin-bottom:20px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;opacity:.5}
+        .empty-state h2{font-size:24px;margin-bottom:10px}
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="/" class="logo">
+                <span class="logo-star">✦</span><span class="logo-v">V</span>
+                <span class="logo-e-bars"><span class="logo-e-bar"></span><span class="logo-e-bar"></span><span class="logo-e-bar"></span></span>
+                <span class="logo-g">G</span><span class="logo-lambda">Λ</span><span class="logo-star">✦</span>
+            </a>
+        </div>
+    </header>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title"><i class="fas fa-crystal-ball"></i> Меню</div>
+                <a href="/" class="menu-item"><i class="fas fa-home"></i><span>Лента</span></a>
+                <a href="/friends" class="menu-item"><i class="fas fa-user-friends"></i><span>Друзья</span></a>
+                <a href="/communities" class="menu-item"><i class="fas fa-users"></i><span>Сообщества</span></a>
+                <a href="/gallery" class="menu-item"><i class="fas fa-images"></i><span>Галерея</span></a>
+                <a href="/chat" class="menu-item active"><i class="fas fa-comments"></i><span>Чат</span></a>
+                <a href="/events" class="menu-item"><i class="fas fa-calendar-alt"></i><span>События</span></a>
+                <a href="/settings" class="menu-item"><i class="fas fa-cog"></i><span>Настройки</span></a>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="empty-state">
+                <i class="fas fa-comments"></i>
+                <h2>Чат в разработке</h2>
+                <p>Скоро здесь можно будет общаться с друзьями</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
