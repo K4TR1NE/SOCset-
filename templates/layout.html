@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}VEGA - Астрологическая сеть{% endblock %}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='%239d7be8'/><stop offset='100%' stop-color='%23c77dff'/></linearGradient></defs><text x='10' y='85' font-size='80' font-weight='900' font-family='Arial' fill='url(%23g)'>V</text><text x='55' y='40' font-size='30' fill='%23ffd93d'>✦</text></svg>">
+    <meta name="theme-color" content="#9d7be8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block extra_css %}{% endblock %}
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        :root {
+            --primary: #9d7be8; --secondary: #c77dff; --accent: #b8a2ff;
+            --dark: #1a142b; --dark-light: #2a1f3a; --card-bg: #251c33;
+            --text-light: #f0e9ff; --text-muted: #cbbae3; --gray: #a08bb4;
+            --success: #8a9eff; --warning: #ffb86b; --danger: #ff6b8b;
+            --shadow: rgba(0, 0, 0, 0.3); --border-color: #3f3153;
+            --gradient: linear-gradient(135deg, #9d7be8 0%, #c77dff 100%);
+        }
+
+        body.light-theme {
+            background: linear-gradient(135deg, #f5f0ff 0%, #e8e0f0 100%);
+            --dark: #f5f0ff; --card-bg: #ffffff; --text-light: #2d1f4e;
+            --text-muted: #6b5b8a; --border-color: #d4c8e8; --shadow: rgba(157,123,232,0.15);
+        }
+        body.light-theme .sidebar-section, body.light-theme .post, body.light-theme .card,
+        body.light-theme .create-post, body.light-theme .right-sidebar>div, body.light-theme .settings-card,
+        body.light-theme .user-card, body.light-theme .community-card { background: #fff; border-color: #d4c8e8; }
+        body.light-theme header { background: rgba(255,255,255,0.95); }
+        body.light-theme .search-bar { background: rgba(157,123,232,0.08); }
+        body.light-theme .search-bar input { color: #2d1f4e; }
+        body.light-theme .post-input textarea { background: rgba(157,123,232,0.05); color: #2d1f4e; }
+        body.light-theme .form-group input, body.light-theme .form-group select, body.light-theme .form-group textarea {
+            background: rgba(157,123,232,0.05); color: #2d1f4e;
+        }
+
+        body { background: linear-gradient(135deg, #1e1730, #2a1f3a); color: var(--text-light); min-height: 100vh; transition: background 0.5s; }
+
+        /* Header styles */
+        header {
+            background: rgba(37, 28, 51, 0.95); backdrop-filter: blur(10px);
+            padding: 10px 20px; position: sticky; top: 0; z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .header-content {
+            max-width: 1400px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 20px;
+        }
+        .logo {
+            display: flex; align-items: center; gap: 2px;
+            text-decoration: none; flex-shrink: 0;
+            filter: drop-shadow(0 0 10px rgba(157,123,232,0.5));
+            transition: all 0.3s;
+        }
+        .logo:hover { filter: drop-shadow(0 0 20px rgba(199,125,255,0.8)); transform: scale(1.03); }
+        .logo-star { font-size: 14px; background: linear-gradient(135deg, #c77dff, #b8a2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: starPulse 2s infinite; }
+        .logo-star:last-child { animation-delay: 1s; }
+        @keyframes starPulse { 0%,100%{opacity:0.5;transform:scale(0.8)} 50%{opacity:1;transform:scale(1.1)} }
+        .logo-v, .logo-g, .logo-lambda { font-size: 36px; font-weight: 800; line-height: 1; }
+        .logo-v { background: linear-gradient(135deg, #f0e9ff, #9d7be8, #c77dff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-g { background: linear-gradient(135deg, #f0e9ff, #c77dff, #b8a2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-lambda { background: linear-gradient(135deg, #c77dff, #b8a2ff, #9d7be8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-e-bars { display: flex; flex-direction: column; gap: 5px; margin: 0 3px; height: 36px; justify-content: center; }
+        .logo-e-bar { width: 20px; height: 4px; background: linear-gradient(90deg, #9d7be8, #c77dff); border-radius: 2px; transition: all 0.3s; }
+        .logo:hover .logo-e-bar:nth-child(1) { width: 24px; }
+        .logo:hover .logo-e-bar:nth-child(2) { width: 18px; }
+        .logo:hover .logo-e-bar:nth-child(3) { width: 22px; }
+
+        .search-bar {
+            display: flex; background: rgba(255,255,255,0.08);
+            border-radius: 30px; padding: 8px 20px; flex: 1; max-width: 400px;
+            border: 1px solid var(--border-color);
+        }
+        .search-bar i { color: var(--text-muted); }
+        .search-bar input {
+            border: none; background: transparent; width: 100%;
+            margin-left: 10px; outline: none; color: var(--text-light);
+        }
+        .search-bar input::placeholder { color: var(--gray); }
+
+        .user-profile {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(157,123,232,0.15); padding: 5px 15px 5px 5px;
+            border-radius: 30px; border: 1px solid var(--border-color);
+            text-decoration: none; color: var(--text-light);
+        }
+        .user-profile:hover { background: rgba(157,123,232,0.25); }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--secondary); }
+        .avatar-sm { width: 35px; height: 35px; }
+        .avatar-lg { width: 55px; height: 55px; border-radius: 16px; }
+
+        /* Container layout */
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        /* Sidebar */
+        .sidebar { width: 250px; flex-shrink: 0; }
+        .sidebar-section {
+            background: var(--card-bg); border-radius: 16px; padding: 18px;
+            margin-bottom: 15px; border: 1px solid var(--border-color);
+            box-shadow: 0 8px 20px var(--shadow);
+        }
+        .sidebar-title {
+            font-weight: 600; margin-bottom: 12px; color: var(--text-light);
+            font-size: 16px; display: flex; align-items: center; gap: 10px;
+        }
+        .sidebar-title i { color: var(--secondary); }
+        .menu-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 12px; border-radius: 10px; margin-bottom: 3px;
+            color: var(--text-muted); text-decoration: none; transition: all 0.3s;
+            font-size: 14px;
+        }
+        .menu-item:hover { background: rgba(157,123,232,0.15); color: var(--secondary); transform: translateX(3px); }
+        .menu-item.active { background: var(--gradient); color: white; }
+        .menu-item i { width: 18px; text-align: center; }
+
+        /* Main content */
+        .main-content { flex: 1; min-width: 0; }
+        .page-title {
+            font-size: 28px; font-weight: 700; margin-bottom: 20px;
+            background: var(--gradient); -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg); border-radius: 16px; padding: 20px;
+            border: 1px solid var(--border-color); margin-bottom: 20px;
+            box-shadow: 0 8px 20px var(--shadow);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 8px 18px; border-radius: 8px; border: none;
+            cursor: pointer; font-weight: 600; font-size: 13px;
+            transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-primary { background: var(--gradient); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(157,123,232,0.4); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,107,139,0.4); }
+        .btn-secondary {
+            background: rgba(255,255,255,0.08); color: var(--text-light);
+            border: 1px solid var(--border-color);
+        }
+        .btn-secondary:hover { background: rgba(157,123,232,0.15); }
+
+        /* Forms */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; color: var(--text-muted); font-size: 12px; margin-bottom: 5px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 11px 14px; background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color); border-radius: 10px;
+            color: var(--text-light); font-size: 14px; outline: none;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--secondary); box-shadow: 0 0 15px rgba(157,123,232,0.2);
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 12px 16px; border-radius: 12px; margin-bottom: 15px;
+            display: flex; align-items: center; gap: 10px; font-size: 13px;
+        }
+        .alert-success { background: rgba(138,158,255,0.12); border: 1px solid rgba(138,158,255,0.3); color: #8a9eff; }
+        .alert-error { background: rgba(255,107,139,0.12); border: 1px solid rgba(255,107,139,0.3); color: #ff6b8b; }
+        .alert-info { background: rgba(157,123,232,0.12); border: 1px solid rgba(157,123,232,0.3); color: #c77dff; }
+
+        /* Empty state */
+        .empty-state { text-align: center; padding: 40px; color: var(--text-muted); }
+        .empty-state i { font-size: 50px; margin-bottom: 15px; opacity: 0.3; }
+
+        /* Theme toggle */
+        .theme-toggle-btn {
+            position: fixed; bottom: 30px; right: 30px;
+            width: 55px; height: 55px; border-radius: 50%;
+            background: var(--gradient); color: #fff; border: none;
+            cursor: pointer; font-size: 22px; display: flex;
+            align-items: center; justify-content: center;
+            box-shadow: 0 8px 25px rgba(157,123,232,0.5);
+            z-index: 999; transition: all 0.3s;
+        }
+        .theme-toggle-btn:hover { transform: scale(1.1); }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .container { flex-direction: column; padding: 10px; }
+            .sidebar { width: 100%; position: static; }
+            .sidebar-section { display: flex; flex-wrap: wrap; gap: 5px; padding: 10px; }
+            .sidebar-title { display: none; }
+            .menu-item { padding: 8px 12px; font-size: 13px; white-space: nowrap; }
+            .menu-item span { display: inline; }
+            .search-bar { display: none; }
+            .logo-v, .logo-g, .logo-lambda { font-size: 28px; }
+            .logo-e-bars { height: 28px; gap: 4px; }
+            .logo-e-bar { width: 16px; height: 3px; }
+            .theme-toggle-btn { bottom: 20px; right: 20px; width: 45px; height: 45px; font-size: 18px; }
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="/" class="logo">
+                <span class="logo-star">✦</span>
+                <span class="logo-v">V</span>
+                <span class="logo-e-bars">
+                    <span class="logo-e-bar"></span><span class="logo-e-bar"></span><span class="logo-e-bar"></span>
+                </span>
+                <span class="logo-g">G</span>
+                <span class="logo-lambda">Λ</span>
+                <span class="logo-star">✦</span>
+            </a>
+
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="{% block search_placeholder %}Поиск...{% endblock %}" id="globalSearch">
+            </div>
+
+            <a href="/profile" class="user-profile">
+                <img src="{{ current_user.avatar if current_user else 'https://randomuser.me/api/portraits/men/32.jpg' }}" alt="Аватар" class="avatar">
+                <span>{{ current_user.name if current_user else 'Профиль' }}</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title"><i class="fas fa-crystal-ball"></i> Меню</div>
+                <a href="/" class="menu-item {% if request.path == '/' %}active{% endif %}">
+                    <i class="fas fa-home"></i><span>Лента</span>
+                </a>
+                <a href="/friends" class="menu-item {% if request.path == '/friends' %}active{% endif %}">
+                    <i class="fas fa-user-friends"></i><span>Друзья</span>
+                </a>
+                <a href="/communities" class="menu-item {% if request.path == '/communities' %}active{% endif %}">
+                    <i class="fas fa-users"></i><span>Сообщества</span>
+                </a>
+                <a href="/gallery" class="menu-item {% if request.path == '/gallery' %}active{% endif %}">
+                    <i class="fas fa-images"></i><span>Галерея</span>
+                </a>
+                <a href="/chat" class="menu-item {% if request.path == '/chat' %}active{% endif %}">
+                    <i class="fas fa-comments"></i><span>Чат</span>
+                </a>
+                <a href="/events" class="menu-item {% if request.path == '/events' %}active{% endif %}">
+                    <i class="fas fa-calendar-alt"></i><span>События</span>
+                </a>
+                <a href="/settings" class="menu-item {% if request.path == '/settings' %}active{% endif %}">
+                    <i class="fas fa-cog"></i><span>Настройки</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="main-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <i class="fas fa-{% if category == 'error' %}exclamation-circle{% elif category == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </div>
+
+        {% block right_sidebar %}{% endblock %}
+    </div>
+
+    <button class="theme-toggle-btn" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <script>
+        // Theme toggle
+        const themeBtn = document.getElementById('themeToggle');
+        const body = document.body;
+        if (localStorage.getItem('vega-theme') === 'light') {
+            body.classList.add('light-theme');
+            themeBtn.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+        themeBtn.addEventListener('click', () => {
+            body.classList.toggle('light-theme');
+            const isLight = body.classList.contains('light-theme');
+            themeBtn.innerHTML = isLight ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('vega-theme', isLight ? 'light' : 'dark');
+        });
+
+        // Auto-hide alerts
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                alert.style.transition = 'all 0.5s';
+                alert.style.opacity = '0';
+                alert.style.transform = 'translateY(-10px)';
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 5000);
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
