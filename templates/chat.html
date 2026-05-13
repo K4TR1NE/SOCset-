@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block title %}VEGA - Чат{% endblock %}
+
+{% block extra_css %}
+<style>
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-muted);
+    }
+
+    .empty-state i {
+        font-size: 80px;
+        margin-bottom: 20px;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        opacity: 0.5;
+    }
+
+    .empty-state h2 {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+
+    .empty-state p {
+        font-size: 14px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="empty-state">
+    <i class="fas fa-comments"></i>
+    <h2>Чат в разработке</h2>
+    <p>Скоро здесь можно будет общаться с друзьями</p>
+</div>
+{% endblock %}
