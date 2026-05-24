@@ -1,0 +1,390 @@
+{% extends "layout.html" %}
+
+{% block title %}VEGA - События{% endblock %}
+
+{% block extra_css %}
+<style>
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .calendar-title {
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .calendar-nav {
+        display: flex;
+        gap: 8px;
+    }
+
+    .nav-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border-color);
+        color: var(--text-light);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .nav-btn:hover {
+        background: var(--gradient);
+        border-color: transparent;
+    }
+
+    .nav-btn.today-btn {
+        width: auto;
+        padding: 0 15px;
+        gap: 6px;
+    }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
+    }
+
+    .weekday {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 11px;
+        font-weight: 700;
+        padding: 8px 0;
+    }
+
+    .weekday.weekend {
+        color: var(--danger);
+    }
+
+    .day-cell {
+        aspect-ratio: 1;
+        border-radius: 12px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+        font-size: 14px;
+        background: rgba(255,255,255,0.02);
+    }
+
+    .day-cell:hover {
+        background: rgba(157,123,232,0.2);
+        transform: translateY(-2px);
+    }
+
+    .day-cell.empty {
+        cursor: default;
+    }
+
+    .day-cell.empty:hover {
+        background: transparent;
+        transform: none;
+    }
+
+    .day-cell.today {
+        background: rgba(157,123,232,0.3);
+        font-weight: 700;
+        border: 2px solid var(--secondary);
+    }
+
+    .day-cell.selected {
+        background: var(--gradient);
+        color: white;
+        font-weight: 700;
+    }
+
+    .event-markers {
+        display: flex;
+        gap: 2px;
+        margin-top: 3px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .event-marker {
+        padding: 2px 6px;
+        border-radius: 8px;
+        font-size: 9px;
+        font-weight: 600;
+        color: white;
+        white-space: nowrap;
+    }
+
+    .event-marker.holiday {
+        background: var(--danger);
+    }
+
+    .event-marker.personal {
+        background: var(--success);
+    }
+
+    .event-list-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        border-radius: 14px;
+        margin-bottom: 8px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(63,49,83,0.3);
+        transition: all 0.3s;
+    }
+
+    .event-list-item:hover {
+        background: rgba(157,123,232,0.1);
+    }
+
+    .event-icon-circle {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .event-info {
+        flex: 1;
+    }
+
+    .event-info h4 {
+        font-size: 14px;
+        margin-bottom: 2px;
+    }
+
+    .event-info p {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s;
+    }
+
+    .modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .modal-dialog {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 30px;
+        max-width: 420px;
+        width: 90%;
+        border: 1px solid var(--border-color);
+        transform: scale(0.9);
+        transition: all 0.3s;
+    }
+
+    .modal-overlay.active .modal-dialog {
+        transform: scale(1);
+    }
+
+    .modal-title {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .modal-actions .btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .page-subtitle {
+        color: var(--text-muted);
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">События</h1>
+<p class="page-subtitle">Календарь праздников и ваших личных событий</p>
+
+<div class="card">
+    <div class="calendar-header">
+        <div class="calendar-title">{{ calendar.month_name }} {{ calendar.year }}</div>
+        <div class="calendar-nav">
+            <a href="/events?year={{ prev_month[0] }}&month={{ prev_month[1] }}" class="nav-btn">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <a href="/events" class="nav-btn today-btn">
+                <i class="fas fa-calendar-day"></i> Сегодня
+            </a>
+            <a href="/events?year={{ next_month[0] }}&month={{ next_month[1] }}" class="nav-btn">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="calendar-grid">
+        <div class="weekday">Пн</div>
+        <div class="weekday">Вт</div>
+        <div class="weekday">Ср</div>
+        <div class="weekday">Чт</div>
+        <div class="weekday">Пт</div>
+        <div class="weekday weekend">Сб</div>
+        <div class="weekday weekend">Вс</div>
+    </div>
+
+    <div class="calendar-grid">
+        {% for week in calendar.calendar %}
+            {% for day in week %}
+                {% if day == 0 %}
+                    <div class="day-cell empty"></div>
+                {% else %}
+                    {% set date_str = calendar.year|string + '-' + '%02d'|format(calendar.month) + '-' + '%02d'|format(day) %}
+                    <div class="day-cell {% if day == calendar.today %}today{% endif %} {% if day == selected_day %}selected{% endif %}"
+                         onclick="selectDate('{{ date_str }}')">
+                        {{ day }}
+                        {% if day in calendar.events %}
+                        <div class="event-markers">
+                            {% for event in calendar.events[day][:2] %}
+                            <div class="event-marker {{ event.event_type }}">
+                                {{ event.title[:6] }}{% if event.title|length > 6 %}..{% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="sidebar-title">
+        {% if selected_date %}
+        <i class="fas fa-calendar-check"></i> События {{ selected_date }}
+        {% else %}
+        <i class="fas fa-star"></i> Выберите дату
+        {% endif %}
+    </div>
+
+    {% if day_events %}
+        {% for event in day_events %}
+        <div class="event-list-item">
+            <div class="event-icon-circle" style="background: {{ event.color or '#9d7be8' }};">
+                <i class="fas {{ event.icon or 'fa-star' }}"></i>
+            </div>
+            <div class="event-info">
+                <h4>{{ event.title }}</h4>
+                <p>{{ event.description or '' }}</p>
+                <span style="font-size: 11px; background: rgba(157,123,232,0.2); padding: 2px 8px; border-radius: 8px;">
+                    {{ 'Праздник' if event.event_type == 'holiday' else 'Личное' }}
+                </span>
+            </div>
+            {% if event.user_id == current_user.id %}
+            <button class="nav-btn" onclick="deleteEvent({{ event.id }})" style="color: var(--danger);">
+                <i class="fas fa-trash"></i>
+            </button>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+    <div class="empty-state">
+        <i class="far fa-calendar"></i>
+        <p>{% if selected_date %}Нет событий{% else %}Нажмите на дату в календаре{% endif %}</p>
+    </div>
+    {% endif %}
+
+    <button class="btn btn-primary" onclick="showAddEventModal()" style="width: 100%; justify-content: center; margin-top: 10px;">
+        <i class="fas fa-plus-circle"></i> Добавить событие
+    </button>
+</div>
+
+<!-- Модальное окно -->
+<div class="modal-overlay" id="addEventModal">
+    <div class="modal-dialog">
+        <div class="modal-title"><i class="fas fa-calendar-plus"></i> Новое событие</div>
+        <form method="POST" action="/add_event">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="form-group">
+                <label>Название *</label>
+                <input type="text" name="title" placeholder="День рождения, встреча..." required>
+            </div>
+            <div class="form-group">
+                <label>Дата *</label>
+                <input type="date" name="event_date" value="{{ selected_date or '' }}" required>
+            </div>
+            <div class="form-group">
+                <label>Описание</label>
+                <textarea name="description" placeholder="Подробности..."></textarea>
+            </div>
+            <input type="hidden" name="color" value="#9d7be8">
+            <input type="hidden" name="icon" value="fa-calendar-star">
+            <div class="modal-actions">
+                <button type="submit" class="btn btn-primary">Добавить</button>
+                <button type="button" class="btn btn-secondary" onclick="hideAddEventModal()">Отмена</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function selectDate(date) {
+        window.location.href = '/events?date=' + date;
+    }
+
+    function showAddEventModal() {
+        document.getElementById('addEventModal').classList.add('active');
+    }
+
+    function hideAddEventModal() {
+        document.getElementById('addEventModal').classList.remove('active');
+    }
+
+    async function deleteEvent(eventId) {
+        if (!confirm('Удалить событие?')) return;
+        try {
+            const res = await fetch('/delete_event/' + eventId, { method: 'POST' });
+            const data = await res.json();
+            if (data.success) location.reload();
+            else alert(data.message);
+        } catch(e) {
+            alert('Ошибка');
+        }
+    }
+
+    document.getElementById('addEventModal')?.addEventListener('click', function(e) {
+        if (e.target === this) hideAddEventModal();
+    });
+</script>
+{% endblock %}

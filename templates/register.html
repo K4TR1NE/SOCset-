@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEGA - Регистрация</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e1730 0%, #2a1f3a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .auth-card {
+            background: rgba(37, 28, 51, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px 35px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid #3f3153;
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-logo-bars {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .auth-logo-star {
+            font-size: 18px;
+            background: linear-gradient(135deg, #c77dff, #b8a2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .auth-logo-v, .auth-logo-g, .auth-logo-lambda {
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .auth-logo-v { background: linear-gradient(135deg, #f0e9ff, #9d7be8, #c77dff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .auth-logo-g { background: linear-gradient(135deg, #f0e9ff, #c77dff, #b8a2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .auth-logo-lambda { background: linear-gradient(135deg, #c77dff, #b8a2ff, #9d7be8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .auth-logo-e-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin: 0 4px;
+            justify-content: center;
+            height: 48px;
+        }
+
+        .auth-logo-e-bar {
+            width: 26px;
+            height: 5px;
+            background: linear-gradient(90deg, #9d7be8, #c77dff);
+            border-radius: 3px;
+        }
+
+        .auth-subtitle {
+            text-align: center;
+            color: #a08bb4;
+            margin: 15px 0 30px;
+            font-size: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #f0e9ff;
+            margin-bottom: 10px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* Стили для поля телефона - такие же как в логине */
+        .phone-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .country-select {
+            width: 85px;
+            padding: 14px 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid #3f3153;
+            border-radius: 14px;
+            color: #f0e9ff;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+            flex-shrink: 0;
+        }
+
+        .country-select option {
+            background: #251c33;
+            color: #f0e9ff;
+        }
+
+        .country-select:focus {
+            border-color: #9d7be8;
+        }
+
+        .phone-number-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .phone-number-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b5b8a;
+            font-size: 16px;
+            z-index: 1;
+        }
+
+        .phone-number {
+            width: 100%;
+            padding: 14px 18px 14px 45px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid #3f3153;
+            border-radius: 14px;
+            color: #f0e9ff;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .phone-number:focus {
+            border-color: #9d7be8;
+            box-shadow: 0 0 20px rgba(157, 123, 232, 0.2);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .phone-number::placeholder {
+            color: #5a4d6e;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b5b8a;
+            font-size: 16px;
+            z-index: 1;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 14px 18px 14px 45px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid #3f3153;
+            border-radius: 14px;
+            color: #f0e9ff;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #9d7be8;
+            box-shadow: 0 0 20px rgba(157, 123, 232, 0.2);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px 14px 45px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid #3f3153;
+            border-radius: 14px;
+            color: #f0e9ff;
+            font-size: 15px;
+            cursor: pointer;
+            outline: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23cbbae3' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+        }
+
+        .form-group select option {
+            background: #251c33;
+            color: #f0e9ff;
+        }
+
+        .form-group select:focus {
+            border-color: #9d7be8;
+            box-shadow: 0 0 20px rgba(157, 123, 232, 0.2);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .btn-auth {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #9d7be8 0%, #c77dff 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-auth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(157, 123, 232, 0.5);
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #b8a8cc;
+            font-size: 14px;
+        }
+
+        .auth-footer a {
+            color: #c77dff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-error {
+            background: rgba(255, 107, 139, 0.12);
+            border: 1px solid rgba(255, 107, 139, 0.3);
+            color: #ff6b8b;
+        }
+
+        .alert-success {
+            background: rgba(138, 158, 255, 0.12);
+            border: 1px solid rgba(138, 158, 255, 0.3);
+            color: #8a9eff;
+        }
+
+        .password-strength {
+            margin-top: 8px;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s;
+        }
+
+        .strength-weak { background: #ff6b8b; width: 33%; }
+        .strength-medium { background: #ffb86b; width: 66%; }
+        .strength-strong { background: #8a9eff; width: 100%; }
+
+        @media (max-width: 480px) {
+            .auth-card { padding: 30px 22px; }
+            .auth-logo-v, .auth-logo-g, .auth-logo-lambda { font-size: 38px; }
+            .auth-logo-e-bars { height: 38px; }
+            .auth-logo-e-bar { width: 22px; height: 4px; }
+            .phone-row {
+                flex-direction: column;
+            }
+            .country-select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <div class="auth-logo-bars">
+                    <span class="auth-logo-star">✦</span>
+                    <span class="auth-logo-v">V</span>
+                    <span class="auth-logo-e-bars"><span class="auth-logo-e-bar"></span><span class="auth-logo-e-bar"></span><span class="auth-logo-e-bar"></span></span>
+                    <span class="auth-logo-g">G</span>
+                    <span class="auth-logo-lambda">Λ</span>
+                    <span class="auth-logo-star">✦</span>
+                </div>
+            </div>
+            <div class="auth-subtitle">Создайте аккаунт</div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('register') }}" id="registerForm">
+                <div class="form-group">
+                    <label>Имя и фамилия</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" name="name" placeholder="Иван Петров" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Номер телефона</label>
+                    <div class="phone-row">
+                        <select name="country_code" class="country-select" required>
+                            <option value="+7">🇷🇺 +7</option>
+                            <option value="+380">🇺🇦 +380</option>
+                            <option value="+375">🇧🇾 +375</option>
+                            <option value="+994">🇦🇿 +994</option>
+                            <option value="+374">🇦🇲 +374</option>
+                            <option value="+995">🇬🇪 +995</option>
+                            <option value="+996">🇰🇬 +996</option>
+                            <option value="+992">🇹🇯 +992</option>
+                            <option value="+993">🇹🇲 +993</option>
+                            <option value="+998">🇺🇿 +998</option>
+                            <option value="+86">🇨🇳 +86</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+44">🇬🇧 +44</option>
+                            <option value="+49">🇩🇪 +49</option>
+                            <option value="+33">🇫🇷 +33</option>
+                            <option value="+81">🇯🇵 +81</option>
+                            <option value="+82">🇰🇷 +82</option>
+                            <option value="+91">🇮🇳 +91</option>
+                            <option value="+55">🇧🇷 +55</option>
+                            <option value="+61">🇦🇺 +61</option>
+                        </select>
+                        <div class="phone-number-wrapper">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" name="phone_number" class="phone-number" placeholder="XXX XXX XX XX" maxlength="15" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Знак зодиака</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-star"></i>
+                        <select name="zodiac">
+                            <option value="Овен">♈ Овен (21.03 - 19.04)</option>
+                            <option value="Телец">♉ Телец (20.04 - 20.05)</option>
+                            <option value="Близнецы">♊ Близнецы (21.05 - 20.06)</option>
+                            <option value="Рак">♋ Рак (21.06 - 22.07)</option>
+                            <option value="Лев" selected>♌ Лев (23.07 - 22.08)</option>
+                            <option value="Дева">♍ Дева (23.08 - 22.09)</option>
+                            <option value="Весы">♎ Весы (23.09 - 22.10)</option>
+                            <option value="Скорпион">♏ Скорпион (23.10 - 21.11)</option>
+                            <option value="Стрелец">♐ Стрелец (22.11 - 21.12)</option>
+                            <option value="Козерог">♑ Козерог (22.12 - 19.01)</option>
+                            <option value="Водолей">♒ Водолей (20.01 - 18.02)</option>
+                            <option value="Рыбы">♓ Рыбы (19.02 - 20.03)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" name="password" id="password" placeholder="Минимум 6 символов" required oninput="checkPasswordStrength()">
+                        <i class="fas fa-eye password-toggle" onclick="togglePassword()" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #6b5b8a; cursor: pointer;"></i>
+                    </div>
+                    <div class="password-strength">
+                        <div class="password-strength-bar" id="strengthBar"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Подтвердите пароль</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" name="password_confirm" id="passwordConfirm" placeholder="Повторите пароль" required oninput="checkPasswordMatch()">
+                    </div>
+                    <span id="matchText" style="font-size: 11px;"></span>
+                </div>
+
+                <button type="submit" class="btn-auth">Зарегистрироваться</button>
+            </form>
+
+            <div class="auth-footer">
+                Уже есть аккаунт? <a href="{{ url_for('login') }}">Войти</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const input = document.getElementById('password');
+            const icon = document.querySelector('.password-toggle');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+                icon.style.color = '#c77dff';
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+                icon.style.color = '#6b5b8a';
+            }
+        }
+
+        function checkPasswordStrength() {
+            const password = document.getElementById('password').value;
+            const bar = document.getElementById('strengthBar');
+
+            if (password.length === 0) {
+                bar.style.width = '0%';
+                bar.className = 'password-strength-bar';
+            } else if (password.length < 6) {
+                bar.className = 'password-strength-bar strength-weak';
+            } else if (password.length < 8 || !/[0-9]/.test(password)) {
+                bar.className = 'password-strength-bar strength-medium';
+            } else {
+                bar.className = 'password-strength-bar strength-strong';
+            }
+        }
+
+        function checkPasswordMatch() {
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('passwordConfirm').value;
+            const matchText = document.getElementById('matchText');
+
+            if (confirm.length === 0) {
+                matchText.textContent = '';
+            } else if (password === confirm) {
+                matchText.textContent = '✓ Пароли совпадают';
+                matchText.style.color = '#8a9eff';
+            } else {
+                matchText.textContent = '✗ Пароли не совпадают';
+                matchText.style.color = '#ff6b8b';
+            }
+        }
+
+        // Очистка номера от не-цифр и ограничение длины
+        const phoneInput = document.querySelector('.phone-number');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let value = this.value.replace(/\D/g, '');
+                if (value.length > 15) {
+                    value = value.slice(0, 15);
+                }
+                this.value = value;
+            });
+        }
+
+        // Собираем полный номер при отправке
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            const countryCode = document.querySelector('.country-select').value;
+            const phoneNumber = document.querySelector('.phone-number').value;
+            const fullPhone = countryCode + phoneNumber;
+
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'phone';
+            hiddenInput.value = fullPhone;
+            this.appendChild(hiddenInput);
+        });
+
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                alert.style.transition = 'all 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>
