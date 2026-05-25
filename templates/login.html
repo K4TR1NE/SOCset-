@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEGA - Вход</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e1730 0%, #2a1f3a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .auth-card {
+            background: rgba(37, 28, 51, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px 35px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(63, 49, 83, 0.5);
+            border: 1px solid #3f3153;
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-logo-bars {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            margin-bottom: 10px;
+        }
+
+        .auth-logo-star {
+            font-size: 18px;
+            background: linear-gradient(135deg, #c77dff, #b8a2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: starPulse 2s ease-in-out infinite;
+        }
+
+        .auth-logo-v {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f0e9ff, #9d7be8, #c77dff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .auth-logo-e-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin: 0 4px;
+            justify-content: center;
+            height: 48px;
+        }
+
+        .auth-logo-e-bar {
+            display: block;
+            width: 26px;
+            height: 5px;
+            background: linear-gradient(90deg, #9d7be8, #c77dff);
+            border-radius: 3px;
+        }
+
+        .auth-logo-g {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f0e9ff, #c77dff, #b8a2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .auth-logo-lambda {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #c77dff, #b8a2ff, #9d7be8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        @keyframes starPulse {
+            0%, 100% { opacity: 0.5; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .auth-subtitle {
+            text-align: center;
+            color: #a08bb4;
+            margin-bottom: 35px;
+            font-size: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #f0e9ff;
+            margin-bottom: 10px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* Стили для поля телефона */
+        .phone-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .country-select {
+            width: 85px;
+            padding: 14px 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid #3f3153;
+            border-radius: 14px;
+            color: #f0e9ff;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+            flex-shrink: 0;
+        }
+
+        .country-select option {
+            background: #251c33;
+            color: #f0e9ff;
+        }
+
+        .country-select:focus {
+            border-color: #9d7be8;
+        }
+
+        .phone-number-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .phone-number-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b5b8a;
+            font-size: 16px;
+            z-index: 1;
+        }
+
+        .phone-number {
+            width: 100%;
+            padding: 14px 18px 14px 45px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid #3f3153;
+            border-radius: 14px;
+            color: #f0e9ff;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .phone-number:focus {
+            border-color: #9d7be8;
+            box-shadow: 0 0 20px rgba(157, 123, 232, 0.2);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .phone-number::placeholder {
+            color: #5a4d6e;
+        }
+
+        /* Поле пароля - без иконки замка, глазик отдельно */
+        .password-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .password-input {
+            flex: 1;
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid #3f3153;
+            border-radius: 14px;
+            color: #f0e9ff;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .password-input:focus {
+            border-color: #9d7be8;
+            box-shadow: 0 0 20px rgba(157, 123, 232, 0.2);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .password-input::placeholder {
+            color: #5a4d6e;
+        }
+
+        .eye-button {
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid #3f3153;
+            border-radius: 14px;
+            color: #6b5b8a;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .eye-button:hover {
+            color: #c77dff;
+            border-color: #9d7be8;
+            background: rgba(157, 123, 232, 0.1);
+        }
+
+        .btn-auth {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #9d7be8 0%, #c77dff 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-auth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(157, 123, 232, 0.5);
+        }
+
+        .guest-divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+        }
+
+        .guest-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #3f3153;
+        }
+
+        .guest-divider span {
+            background: rgba(37, 28, 51, 0.95);
+            padding: 0 15px;
+            position: relative;
+            color: #a08bb4;
+            font-size: 12px;
+        }
+
+        .btn-guest {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid #3f3153;
+            color: #f0e9ff;
+            width: 100%;
+            padding: 15px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-guest:hover {
+            background: rgba(157, 123, 232, 0.15);
+            border-color: #9d7be8;
+            transform: translateY(-2px);
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #b8a8cc;
+            font-size: 14px;
+        }
+
+        .auth-footer a {
+            color: #c77dff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-error {
+            background: rgba(255, 107, 139, 0.12);
+            border: 1px solid rgba(255, 107, 139, 0.3);
+            color: #ff6b8b;
+        }
+
+        .alert-success {
+            background: rgba(138, 158, 255, 0.12);
+            border: 1px solid rgba(138, 158, 255, 0.3);
+            color: #8a9eff;
+        }
+
+        .guest-note {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(157, 123, 232, 0.05);
+            border-radius: 10px;
+            font-size: 12px;
+            color: #a08bb4;
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            .auth-card { padding: 30px 22px; }
+            .auth-logo-v, .auth-logo-g, .auth-logo-lambda { font-size: 38px; }
+            .auth-logo-e-bars { height: 38px; }
+            .auth-logo-e-bar { width: 22px; height: 4px; }
+            .phone-row {
+                flex-direction: column;
+            }
+            .country-select {
+                width: 100%;
+            }
+            .password-wrapper {
+                flex-direction: column;
+            }
+            .eye-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <div class="auth-logo-bars">
+                    <span class="auth-logo-star">✦</span>
+                    <span class="auth-logo-v">V</span>
+                    <span class="auth-logo-e-bars">
+                        <span class="auth-logo-e-bar"></span>
+                        <span class="auth-logo-e-bar"></span>
+                        <span class="auth-logo-e-bar"></span>
+                    </span>
+                    <span class="auth-logo-g">G</span>
+                    <span class="auth-logo-lambda">Λ</span>
+                    <span class="auth-logo-star">✦</span>
+                </div>
+            </div>
+            <div class="auth-subtitle">Войдите в астрологическую сеть</div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <i class="fas fa-{% if category == 'error' %}exclamation-circle{% elif category == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('login') }}" id="loginForm">
+                <div class="form-group">
+                    <label>Номер телефона</label>
+                    <div class="phone-row">
+                        <select name="country_code" class="country-select" required>
+                            <option value="+7">🇷🇺 +7</option>
+                            <option value="+380">🇺🇦 +380</option>
+                            <option value="+375">🇧🇾 +375</option>
+                            <option value="+994">🇦🇿 +994</option>
+                            <option value="+374">🇦🇲 +374</option>
+                            <option value="+995">🇬🇪 +995</option>
+                            <option value="+996">🇰🇬 +996</option>
+                            <option value="+992">🇹🇯 +992</option>
+                            <option value="+993">🇹🇲 +993</option>
+                            <option value="+998">🇺🇿 +998</option>
+                            <option value="+86">🇨🇳 +86</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+44">🇬🇧 +44</option>
+                            <option value="+49">🇩🇪 +49</option>
+                            <option value="+33">🇫🇷 +33</option>
+                            <option value="+81">🇯🇵 +81</option>
+                            <option value="+82">🇰🇷 +82</option>
+                            <option value="+91">🇮🇳 +91</option>
+                            <option value="+55">🇧🇷 +55</option>
+                            <option value="+61">🇦🇺 +61</option>
+                        </select>
+                        <div class="phone-number-wrapper">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" name="phone_number" class="phone-number" placeholder="XXX XXX XX XX" maxlength="15" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <div class="password-wrapper">
+                        <input type="password" name="password" id="password" class="password-input" placeholder="Введите пароль" required>
+                        <i class="fas fa-eye eye-button" onclick="togglePassword()"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-auth">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Войти</span>
+                </button>
+            </form>
+
+            <div class="guest-divider">
+                <span>или</span>
+            </div>
+
+            <form method="POST" action="{{ url_for('login') }}">
+                <input type="hidden" name="guest" value="1">
+                <button type="submit" class="btn-guest">
+                    <i class="fas fa-user-astronaut"></i> Продолжить как гость
+                </button>
+            </form>
+
+            <div class="guest-note">
+                <i class="fas fa-info-circle"></i> Гостевой режим: вы можете смотреть контент, но не можете публиковать посты
+            </div>
+
+            <div class="auth-footer">
+                Нет аккаунта? <a href="{{ url_for('register') }}">Зарегистрироваться</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const input = document.getElementById('password');
+            const icon = document.querySelector('.eye-button');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+                icon.style.color = '#c77dff';
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+                icon.style.color = '#6b5b8a';
+            }
+        }
+
+        // Очистка номера от не-цифр и ограничение длины
+        const phoneInput = document.querySelector('.phone-number');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let value = this.value.replace(/\D/g, '');
+                if (value.length > 15) {
+                    value = value.slice(0, 15);
+                }
+                this.value = value;
+            });
+        }
+
+        // Собираем полный номер при отправке
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const countryCode = document.querySelector('.country-select').value;
+            const phoneNumber = document.querySelector('.phone-number').value;
+            const fullPhone = countryCode + phoneNumber;
+
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'phone';
+            hiddenInput.value = fullPhone;
+            this.appendChild(hiddenInput);
+        });
+
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.transition = 'all 0.5s';
+                alert.style.opacity = '0';
+                alert.style.transform = 'translateY(-10px)';
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>
