@@ -1,0 +1,922 @@
+{% extends "layout.html" %}
+
+{% block title %}VEGA - Профиль {{ profile_user.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-header {
+        display: flex;
+-align-items: center;
+        gap: 25px;
+        margin-bottom: 20px;
+    }
+
+    .profile-name {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .friend-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: normal;
+    }
+
+    .friend-status-badge.friends {
+        background: rgba(138,158,255,0.2);
+        color: var(--success);
+    }
+
+    .friend-status-badge.pending {
+        background: rgba(255,184,107,0.2);
+        color: var(--warning);
+    }
+
+    .friend-status-badge.none {
+        background: rgba(255,255,255,0.1);
+        color: var(--text-muted);
+    }
+
+    .zodiac-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(157,123,232,0.2);
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        color: var(--secondary);
+        margin-bottom: 12px;
+    }
+
+    .profile-stats {
+        display: flex;
+        gap: 25px;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--secondary);
+    }
+
+    .stat-label {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .profile-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
+
+    .btn-message {
+        background: var(--gradient);
+        color: white;
+    }
+
+    .tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 10px;
+    }
+
+    .tab-btn {
+        padding: 10px 22px;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 15px;
+        border-radius: 10px;
+        transition: all 0.3s;
+        font-weight: 500;
+    }
+
+    .tab-btn:hover {
+        background: rgba(157,123,232,0.1);
+        color: var(--secondary);
+    }
+
+    .tab-btn.active {
+        background: var(--gradient);
+        color: white;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    .profile-post {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: all 0.2s;
+    }
+
+    .profile-post:hover {
+        border-color: var(--secondary);
+    }
+
+    .profile-post-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .profile-post-date {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .profile-post-content {
+        margin-bottom: 15px;
+        line-height: 1.6;
+    }
+
+    .profile-post-content p {
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .profile-post-media {
+        margin-top: 12px;
+        margin-bottom: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .profile-post-media img, .profile-post-media video {
+        max-width: 100%;
+        max-height: 400px;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        background: #000;
+        cursor: pointer;
+    }
+
+    .profile-post-stats {
+        display: flex;
+        gap: 20px;
+        padding: 10px 0;
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-muted);
+        font-size: 13px;
+    }
+
+    .profile-post-stats span {
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .profile-post-stats span:hover {
+        color: var(--secondary);
+    }
+
+    .profile-post-actions {
+        display: flex;
+        gap: 15px;
+        padding-top: 10px;
+    }
+
+    .profile-post-action {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        color: var(--text-muted);
+        border: none;
+        background: transparent;
+        font-size: 13px;
+        transition: all 0.2s;
+    }
+
+    .profile-post-action:hover {
+        background: rgba(157,123,232,0.15);
+        color: var(--secondary);
+    }
+
+    .repost-notice {
+        color: var(--secondary);
+        font-size: 13px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(157,123,232,0.1);
+        padding: 6px 12px;
+        border-radius: 20px;
+        width: fit-content;
+    }
+
+    .repost-wrapper {
+        background: rgba(157,123,232,0.08);
+        border-left: 3px solid var(--secondary);
+        border-radius: 12px;
+        padding: 12px;
+        margin-top: 8px;
+    }
+
+    .repost-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(157,123,232,0.2);
+    }
+
+    .repost-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .repost-author {
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--secondary);
+    }
+
+    .repost-text {
+        font-size: 14px;
+        line-height: 1.5;
+        color: var(--text-light);
+        margin-bottom: 10px;
+    }
+
+    .repost-media {
+        margin-top: 10px;
+    }
+
+    .repost-media img, .repost-media video {
+        max-width: 100%;
+        border-radius: 12px;
+        max-height: 300px;
+    }
+
+    .horoscope-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 18px;
+        margin-bottom: 12px;
+    }
+
+    .horoscope-card h4 {
+        color: var(--secondary);
+        margin-bottom: 8px;
+        font-size: 15px;
+    }
+
+    .horoscope-card p {
+        color: var(--text-muted);
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .mutual-friends {
+        margin-top: 20px;
+        padding: 15px;
+        background: rgba(255,255,255,0.03);
+        border-radius: 14px;
+        border: 1px solid var(--border-color);
+    }
+
+    .mutual-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: var(--text-muted);
+    }
+
+    .mutual-list {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .mutual-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .mutual-item:hover {
+        transform: translateY(-2px);
+    }
+
+    .mutual-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--secondary);
+    }
+
+    .mutual-name {
+        font-size: 11px;
+        text-align: center;
+        max-width: 60px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .comments-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.85);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .comments-modal.active {
+        display: flex;
+    }
+
+    .comments-modal-content {
+        background: var(--card-bg);
+        border-radius: 20px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--border-color);
+    }
+
+    .comments-modal-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .comments-modal-header h3 {
+        font-size: 18px;
+        margin: 0;
+    }
+
+    .comments-modal-close {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    .comments-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .comment-item {
+        display: flex;
+        gap: 12px;
+        padding: 10px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.03);
+    }
+
+    .comment-avatar {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        object-fit: cover;
+        cursor: pointer;
+    }
+
+    .comment-content {
+        flex: 1;
+    }
+
+    .comment-author {
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 4px;
+        cursor: pointer;
+    }
+
+    .comment-text {
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .comment-time {
+        font-size: 10px;
+        color: var(--text-muted);
+        margin-top: 4px;
+    }
+
+    .comments-input-area {
+        padding: 15px;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        gap: 10px;
+    }
+
+    .comments-input-area input {
+        flex: 1;
+        padding: 10px 15px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border-color);
+        border-radius: 25px;
+        color: var(--text-light);
+        font-size: 13px;
+        outline: none;
+    }
+
+    .comments-input-area input:focus {
+        border-color: var(--secondary);
+    }
+
+    .comments-input-area button {
+        background: var(--gradient);
+        border: none;
+        color: white;
+        padding: 8px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        .profile-stats {
+            justify-content: center;
+        }
+        .profile-name {
+            justify-content: center;
+        }
+        .profile-actions {
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="profile-header">
+        <img src="{{ profile_user.avatar or 'https://randomuser.me/api/portraits/men/32.jpg' }}" alt="Аватар" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;">
+        <div>
+            <div class="profile-name">
+                {{ profile_user.name }}
+                {% if friend_status == 'friends' %}
+                <span class="friend-status-badge friends">
+                    <i class="fas fa-user-check"></i> Друг
+                </span>
+                {% elif friend_status == 'sent' %}
+                <span class="friend-status-badge pending">
+                    <i class="fas fa-clock"></i> Заявка отправлена
+                </span>
+                {% elif friend_status == 'received' %}
+                <span class="friend-status-badge pending">
+                    <i class="fas fa-user-plus"></i> Заявка от вас
+                </span>
+                {% endif %}
+            </div>
+            <div class="zodiac-badge">
+                {{ horoscope.emoji }} {{ profile_user.zodiac or 'Лев' }}
+            </div>
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <div class="stat-value">{{ stats.friends_count if stats else 0 }}</div>
+                    <div class="stat-label">друзей</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ stats.subscribers if stats else 0 }}</div>
+                    <div class="stat-label">подписчиков</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ stats.posts_count if stats else 0 }}</div>
+                    <div class="stat-label">постов</div>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                {% if friend_status == 'none' %}
+                <button class="btn btn-primary" onclick="sendFriendRequest({{ profile_user.id }})">
+                    <i class="fas fa-user-plus"></i> Добавить в друзья
+                </button>
+                {% elif friend_status == 'sent' %}
+                <button class="btn btn-secondary" disabled>
+                    <i class="fas fa-clock"></i> Заявка отправлена
+                </button>
+                {% elif friend_status == 'received' %}
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-primary" onclick="acceptFriendRequestFromProfile({{ profile_user.id }})">
+                        <i class="fas fa-check"></i> Принять
+                    </button>
+                    <button class="btn btn-secondary" onclick="declineFriendRequestFromProfile({{ profile_user.id }})">
+                        <i class="fas fa-times"></i> Отклонить
+                    </button>
+                </div>
+                {% elif friend_status == 'friends' %}
+                <button class="btn btn-secondary" onclick="removeFriendFromProfile({{ profile_user.id }})">
+                    <i class="fas fa-user-minus"></i> Удалить из друзей
+                </button>
+                {% endif %}
+
+                <button class="btn btn-message" onclick="startChat({{ profile_user.id }})">
+                    <i class="fas fa-comment"></i> Написать сообщение
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {% if mutual_friends and mutual_friends|length > 0 %}
+    <div class="mutual-friends">
+        <div class="mutual-title">
+            <i class="fas fa-users"></i> Общие друзья ({{ mutual_friends|length }})
+        </div>
+        <div class="mutual-list">
+            {% for friend in mutual_friends[:6] %}
+            <div class="mutual-item" onclick="location.href='/user/{{ friend.id }}'">
+                <img src="{{ friend.avatar }}" class="mutual-avatar">
+                <span class="mutual-name">{{ friend.name[:10] }}{% if friend.name|length > 10 %}..{% endif %}</span>
+            </div>
+            {% endfor %}
+            {% if mutual_friends|length > 6 %}
+            <div class="mutual-item" onclick="showAllMutualFriends()">
+                <div class="mutual-avatar" style="display: flex; align-items: center; justify-content: center; background: var(--gradient); font-size: 18px;">
+                    +{{ mutual_friends|length - 6 }}
+                </div>
+                <span class="mutual-name">Ещё</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('posts')"><i class="fas fa-newspaper"></i> Посты ({{ posts|length }})</button>
+    <button class="tab-btn" onclick="switchTab('info')"><i class="fas fa-info-circle"></i> Информация</button>
+</div>
+
+<div class="tab-content active" id="posts-tab">
+    {% if posts %}
+        {% for post in posts %}
+        <div class="profile-post" data-post-id="{{ post.id }}">
+            <div class="profile-post-header">
+                <span class="profile-post-date">{{ post.created_at[:10] if post.created_at else '' }}</span>
+            </div>
+
+            {% if post.is_repost %}
+            <div class="repost-notice">
+                <i class="fas fa-retweet"></i> Репост
+            </div>
+            {% endif %}
+
+            <div class="profile-post-content">
+                {{ post.content|safe }}
+            </div>
+
+            {% set post_files = [] %}
+            {% for item in all_items if item.post_id == post.id %}
+                {% set _ = post_files.append(item) %}
+            {% endfor %}
+
+            {% if post_files %}
+            <div class="profile-post-media">
+                {% for file in post_files %}
+                    {% if file.file_type == 'video' %}
+                    <video controls preload="metadata">
+                        <source src="{{ file.file_path }}">
+                    </video>
+                    {% else %}
+                    <img src="{{ file.file_path }}" alt="Фото" onclick="window.open('{{ file.file_path }}','_blank')">
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="profile-post-stats">
+                <span onclick="toggleLikeInProfile({{ post.id }})">
+                    <i class="fas fa-thumbs-up"></i> <span id="profile-likes-{{ post.id }}">{{ post.likes or 0 }}</span>
+                </span>
+                <span onclick="openCommentsInProfile({{ post.id }})">
+                    <i class="fas fa-comment"></i> <span id="profile-comments-count-{{ post.id }}">{{ post.comments_count or 0 }}</span>
+                </span>
+                <span>
+                    <i class="fas fa-retweet"></i> {{ post.shares or 0 }}
+                </span>
+            </div>
+
+            <div class="profile-post-actions">
+                <button class="profile-post-action" id="profile-like-btn-{{ post.id }}" onclick="toggleLikeInProfile({{ post.id }})">
+                    <i class="far fa-thumbs-up"></i> Нравится
+                </button>
+                <button class="profile-post-action" onclick="openCommentsInProfile({{ post.id }})">
+                    <i class="far fa-comment"></i> Комментировать
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-newspaper"></i>
+            <p>У пользователя пока нет постов</p>
+        </div>
+    {% endif %}
+</div>
+
+<div class="tab-content" id="info-tab">
+    <div class="card">
+        <div style="margin-bottom: 15px;">
+            <i class="fas fa-calendar-alt" style="color: var(--secondary); width: 30px;"></i>
+            <strong>Дата рождения:</strong>
+            {% if profile_user.birthday %}
+                {{ profile_user.birthday }}
+            {% else %}
+                <span class="text-muted">Не указано</span>
+            {% endif %}
+        </div>
+        <div style="margin-bottom: 15px;">
+            <i class="fas fa-city" style="color: var(--secondary); width: 30px;"></i>
+            <strong>Город:</strong>
+            {% if profile_user.city %}
+                {{ profile_user.city }}
+            {% else %}
+                <span class="text-muted">Не указан</span>
+            {% endif %}
+        </div>
+        <div style="margin-bottom: 15px;">
+            <i class="fas fa-star" style="color: var(--secondary); width: 30px;"></i>
+            <strong>Знак зодиака:</strong>
+            {{ profile_user.zodiac or 'Лев' }}
+        </div>
+        <div>
+            <i class="fas fa-info-circle" style="color: var(--secondary); width: 30px;"></i>
+            <strong>О себе:</strong><br>
+            {% if profile_user.bio %}
+                {{ profile_user.bio }}
+            {% else %}
+                <span class="text-muted">Пользователь ничего не рассказал о себе</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="zodiac-badge" style="margin-bottom: 18px; font-size: 16px;">
+            {{ horoscope.emoji }} Гороскоп для {{ profile_user.name }}
+        </div>
+        <div class="horoscope-card">
+            <h4><i class="fas fa-sun"></i> На сегодня</h4>
+            <p>{{ horoscope.today }}</p>
+        </div>
+        <div class="horoscope-card">
+            <h4><i class="fas fa-heart"></i> Любовь</h4>
+            <p>{{ horoscope.love }}</p>
+        </div>
+        <div class="horoscope-card">
+            <h4><i class="fas fa-briefcase"></i> Карьера</h4>
+            <p>{{ horoscope.career }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="comments-modal" id="commentsModal">
+    <div class="comments-modal-content">
+        <div class="comments-modal-header">
+            <h3><i class="fas fa-comments"></i> Комментарии</h3>
+            <button class="comments-modal-close" onclick="closeCommentsModal()">&times;</button>
+        </div>
+        <div class="comments-list" id="commentsList">
+            <div style="text-align: center; padding: 20px;">
+                <i class="fas fa-spinner fa-spin"></i> Загрузка...
+            </div>
+        </div>
+        <div class="comments-input-area">
+            <input type="text" id="commentInput" placeholder="Написать комментарий..." onkeypress="if(event.key==='Enter') submitCommentInProfile()">
+            <button onclick="submitCommentInProfile()">Отправить</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentPostId = null;
+    let likedPosts = new Set();
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(tab + '-tab').classList.add('active');
+    }
+
+    async function toggleLikeInProfile(postId) {
+        const btn = document.getElementById('profile-like-btn-' + postId);
+        if (!btn) return;
+        btn.style.opacity = '0.6';
+        try {
+            const response = await fetch('/like_post/' + postId, { method: 'POST' });
+            const data = await response.json();
+            if (data.success) {
+                document.getElementById('profile-likes-' + postId).innerText = data.new_count;
+                if (data.action === 'liked') {
+                    btn.innerHTML = '<i class="fas fa-thumbs-up"></i> Нравится';
+                    btn.style.color = 'var(--success)';
+                } else {
+                    btn.innerHTML = '<i class="far fa-thumbs-up"></i> Нравится';
+                    btn.style.color = '';
+                }
+            }
+        } catch(e) {}
+        finally { btn.style.opacity = '1'; }
+    }
+
+    async function openCommentsInProfile(postId) {
+        currentPostId = postId;
+        const modal = document.getElementById('commentsModal');
+        const commentsList = document.getElementById('commentsList');
+        commentsList.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Загрузка...</div>';
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        try {
+            const response = await fetch('/get_comments/' + postId);
+            const data = await response.json();
+            if (data.success && data.comments) {
+                if (data.comments.length === 0) {
+                    commentsList.innerHTML = '<div style="text-align: center; padding: 20px;">Нет комментариев</div>';
+                } else {
+                    commentsList.innerHTML = data.comments.map(c => `
+                        <div class="comment-item">
+                            <img src="${c.author_avatar}" class="comment-avatar" onclick="location.href='/user/${c.user_id}'">
+                            <div class="comment-content">
+                                <div class="comment-author" onclick="location.href='/user/${c.user_id}'">${escapeHtml(c.author_name)}</div>
+                                <div class="comment-text">${escapeHtml(c.content)}</div>
+                                <div class="comment-time">${formatTime(c.created_at)}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+        } catch(e) { commentsList.innerHTML = '<div style="text-align: center; padding: 20px;">Ошибка</div>'; }
+    }
+
+    function closeCommentsModal() {
+        document.getElementById('commentsModal').classList.remove('active');
+        document.body.style.overflow = '';
+        document.getElementById('commentInput').value = '';
+    }
+
+    async function submitCommentInProfile() {
+        if (!currentPostId) return;
+        const content = document.getElementById('commentInput').value.trim();
+        if (!content) return;
+        try {
+            const response = await fetch('/add_comment/' + currentPostId, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: content })
+            });
+            const data = await response.json();
+            if (data.success) {
+                const countSpan = document.getElementById('profile-comments-count-' + currentPostId);
+                countSpan.innerText = parseInt(countSpan.innerText) + 1;
+                document.getElementById('commentInput').value = '';
+                await openCommentsInProfile(currentPostId);
+                showNotification('Комментарий добавлен!');
+            }
+        } catch(e) {}
+    }
+
+    async function sendFriendRequest(userId) {
+        try {
+            const response = await fetch('/send_friend_request/' + userId, { method: 'POST' });
+            const data = await response.json();
+            if (data.success) {
+                showNotification('Заявка отправлена!');
+                setTimeout(() => location.reload(), 1000);
+            } else { showNotification(data.message); }
+        } catch(e) { showNotification('Ошибка'); }
+    }
+
+    async function acceptFriendRequestFromProfile(userId) {
+        try {
+            const response = await fetch('/accept_friend_request/' + userId, { method: 'POST' });
+            const data = await response.json();
+            if (data.success) {
+                showNotification('Пользователь добавлен в друзья!');
+                setTimeout(() => location.reload(), 1000);
+            } else { showNotification(data.message); }
+        } catch(e) { showNotification('Ошибка'); }
+    }
+
+    async function declineFriendRequestFromProfile(userId) {
+        try {
+            const response = await fetch('/decline_friend_request/' + userId, { method: 'POST' });
+            const data = await response.json();
+            if (data.success) {
+                showNotification('Заявка отклонена');
+                setTimeout(() => location.reload(), 1000);
+            } else { showNotification(data.message); }
+        } catch(e) { showNotification('Ошибка'); }
+    }
+
+    async function removeFriendFromProfile(userId) {
+        if (!confirm('Удалить из друзей?')) return;
+        try {
+            const response = await fetch('/remove_friend/' + userId, { method: 'POST' });
+            const data = await response.json();
+            if (data.success) {
+                showNotification('Пользователь удален из друзей');
+                setTimeout(() => location.reload(), 1000);
+            } else { showNotification(data.message); }
+        } catch(e) { showNotification('Ошибка'); }
+    }
+
+    function startChat(userId) {
+        window.location.href = '/chat?user=' + userId;
+    }
+
+    function showAllMutualFriends() {
+        showNotification('Все общие друзья отображаются в списке');
+    }
+
+    function formatTime(timestamp) {
+        if (!timestamp) return 'только что';
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diff = Math.floor((now - date) / 1000);
+        if (diff < 60) return 'только что';
+        if (diff < 3600) return Math.floor(diff / 60) + ' мин назад';
+        if (diff < 86400) return Math.floor(diff / 3600) + ' ч назад';
+        return date.toLocaleDateString();
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function showNotification(message) {
+        const n = document.createElement('div');
+        n.textContent = message;
+        n.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--gradient);color:#fff;padding:12px 24px;border-radius:30px;z-index:9999;animation:fadeInUp 0.3s;white-space:nowrap;';
+        document.body.appendChild(n);
+        setTimeout(() => n.remove(), 3000);
+    }
+
+    document.getElementById('commentsModal')?.addEventListener('click', e => { if (e.target === e.currentTarget) closeCommentsModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCommentsModal(); });
+</script>
+{% endblock %}

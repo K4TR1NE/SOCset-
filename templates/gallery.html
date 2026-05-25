@@ -1,0 +1,295 @@
+{% extends "layout.html" %}
+
+{% block title %}VEGA - Галерея{% endblock %}
+
+{% block extra_css %}
+<style>
+    .tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 10px;
+    }
+
+    .tab-btn {
+        padding: 10px 22px;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 15px;
+        border-radius: 10px;
+        transition: all 0.3s;
+    }
+
+    .tab-btn:hover {
+        background: rgba(157,123,232,0.1);
+        color: var(--secondary);
+    }
+
+    .tab-btn.active {
+        background: var(--gradient);
+        color: white;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 15px;
+    }
+
+    .gallery-item {
+        background: var(--card-bg);
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .gallery-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(157,123,232,0.3);
+        border-color: var(--secondary);
+    }
+
+    .gallery-item .media-preview {
+        width: 100%;
+        height: 200px;
+        background: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .gallery-item img, .gallery-item video {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .gallery-item-info {
+        padding: 12px;
+    }
+
+    .gallery-item-info p {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+    }
+
+    .gallery-item-info .date {
+        font-size: 10px;
+        opacity: 0.6;
+    }
+
+    /* Модалка */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.95);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal.active {
+        display: flex;
+    }
+
+    .modal-content {
+        max-width: 90%;
+        max-height: 90%;
+    }
+
+    .modal img, .modal video {
+        max-width: 100%;
+        max-height: 90vh;
+        border-radius: 10px;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .modal-close {
+        position: absolute;
+        top: 20px;
+        right: 40px;
+        color: white;
+        font-size: 40px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+        transform: scale(1.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Галерея</h1>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('photos')">📷 Фото ({{ photos|length }})</button>
+    <button class="tab-btn" onclick="switchTab('videos')">🎬 Видео ({{ videos|length }})</button>
+    <button class="tab-btn" onclick="switchTab('all')">🖼️ Все ({{ all_items|length }})</button>
+</div>
+
+<div class="tab-content active" id="photos-tab">
+    {% if photos %}
+    <div class="gallery-grid">
+        {% for item in photos %}
+        <div class="gallery-item" onclick="openMedia('{{ item.file_path }}', 'image')">
+            <div class="media-preview">
+                <img src="{{ item.file_path }}" alt="Фото" loading="lazy">
+            </div>
+            <div class="gallery-item-info">
+                <p>{{ item.caption or 'Без описания' }}</p>
+                <p class="date">{{ item.created_at[:10] if item.created_at else '' }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-image"></i>
+        <p>Нет фото</p>
+        <p style="font-size: 13px; margin-top: 10px;">Опубликуйте пост с фото, и они появятся здесь</p>
+    </div>
+    {% endif %}
+</div>
+
+<div class="tab-content" id="videos-tab">
+    {% if videos %}
+    <div class="gallery-grid">
+        {% for item in videos %}
+        <div class="gallery-item" onclick="openMedia('{{ item.file_path }}', 'video')">
+            <div class="media-preview">
+                <video preload="metadata">
+                    <source src="{{ item.file_path }}">
+                </video>
+            </div>
+            <div class="gallery-item-info">
+                <p>{{ item.caption or 'Без описания' }}</p>
+                <p class="date">{{ item.created_at[:10] if item.created_at else '' }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-video"></i>
+        <p>Нет видео</p>
+        <p style="font-size: 13px; margin-top: 10px;">Опубликуйте пост с видео, и они появятся здесь</p>
+    </div>
+    {% endif %}
+</div>
+
+<div class="tab-content" id="all-tab">
+    {% if all_items %}
+    <div class="gallery-grid">
+        {% for item in all_items %}
+        <div class="gallery-item" onclick="openMedia('{{ item.file_path }}', '{{ item.file_type }}')">
+            <div class="media-preview">
+                {% if item.file_type == 'image' %}
+                <img src="{{ item.file_path }}" alt="Фото" loading="lazy">
+                {% else %}
+                <video preload="metadata">
+                    <source src="{{ item.file_path }}">
+                </video>
+                {% endif %}
+            </div>
+            <div class="gallery-item-info">
+                <p>{{ item.caption or 'Без описания' }}</p>
+                <p class="date">{{ item.created_at[:10] if item.created_at else '' }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-images"></i>
+        <p>Галерея пуста</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Модалка просмотра -->
+<div class="modal" id="mediaModal" onclick="closeMedia(event)">
+    <span class="modal-close">&times;</span>
+    <div class="modal-content">
+        <img id="modalImage" src="" style="display:none;">
+        <video id="modalVideo" controls style="display:none;">
+            <source id="modalVideoSource" src="">
+        </video>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(tab + '-tab').classList.add('active');
+    }
+
+    function openMedia(path, type) {
+        const modal = document.getElementById('mediaModal');
+        const img = document.getElementById('modalImage');
+        const video = document.getElementById('modalVideo');
+        const videoSource = document.getElementById('modalVideoSource');
+
+        img.style.display = 'none';
+        video.style.display = 'none';
+
+        if (type === 'image') {
+            img.src = path;
+            img.style.display = 'block';
+        } else {
+            videoSource.src = path;
+            video.load();
+            video.style.display = 'block';
+        }
+
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeMedia(event) {
+        if (event.target === document.getElementById('mediaModal') || event.target.classList.contains('modal-close')) {
+            const modal = document.getElementById('mediaModal');
+            const video = document.getElementById('modalVideo');
+            modal.classList.remove('active');
+            video.pause();
+            document.body.style.overflow = '';
+        }
+    }
+
+    // Закрытие по ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('mediaModal');
+            if (modal.classList.contains('active')) {
+                modal.classList.remove('active');
+                document.getElementById('modalVideo').pause();
+                document.body.style.overflow = '';
+            }
+        }
+    });
+</script>
+{% endblock %}
