@@ -1,4 +1,3 @@
-```markdown
 <div align="center">
   
 # ✦ V E G Λ ✦
