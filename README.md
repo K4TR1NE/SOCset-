@@ -45,7 +45,6 @@
 |:--------|:---------|
 | 🌙 **Гороскопы** | Персональные гороскопы по знаку зодиака |
 | 📅 **Календарь** | Праздники + личные события, динамическая Пасха/Масленица |
-| 🏘️ **Сообщества** | Группы по интересам с фильтрацией по категориям |
 
 ### 🎨 Оформление и удобство
 | Функция | Описание |
@@ -91,7 +90,7 @@ python app.py
 ### Откройте в браузере
 
 ```
-http://127.0.0.1:5000
+http://192.168.1.17:5000
 ```
 
 > 💡 **Примечание**: При первом запуске автоматически создадутся все таблицы базы данных и предустановленные праздники.
@@ -154,26 +153,6 @@ events          # События (название, дата, тип: holiday/pe
 user_settings   # Настройки (тема, размер шрифта, приватность, уведомления)
 ```
 
-### ER-диаграмма
-
-```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   users     │────<│   posts     │────<│   likes     │
-└─────────────┘     └─────────────┘     └─────────────┘
-       │                   │                   │
-       │                   │                   │
-       ▼                   ▼                   ▼
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│  friends    │     │  comments   │     │   gallery   │
-└─────────────┘     └─────────────┘     └─────────────┘
-       │
-       ▼
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│  messages   │     │   events    │     │user_settings│
-└─────────────┘     └─────────────┘     └─────────────┘
-```
-
----
 
 ## 🛠️ Технологический стек
 
@@ -269,36 +248,11 @@ user_settings   # Настройки (тема, размер шрифта, пр�
 
 ---
 
-## 🖼️ Скриншоты
-
-<table align="center">
-  <tr>
-    <td align="center"><b>Главная лента</b></td>
-    <td align="center"><b>Профиль пользователя</b></td>
-  </tr>
-  <tr>
-    <td><img src="https://via.placeholder.com/400x300?text=Feed" alt="Лента"></td>
-    <td><img src="https://via.placeholder.com/400x300?text=Profile" alt="Профиль"></td>
-  </tr>
-  <tr>
-    <td align="center"><b>Чат</b></td>
-    <td align="center"><b>Галерея</b></td>
-  </tr>
-  <tr>
-    <td><img src="https://via.placeholder.com/400x300?text=Chat" alt="Чат"></td>
-    <td><img src="https://via.placeholder.com/400x300?text=Gallery" alt="Галерея"></td>
-  </tr>
-</table>
-
----
-
 ## 👥 Команда разработки
 
 <div align="center">
   
 | | | |
-|:---:|:---:|:---:|
-| <img src="https://via.placeholder.com/100" width="100" style="border-radius: 50%"> | <img src="https://via.placeholder.com/100" width="100" style="border-radius: 50%"> | <img src="https://via.placeholder.com/100" width="100" style="border-radius: 50%"> |
 | **Возисов Аретмий** | **Овчинников Максим** | **Трефилов Семён** |
 | *Руководитель проекта* | *Старший фронтенд* | *Бэкенд-разработчик* |
 | Архитектура, CI/CD | Интерфейсы, UX | API, базы данных |
@@ -320,41 +274,6 @@ user_settings   # Настройки (тема, размер шрифта, пр�
 
 ---
 
-## 📄 Лицензия
-
-Проект распространяется под лицензией **MIT**. Подробнее см. в файле [LICENSE](LICENSE).
-
-```
-MIT License
-
-Copyright (c) 2026 VEGA Social Network
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions...
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-```
-
----
-
-## 🙏 Благодарности
-
-- **[Unsplash](https://unsplash.com)** — изображения для демонстрации
-- **[Font Awesome](https://fontawesome.com)** — иконки
-- **[TinyMCE](https://www.tiny.cloud/)** — текстовый редактор
-- **[RandomUser.me](https://randomuser.me)** — тестовые аватары
-- **[Flask](https://flask.palletsprojects.com/)** — веб-фреймворк
-
----
 
 ## ⭐ Поддержка проекта
 
@@ -370,7 +289,7 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
   
   <br><br>
   
-  <sub>© 2026 VEGA Social Network. Все права защищены.</sub>
+  <sub>© 2026 VEGA Social Network. </sub>
   
 </div>
 ```
