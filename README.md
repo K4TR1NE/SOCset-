@@ -1,9 +1,22 @@
-
+```markdown
 <div align="center">
   
 # ✦ V E G Λ ✦
 
 ### *Астрологическая социальная сеть нового поколения*
+
+[![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-2.0+-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://sqlite.org/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/)
+[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://html.spec.whatwg.org/)
+[![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://www.w3.org/Style/CSS/)
+
+![Status](https://img.shields.io/badge/status-active-brightgreen?style=for-the-badge)
+![License](https://img.shields.io/badge/license-MIT-yellow?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge)
+
+</div>
 
 ---
 
@@ -77,7 +90,7 @@ python app.py
 ### Откройте в браузере
 
 ```
-http://192.168.1.17:5000
+http://127.0.0.1:5000
 ```
 
 > 💡 **Примечание**: При первом запуске автоматически создадутся все таблицы базы данных и предустановленные праздники.
@@ -123,23 +136,6 @@ vega-social/
 ```
 
 ---
-
-## 🗄️ База данных
-
-### Схема базы данных
-
-```sql
-users           # Пользователи (телефон, пароль, имя, аватар, знак зодиака, статус, is_guest)
-posts           # Посты (текст, автор, лайки, комментарии, репосты, привязка к стене)
-friends         # Дружеские связи (user_id, friend_id, status: pending/accepted)
-messages        # Личные сообщения (от кого, кому, текст, прочитано, is_repost, repost_post_id)
-likes           # Лайки на постах (user_id, post_id)
-comments        # Комментарии (user_id, post_id, текст)
-gallery         # Медиафайлы (user_id, путь, тип, описание, post_id)
-events          # События (название, дата, тип: holiday/personal, цвет, иконка)
-user_settings   # Настройки (тема, размер шрифта, приватность, уведомления)
-```
-
 
 ## 🛠️ Технологический стек
 
@@ -233,13 +229,14 @@ user_settings   # Настройки (тема, размер шрифта, пр�
 | `POST` | `/change_password` | Смена пароля |
 | `GET` | `/search` | Поиск пользователей |
 
+
 ---
 
 ## 👥 Команда разработки
 
 <div align="center">
   
-| | | |
+
 | **Возисов Аретмий** | **Овчинников Максим** | **Трефилов Семён** |
 | *Руководитель проекта* | *Старший фронтенд* | *Бэкенд-разработчик* |
 | Архитектура, CI/CD | Интерфейсы, UX | API, базы данных |
@@ -259,8 +256,8 @@ user_settings   # Настройки (тема, размер шрифта, пр�
 
 </div>
 
----
 
+---
 
 ## ⭐ Поддержка проекта
 
@@ -276,7 +273,7 @@ user_settings   # Настройки (тема, размер шрифта, пр�
   
   <br><br>
   
-  <sub>© 2026 VEGA Social Network. </sub>
+  <sub>© 2026 VEGA Social Network.</sub>
   
 </div>
 ```
