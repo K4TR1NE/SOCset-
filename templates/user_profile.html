@@ -1,0 +1,1600 @@
+{% extends "layout.html" %}
+
+{% block title %}VEGA - Профиль {{ profile_user.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        margin-bottom: 20px;
+    }
+
+    .profile-name {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .friend-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: normal;
+    }
+
+    .friend-status-badge.friends {
+        background: rgba(138,158,255,0.2);
+        color: var(--success);
+    }
+
+    .friend-status-badge.pending {
+        background: rgba(255,184,107,0.2);
+        color: var(--warning);
+    }
+
+    .friend-status-badge.none {
+        background: rgba(255,255,255,0.1);
+        color: var(--text-muted);
+    }
+
+    .zodiac-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(157,123,232,0.2);
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        color: var(--secondary);
+        margin-bottom: 12px;
+    }
+
+    .profile-stats {
+        display: flex;
+        gap: 25px;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--secondary);
+    }
+
+    .stat-label {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .profile-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
+
+    .btn-message {
+        background: var(--gradient);
+        color: white;
+    }
+
+    .tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 10px;
+    }
+
+    .tab-btn {
+        padding: 10px 22px;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 15px;
+        border-radius: 10px;
+        transition: all 0.3s;
+        font-weight: 500;
+    }
+
+    .tab-btn:hover {
+        background: rgba(157,123,232,0.1);
+        color: var(--secondary);
+    }
+
+    .tab-btn.active {
+        background: var(--gradient);
+        color: white;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    /* Форма для записи на стене */
+    .create-wall-post {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 20px;
+    }
+
+    .wall-post-textarea {
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        color: var(--text-light);
+        font-size: 14px;
+        resize: vertical;
+        font-family: inherit;
+        outline: none;
+    }
+
+    .wall-preview-item {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 2px solid var(--secondary);
+        background: #000;
+    }
+
+    .wall-preview-item img, .wall-preview-item video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Стили для постов */
+    .post {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid var(--border-color);
+        transition: all 0.2s;
+        margin-bottom: 20px;
+    }
+
+    .post:hover {
+        border-color: var(--secondary);
+    }
+
+    .post-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .post-author {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+    }
+
+    .post-author-info h4 {
+        font-weight: 600;
+        font-size: 15px;
+        margin-bottom: 2px;
+    }
+
+    .post-author-info p {
+        color: var(--text-muted);
+        font-size: 12px;
+    }
+
+    .post-content {
+        margin-bottom: 15px;
+        line-height: 1.6;
+        font-size: 15px;
+    }
+
+    .post-content img {
+        max-width: 100%;
+        border-radius: 8px;
+    }
+
+    .post-media {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .post-media img, .post-media video {
+        width: 100%;
+        max-height: 500px;
+        object-fit: contain;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        background: #000;
+        cursor: pointer;
+    }
+
+    .post-actions-buttons {
+        display: flex;
+        justify-content: space-around;
+        padding-top: 10px;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .post-action-button {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 30px;
+        cursor: pointer;
+        color: var(--text-muted);
+        border: none;
+        background: transparent;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+
+    .action-count {
+        font-size: 13px;
+        margin-left: 3px;
+    }
+
+    .post-action-button:hover {
+        background: rgba(157,123,232,0.15);
+        color: var(--secondary);
+    }
+
+    .post-action-button.liked {
+        color: var(--success);
+    }
+
+    /* Блок комментариев под постом */
+    .post-comments {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .comments-list-preview {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 10px;
+    }
+
+    .comment-preview-item {
+        display: flex;
+        gap: 10px;
+        padding: 8px 0;
+        cursor: pointer;
+    }
+
+    .comment-preview-item:hover {
+        background: rgba(157,123,232,0.05);
+        border-radius: 8px;
+    }
+
+    .comment-preview-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .comment-preview-content {
+        flex: 1;
+    }
+
+    .comment-preview-author {
+        font-weight: 600;
+        font-size: 12px;
+        color: var(--secondary);
+        margin-bottom: 2px;
+    }
+
+    .comment-preview-text {
+        font-size: 13px;
+        line-height: 1.4;
+        color: var(--text-light);
+    }
+
+    .comment-preview-time {
+        font-size: 10px;
+        color: var(--text-muted);
+        margin-top: 2px;
+    }
+
+    .show-all-comments-btn {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        font-size: 12px;
+        cursor: pointer;
+        padding: 5px 0;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .show-all-comments-btn:hover {
+        color: var(--secondary);
+    }
+
+    /* Модалка репоста */
+    .repost-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.85);
+        z-index: 1001;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .repost-modal.active {
+        display: flex;
+    }
+
+    .repost-modal-content {
+        background: var(--card-bg);
+        border-radius: 20px;
+        width: 90%;
+        max-width: 450px;
+        padding: 25px;
+        border: 1px solid var(--border-color);
+    }
+
+    .repost-modal-content h3 {
+        margin-bottom: 20px;
+    }
+
+    .repost-modal-content textarea {
+        width: 100%;
+        padding: 12px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        color: var(--text-light);
+        font-size: 14px;
+        resize: vertical;
+        margin-bottom: 20px;
+    }
+
+    .repost-options {
+        margin-bottom: 20px;
+    }
+
+    .repost-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .repost-option:hover {
+        background: rgba(157,123,232,0.1);
+    }
+
+    .repost-option.selected {
+        background: rgba(157,123,232,0.2);
+        border: 1px solid var(--secondary);
+    }
+
+    .repost-option input {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    .repost-option label {
+        flex: 1;
+        cursor: pointer;
+    }
+
+    .friend-search {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .friend-search input {
+        flex: 1;
+        padding: 10px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        color: var(--text-light);
+    }
+
+    .friend-results {
+        margin-top: 10px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .friend-result-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    .comments-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.85);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .comments-modal.active {
+        display: flex;
+    }
+
+    .comments-modal-content {
+        background: var(--card-bg);
+        border-radius: 20px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+
+    .comments-modal-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .comments-modal-header h3 {
+        font-size: 18px;
+        margin: 0;
+    }
+
+    .comments-modal-close {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        font-size: 24px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .comments-modal-close:hover {
+        color: var(--danger);
+    }
+
+    .comments-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .comment-item {
+        display: flex;
+        gap: 12px;
+        padding: 10px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.03);
+    }
+
+    .comment-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+        cursor: pointer;
+    }
+
+    .comment-content {
+        flex: 1;
+    }
+
+    .comment-author {
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 4px;
+        cursor: pointer;
+    }
+
+    .comment-text {
+        font-size: 13px;
+        line-height: 1.4;
+        color: var(--text-light);
+    }
+
+    .comment-time {
+        font-size: 10px;
+        color: var(--text-muted);
+        margin-top: 4px;
+    }
+
+    .comments-input-area {
+        padding: 15px;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        gap: 10px;
+    }
+
+    .comments-input-area input {
+        flex: 1;
+        padding: 10px 15px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border-color);
+        border-radius: 25px;
+        color: var(--text-light);
+        font-size: 13px;
+        outline: none;
+    }
+
+    .comments-input-area input:focus {
+        border-color: var(--secondary);
+    }
+
+    .comments-input-area button {
+        background: var(--gradient);
+        border: none;
+        color: white;
+        padding: 8px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    .horoscope-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 18px;
+        margin-bottom: 12px;
+    }
+
+    .horoscope-card h4 {
+        color: var(--secondary);
+        margin-bottom: 8px;
+        font-size: 15px;
+    }
+
+    .horoscope-card p {
+        color: var(--text-muted);
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .mutual-friends {
+        margin-top: 20px;
+        padding: 15px;
+        background: rgba(255,255,255,0.03);
+        border-radius: 14px;
+        border: 1px solid var(--border-color);
+    }
+
+    .mutual-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: var(--text-muted);
+    }
+
+    .mutual-list {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .mutual-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .mutual-item:hover {
+        transform: translateY(-2px);
+    }
+
+    .mutual-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--secondary);
+    }
+
+    .mutual-name {
+        font-size: 11px;
+        text-align: center;
+        max-width: 60px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .preview-remove {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        background: var(--danger);
+        color: white;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 12px;
+        z-index: 10;
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        .profile-stats {
+            justify-content: center;
+        }
+        .profile-name {
+            justify-content: center;
+        }
+        .profile-actions {
+            justify-content: center;
+        }
+        .post-actions-buttons {
+            flex-wrap: wrap;
+        }
+        .create-wall-post {
+            padding: 15px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="profile-header">
+        <img src="{{ profile_user.avatar or 'https://randomuser.me/api/portraits/men/32.jpg' }}" alt="Аватар" class="avatar-lg" style="width: 120px; height: 120px; border-radius: 50%;">
+        <div>
+            <div class="profile-name">
+                {{ profile_user.name }}
+                {% if friend_status == 'friends' %}
+                <span class="friend-status-badge friends">
+                    <i class="fas fa-user-check"></i> Друг
+                </span>
+                {% elif friend_status == 'sent' %}
+                <span class="friend-status-badge pending">
+                    <i class="fas fa-clock"></i> Заявка отправлена
+                </span>
+                {% elif friend_status == 'received' %}
+                <span class="friend-status-badge pending">
+                    <i class="fas fa-user-plus"></i> Заявка от вас
+                </span>
+                {% endif %}
+            </div>
+            <div class="zodiac-badge">
+                {{ horoscope.emoji }} {{ profile_user.zodiac or 'Лев' }}
+            </div>
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <div class="stat-value">{{ stats.friends_count if stats else 0 }}</div>
+                    <div class="stat-label">друзей</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ stats.subscribers if stats else 0 }}</div>
+                    <div class="stat-label">подписчиков</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ stats.posts_count if stats else 0 }}</div>
+                    <div class="stat-label">постов</div>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                {% if friend_status == 'none' %}
+                <button class="btn btn-primary" onclick="sendFriendRequest({{ profile_user.id }})">
+                    <i class="fas fa-user-plus"></i> Добавить в друзья
+                </button>
+                {% elif friend_status == 'sent' %}
+                <button class="btn btn-secondary" disabled>
+                    <i class="fas fa-clock"></i> Заявка отправлена
+                </button>
+                {% elif friend_status == 'received' %}
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-primary" onclick="acceptFriendRequestFromProfile({{ profile_user.id }})">
+                        <i class="fas fa-check"></i> Принять
+                    </button>
+                    <button class="btn btn-secondary" onclick="declineFriendRequestFromProfile({{ profile_user.id }})">
+                        <i class="fas fa-times"></i> Отклонить
+                    </button>
+                </div>
+                {% elif friend_status == 'friends' %}
+                <button class="btn btn-secondary" onclick="removeFriendFromProfile({{ profile_user.id }})">
+                    <i class="fas fa-user-minus"></i> Удалить из друзей
+                </button>
+                {% endif %}
+
+                <button class="btn btn-message" onclick="startChat({{ profile_user.id }})">
+                    <i class="fas fa-comment"></i> Написать сообщение
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {% if mutual_friends and mutual_friends|length > 0 %}
+    <div class="mutual-friends">
+        <div class="mutual-title">
+            <i class="fas fa-users"></i> Общие друзья ({{ mutual_friends|length }})
+        </div>
+        <div class="mutual-list">
+            {% for friend in mutual_friends[:6] %}
+            <div class="mutual-item" onclick="location.href='/user/{{ friend.id }}'">
+                <img src="{{ friend.avatar }}" class="mutual-avatar">
+                <span class="mutual-name">{{ friend.name[:10] }}{% if friend.name|length > 10 %}..{% endif %}</span>
+            </div>
+            {% endfor %}
+            {% if mutual_friends|length > 6 %}
+            <div class="mutual-item" onclick="showAllMutualFriends()">
+                <div class="mutual-avatar" style="display: flex; align-items: center; justify-content: center; background: var(--gradient); font-size: 18px;">
+                    +{{ mutual_friends|length - 6 }}
+                </div>
+                <span class="mutual-name">Ещё</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Форма для записи на стене (только для не-гостей и не для своего профиля) -->
+{% if not session.get('is_guest') and profile_user.id != current_user.id %}
+<div class="create-wall-post">
+    <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+        <img src="{{ current_user.avatar }}" class="avatar">
+        <div style="flex: 1;">
+            <textarea id="wallPostContent" class="wall-post-textarea" rows="3" placeholder="Написать на стене {{ profile_user.name }}..."></textarea>
+            <div id="wallPreviewContainer" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;"></div>
+        </div>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <label class="btn btn-secondary" style="cursor:pointer;">
+                <i class="fas fa-image"></i> Фото/Видео
+                <input type="file" id="wallMediaInput" accept="image/*,video/*" multiple style="display:none;">
+            </label>
+        </div>
+        <button class="btn btn-primary" id="wallPostBtn" onclick="postOnWall({{ profile_user.id }})">
+            <i class="fas fa-paper-plane"></i> Опубликовать
+        </button>
+    </div>
+</div>
+{% endif %}
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('posts')"><i class="fas fa-newspaper"></i> Посты ({{ posts|length }})</button>
+    <button class="tab-btn" onclick="switchTab('info')"><i class="fas fa-info-circle"></i> Информация</button>
+</div>
+
+<!-- Посты -->
+<div class="tab-content active" id="posts-tab">
+    {% if posts %}
+        {% for post in posts %}
+        <div class="post" data-post-id="{{ post.id }}">
+            <div class="post-header">
+                <div class="post-author" onclick="location.href='/user/{{ post.author_id }}'">
+                    <img src="{% if post.author_avatar %}{{ post.author_avatar }}{% else %}https://randomuser.me/api/portraits/men/32.jpg{% endif %}" class="avatar">
+                    <div class="post-author-info">
+                        <h4>
+                            {{ post.author_name }}
+                            {% if post.author_id != profile_user.id %}
+                            <span style="font-size: 12px; color: var(--text-muted);">
+                                <i class="fas fa-share"></i> написал(а) на стене {{ profile_user.name }}
+                            </span>
+                            {% endif %}
+                        </h4>
+                        <p>{{ post.created_at[:10] if post.created_at else '' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            {% if post.content %}
+            <div class="post-content">
+                {{ post.content|safe }}
+            </div>
+            {% endif %}
+
+            {% set post_files = [] %}
+            {% for item in all_items if item.post_id == post.id %}
+                {% set _ = post_files.append(item) %}
+            {% endfor %}
+
+            {% if post_files %}
+            <div class="post-media">
+                {% for file in post_files %}
+                    {% if file.file_type == 'video' %}
+                    <video controls preload="metadata">
+                        <source src="{{ file.file_path }}" type="video/mp4">
+                        Ваш браузер не поддерживает видео
+                    </video>
+                    {% else %}
+                    <img src="{{ file.file_path }}" alt="Фото" onclick="window.open('{{ file.file_path }}','_blank')">
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="post-actions-buttons">
+                <button class="post-action-button" id="profile-like-btn-{{ post.id }}" onclick="likePostInProfile({{ post.id }})">
+                    <i class="far fa-thumbs-up"></i>
+                    <span>Нравится</span>
+                    <span class="action-count" id="profile-likes-{{ post.id }}">{{ post.likes or 0 }}</span>
+                </button>
+                <button class="post-action-button" onclick="openCommentsInProfile({{ post.id }})">
+                    <i class="far fa-comment"></i>
+                    <span>Комментировать</span>
+                    <span class="action-count" id="profile-comments-count-{{ post.id }}">{{ post.comments_count or 0 }}</span>
+                </button>
+                <button class="post-action-button" onclick="openRepostModal({{ post.id }})">
+                    <i class="fas fa-share-alt"></i>
+                    <span>Репост</span>
+                </button>
+            </div>
+
+            <!-- Блок комментариев под постом -->
+            <div class="post-comments" id="post-comments-{{ post.id }}" style="display: none;">
+                <div class="comments-list-preview" id="comments-preview-{{ post.id }}">
+                </div>
+                <button class="show-all-comments-btn" onclick="openCommentsInProfile({{ post.id }})">
+                    <i class="fas fa-comment-dots"></i> Показать все комментарии
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-newspaper"></i>
+            <p>У пользователя пока нет постов</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Информация -->
+<div class="tab-content" id="info-tab">
+    <div class="card">
+        <div style="margin-bottom: 15px;">
+            <i class="fas fa-calendar-alt" style="color: var(--secondary); width: 30px;"></i>
+            <strong>Дата рождения:</strong>
+            {% if profile_user.birthday %}
+                {{ profile_user.birthday }}
+            {% else %}
+                <span class="text-muted">Не указано</span>
+            {% endif %}
+        </div>
+        <div style="margin-bottom: 15px;">
+            <i class="fas fa-city" style="color: var(--secondary); width: 30px;"></i>
+            <strong>Город:</strong>
+            {% if profile_user.city %}
+                {{ profile_user.city }}
+            {% else %}
+                <span class="text-muted">Не указан</span>
+            {% endif %}
+        </div>
+        <div style="margin-bottom: 15px;">
+            <i class="fas fa-star" style="color: var(--secondary); width: 30px;"></i>
+            <strong>Знак зодиака:</strong>
+            {{ profile_user.zodiac or 'Лев' }}
+        </div>
+        <div>
+            <i class="fas fa-info-circle" style="color: var(--secondary); width: 30px;"></i>
+            <strong>О себе:</strong><br>
+            {% if profile_user.bio %}
+                {{ profile_user.bio }}
+            {% else %}
+                <span class="text-muted">Пользователь ничего не рассказал о себе</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="zodiac-badge" style="margin-bottom: 18px; font-size: 16px;">
+            {{ horoscope.emoji }} Гороскоп для {{ profile_user.name }}
+        </div>
+        <div class="horoscope-card">
+            <h4><i class="fas fa-sun"></i> На сегодня</h4>
+            <p>{{ horoscope.today }}</p>
+        </div>
+        <div class="horoscope-card">
+            <h4><i class="fas fa-heart"></i> Любовь</h4>
+            <p>{{ horoscope.love }}</p>
+        </div>
+        <div class="horoscope-card">
+            <h4><i class="fas fa-briefcase"></i> Карьера</h4>
+            <p>{{ horoscope.career }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка комментариев -->
+<div class="comments-modal" id="commentsModal">
+    <div class="comments-modal-content">
+        <div class="comments-modal-header">
+            <h3><i class="fas fa-comments"></i> Комментарии</h3>
+            <button class="comments-modal-close" onclick="closeCommentsModal()">&times;</button>
+        </div>
+        <div class="comments-list" id="commentsList">
+            <div style="text-align: center; padding: 20px;">
+                <i class="fas fa-spinner fa-spin"></i> Загрузка...
+            </div>
+        </div>
+        <div class="comments-input-area">
+            <input type="text" id="commentInput" placeholder="Написать комментарий..." onkeypress="if(event.key==='Enter') submitCommentInProfile()">
+            <button onclick="submitCommentInProfile()">Отправить</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка репоста -->
+<div class="repost-modal" id="repostModal">
+    <div class="repost-modal-content">
+        <h3><i class="fas fa-share-alt"></i> Сделать репост</h3>
+        <textarea id="repostComment" rows="3" placeholder="Ваш комментарий (необязательно)..."></textarea>
+
+        <div class="repost-options">
+            <div class="repost-option selected" onclick="selectRepostOption('wall')">
+                <input type="radio" name="repost_target" value="wall" checked>
+                <label>На свою стену</label>
+            </div>
+            <div class="repost-option" onclick="selectRepostOption('friend')">
+                <input type="radio" name="repost_target" value="friend">
+                <label>Другу на стену</label>
+            </div>
+        </div>
+
+        <div id="friendSelectArea" style="display: none;">
+            <div class="friend-search">
+                <input type="text" id="friendSearch" placeholder="Поиск друга..." oninput="searchFriends()">
+            </div>
+            <div id="friendResults" class="friend-results"></div>
+        </div>
+
+        <div class="edit-actions" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+            <button class="btn btn-secondary" onclick="closeRepostModal()">Отмена</button>
+            <button class="btn btn-primary" onclick="confirmRepost()">Репостнуть</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentPostId = null;
+    let likedPosts = new Set();
+    let currentRepostPostId = null;
+    let selectedFriendId = null;
+    let friendsList = [];
+    let wallSelectedFiles = [];
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(tab + '-tab').classList.add('active');
+    }
+
+    async function loadLikedStateInProfile() {
+        try {
+            const response = await fetch('/get_user_likes');
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.liked_posts) {
+                    likedPosts = new Set(data.liked_posts);
+                    likedPosts.forEach(postId => {
+                        updateLikeButtonInProfileUI(postId, true);
+                    });
+                }
+            }
+        } catch(e) {
+            const saved = localStorage.getItem('vega_liked_posts');
+            if (saved) {
+                likedPosts = new Set(JSON.parse(saved));
+                likedPosts.forEach(postId => {
+                    updateLikeButtonInProfileUI(postId, true);
+                });
+            }
+        }
+    }
+
+    function updateLikeButtonInProfileUI(postId, isLiked) {
+        const btn = document.getElementById('profile-like-btn-' + postId);
+        if (!btn) return;
+
+        if (isLiked) {
+            btn.classList.add('liked');
+            btn.innerHTML = '<i class="fas fa-thumbs-up"></i><span>Нравится</span><span class="action-count" id="profile-likes-' + postId + '">' + (document.getElementById('profile-likes-' + postId)?.innerText || 0) + '</span>';
+        } else {
+            btn.classList.remove('liked');
+            btn.innerHTML = '<i class="far fa-thumbs-up"></i><span>Нравится</span><span class="action-count" id="profile-likes-' + postId + '">' + (document.getElementById('profile-likes-' + postId)?.innerText || 0) + '</span>';
+        }
+    }
+
+    function updateLikeCountInProfile(postId, newCount) {
+        const likesSpan = document.getElementById('profile-likes-' + postId);
+        if (likesSpan) {
+            likesSpan.innerText = newCount;
+        }
+        const btn = document.getElementById('profile-like-btn-' + postId);
+        if (btn) {
+            const actionCount = btn.querySelector('.action-count');
+            if (actionCount) actionCount.innerText = newCount;
+        }
+    }
+
+    async function likePostInProfile(postId) {
+        const btn = document.getElementById('profile-like-btn-' + postId);
+        const wasLiked = likedPosts.has(postId);
+
+        btn.style.opacity = '0.6';
+        btn.style.cursor = 'wait';
+
+        try {
+            const response = await fetch('/like_post/' + postId, { method: 'POST' });
+            const data = await response.json();
+
+            if (data.success) {
+                updateLikeCountInProfile(postId, data.new_count);
+
+                if (data.action === 'liked') {
+                    likedPosts.add(postId);
+                    updateLikeButtonInProfileUI(postId, true);
+                    showNotification('👍 Лайк добавлен!');
+                } else {
+                    likedPosts.delete(postId);
+                    updateLikeButtonInProfileUI(postId, false);
+                    showNotification('👎 Лайк убран');
+                }
+                localStorage.setItem('vega_liked_posts', JSON.stringify([...likedPosts]));
+            } else {
+                showNotification(data.message || 'Ошибка');
+                updateLikeButtonInProfileUI(postId, wasLiked);
+            }
+        } catch(e) {
+            console.error('Error liking post:', e);
+            showNotification('Ошибка соединения');
+            updateLikeButtonInProfileUI(postId, wasLiked);
+        } finally {
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+        }
+    }
+
+    async function openCommentsInProfile(postId) {
+        currentPostId = postId;
+        const modal = document.getElementById('commentsModal');
+        const commentsList = document.getElementById('commentsList');
+
+        commentsList.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Загрузка...</div>';
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+
+        try {
+            const response = await fetch('/get_comments/' + postId);
+            const data = await response.json();
+
+            if (data.success && data.comments) {
+                if (data.comments.length === 0) {
+                    commentsList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-muted);"><i class="fas fa-comment-slash"></i><p style="margin-top: 10px;">Нет комментариев</p></div>';
+                } else {
+                    commentsList.innerHTML = data.comments.map(comment => `
+                        <div class="comment-item">
+                            <img src="${comment.author_avatar || 'https://randomuser.me/api/portraits/men/1.jpg'}" class="comment-avatar" onclick="location.href='/user/${comment.user_id}'">
+                            <div class="comment-content">
+                                <div class="comment-author" onclick="location.href='/user/${comment.user_id}'">${escapeHtml(comment.author_name)}</div>
+                                <div class="comment-text">${escapeHtml(comment.content)}</div>
+                                <div class="comment-time">${formatTime(comment.created_at)}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+        } catch(e) {
+            commentsList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--danger);">Ошибка загрузки</div>';
+        }
+    }
+
+    function closeCommentsModal() {
+        const modal = document.getElementById('commentsModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        document.getElementById('commentInput').value = '';
+        if (currentPostId) {
+            loadCommentsPreviewInProfile(currentPostId);
+        }
+        currentPostId = null;
+    }
+
+    async function submitCommentInProfile() {
+        if (!currentPostId) return;
+
+        const input = document.getElementById('commentInput');
+        const content = input.value.trim();
+
+        if (!content) {
+            showNotification('Введите текст комментария');
+            return;
+        }
+
+        try {
+            const response = await fetch('/add_comment/' + currentPostId, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: content })
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                const countSpan = document.getElementById('profile-comments-count-' + currentPostId);
+                if (countSpan) countSpan.innerText = parseInt(countSpan.innerText) + 1;
+
+                input.value = '';
+                closeCommentsModal();
+                await loadCommentsPreviewInProfile(currentPostId);
+                showNotification('💬 Комментарий добавлен!');
+            } else {
+                showNotification(data.message || 'Ошибка');
+            }
+        } catch(e) {
+            showNotification('Ошибка отправки');
+        }
+    }
+
+    async function loadCommentsPreviewInProfile(postId) {
+        try {
+            const response = await fetch('/get_comments/' + postId);
+            const data = await response.json();
+
+            const commentsContainer = document.getElementById('post-comments-' + postId);
+            const previewContainer = document.getElementById('comments-preview-' + postId);
+
+            if (data.success && data.comments && data.comments.length > 0) {
+                commentsContainer.style.display = 'block';
+                const lastComments = data.comments.slice(-3);
+
+                previewContainer.innerHTML = lastComments.map(comment => `
+                    <div class="comment-preview-item" onclick="event.stopPropagation(); openCommentsInProfile(${postId})">
+                        <img src="${comment.author_avatar || 'https://randomuser.me/api/portraits/men/1.jpg'}" class="comment-preview-avatar" onclick="event.stopPropagation(); location.href='/user/${comment.user_id}'">
+                        <div class="comment-preview-content">
+                            <div class="comment-preview-author" onclick="event.stopPropagation(); location.href='/user/${comment.user_id}'">${escapeHtml(comment.author_name)}</div>
+                            <div class="comment-preview-text">${escapeHtml(comment.content)}</div>
+                            <div class="comment-preview-time">${formatTime(comment.created_at)}</div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                commentsContainer.style.display = 'none';
+            }
+        } catch(e) {
+            console.error('Error loading comments preview:', e);
+        }
+    }
+
+    // Запись на стене
+    const wallMediaInput = document.getElementById('wallMediaInput');
+    if (wallMediaInput) {
+        wallMediaInput.addEventListener('change', function(e) {
+            const container = document.getElementById('wallPreviewContainer');
+            container.innerHTML = '';
+            wallSelectedFiles = Array.from(e.target.files);
+
+            wallSelectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const div = document.createElement('div');
+                    div.className = 'wall-preview-item';
+                    div.style.position = 'relative';
+                    div.style.width = '80px';
+                    div.style.height = '80px';
+                    div.style.borderRadius = '10px';
+                    div.style.overflow = 'hidden';
+                    div.style.border = '2px solid var(--secondary)';
+                    div.style.background = '#000';
+                    div.style.flexShrink = '0';
+
+                    if (file.type.startsWith('image/')) {
+                        div.innerHTML = `<img src="${event.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
+                    } else {
+                        div.innerHTML = `<video src="${event.target.result}" style="width:100%;height:100%;object-fit:cover;"></video>`;
+                    }
+                    div.innerHTML += `<span class="preview-remove" onclick="removeWallFile(${index})">&times;</span>`;
+                    container.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    }
+
+    function removeWallFile(index) {
+        wallSelectedFiles.splice(index, 1);
+        const container = document.getElementById('wallPreviewContainer');
+        const input = document.getElementById('wallMediaInput');
+        if (input) input.value = '';
+        container.innerHTML = '';
+
+        wallSelectedFiles.forEach((file, newIndex) => {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const div = document.createElement('div');
+                div.className = 'wall-preview-item';
+                div.style.position = 'relative';
+                div.style.width = '80px';
+                div.style.height = '80px';
+                div.style.borderRadius = '10px';
+                div.style.overflow = 'hidden';
+                div.style.border = '2px solid var(--secondary)';
+                div.style.background = '#000';
+                div.style.flexShrink = '0';
+
+                if (file.type.startsWith('image/')) {
+                    div.innerHTML = `<img src="${event.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
+                } else {
+                    div.innerHTML = `<video src="${event.target.result}" style="width:100%;height:100%;object-fit:cover;"></video>`;
+                }
+                div.innerHTML += `<span class="preview-remove" onclick="removeWallFile(${newIndex})">&times;</span>`;
+                container.appendChild(div);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    async function postOnWall(userId) {
+        const content = document.getElementById('wallPostContent')?.value.trim() || '';
+
+        if (!content && wallSelectedFiles.length === 0) {
+            showNotification('Напишите текст или прикрепите файл');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('content', content);
+        for (let file of wallSelectedFiles) {
+            formData.append('media', file);
+        }
+
+        const btn = document.getElementById('wallPostBtn');
+        if (!btn) return;
+
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Публикация...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/post_on_wall/' + userId, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                showNotification('✅ Запись опубликована на стене!');
+                document.getElementById('wallPostContent').value = '';
+                document.getElementById('wallPreviewContainer').innerHTML = '';
+                if (wallMediaInput) wallMediaInput.value = '';
+                wallSelectedFiles = [];
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showNotification(data.error || 'Ошибка публикации');
+            }
+        } catch(e) {
+            console.error('Error:', e);
+            showNotification('Ошибка соединения');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+
+    // Репосты
+    function selectRepostOption(option) {
+        document.querySelectorAll('.repost-option').forEach(opt => opt.classList.remove('selected'));
+        if (option === 'wall') {
+            document.querySelector('.repost-option:first-child').classList.add('selected');
+            document.getElementById('friendSelectArea').style.display = 'none';
+            selectedFriendId = null;
+        } else {
+            document.querySelector('.repost-option:last-child').classList.add('selected');
+            document.getElementById('friendSelectArea').style.display = 'block';
+            loadFriends();
+        }
+    }
+
+    async function loadFriends() {
+        try {
+            const response = await fetch('/get_friends_list');
+            const data = await response.json();
+            if (data.success) {
+                friendsList = data.friends;
+                searchFriends();
+            }
+        } catch(e) {
+            console.error('Error loading friends:', e);
+        }
+    }
+
+    function searchFriends() {
+        const query = document.getElementById('friendSearch')?.value.toLowerCase() || '';
+        const results = friendsList.filter(f => f.name.toLowerCase().includes(query));
+        const container = document.getElementById('friendResults');
+
+        if (!container) return;
+
+        if (results.length === 0) {
+            container.innerHTML = '<div style="padding: 10px; text-align: center; color: var(--text-muted);">Друзья не найдены</div>';
+            return;
+        }
+
+        container.innerHTML = results.map(friend => `
+            <div class="friend-result-item" onclick="selectFriend(${friend.id}, '${escapeHtml(friend.name)}')">
+                <img src="${friend.avatar}" style="width: 36px; height: 36px; border-radius: 50%;">
+                <div>
+                    <div style="font-weight: 600;">${escapeHtml(friend.name)}</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">${friend.friends_count} друзей</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function selectFriend(id, name) {
+        selectedFriendId = id;
+        const searchInput = document.getElementById('friendSearch');
+        if (searchInput) searchInput.value = name;
+        const results = document.getElementById('friendResults');
+        if (results) results.innerHTML = '';
+        showNotification(`Выбран друг: ${name}`);
+    }
+
+    function openRepostModal(postId) {
+        currentRepostPostId = postId;
+        document.getElementById('repostModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+        selectedFriendId = null;
+        const searchInput = document.getElementById('friendSearch');
+        if (searchInput) searchInput.value = '';
+        const commentArea = document.getElementById('repostComment');
+        if (commentArea) commentArea.value = '';
+        const friendArea = document.getElementById('friendSelectArea');
+        if (friendArea) friendArea.style.display = 'none';
+        const firstOption = document.querySelector('.repost-option:first-child');
+        if (firstOption) firstOption.classList.add('selected');
+        const secondOption = document.querySelector('.repost-option:last-child');
+        if (secondOption) secondOption.classList.remove('selected');
+    }
+
+    function closeRepostModal() {
+        document.getElementById('repostModal').classList.remove('active');
+        document.body.style.overflow = '';
+        currentRepostPostId = null;
+    }
+
+    async function confirmRepost() {
+        if (!currentRepostPostId) return;
+
+        const targetRadio = document.querySelector('input[name="repost_target"]:checked');
+        const target = targetRadio ? targetRadio.value : 'wall';
+        const comment = document.getElementById('repostComment')?.value.trim() || '';
+
+        let targetUserId = null;
+        if (target === 'friend') {
+            if (!selectedFriendId) {
+                showNotification('Выберите друга', true);
+                return;
+            }
+            targetUserId = selectedFriendId;
+        }
+
+        try {
+            const response = await fetch('/create_repost/' + currentRepostPostId, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    target_user_id: targetUserId,
+                    content: comment
+                })
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                showNotification('✅ Репост сделан!');
+                closeRepostModal();
+            } else {
+                showNotification(data.message || 'Ошибка', true);
+            }
+        } catch(e) {
+            console.error('Error:', e);
+            showNotification('Ошибка соединения', true);
+        }
+    }
+
+    function formatTime(timestamp) {
+        if (!timestamp) return 'только что';
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diff = Math.floor((now - date) / 1000);
+        if (diff < 60) return 'только что';
+        if (diff < 3600) return Math.floor(diff / 60) + ' мин назад';
+        if (diff < 86400) return Math.floor(diff / 3600) + ' ч назад';
+        return date.toLocaleDateString();
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function showNotification(message, isError = false) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: ${isError ? 'var(--danger)' : 'var(--gradient)'};
+            color: white; padding: 12px 24px;
+            border-radius: 30px; z-index: 9999; font-weight: 500;
+            animation: fadeInUp 0.3s ease-out;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        `;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+    }
+
+    async function sendFriendRequest(userId) {
+        try {
+            const response = await fetch('/send_friend_request/' + userId, { method: 'POST' });
+            const data = await response.json();
+            if (data.success) {
+                showNotification('✅ Заявка отправлена!');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showNotification(data.message);
+            }
+        } catch(e) {
+            showNotification('Ошибка соединения');
+        }
+    }
+
+    async function acceptFriendRequestFromProfile(userId) {
+        try {
+            const response = await fetch('/accept_friend_request/' + userId, { method: 'POST' });
+            const data = await response.json();
+            if (data.success) {
+                showNotification('✅ Пользователь добавлен в друзья!');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showNotification(data.message);
+            }
+        } catch(e) {
+            showNotification('Ошибка соединения');
+        }
+    }
+
+    async function declineFriendRequestFromProfile(userId) {
+        try {
+            const response = await fetch('/decline_friend_request/' + userId, { method: 'POST' });
+            const data = await response.json();
+            if (data.success) {
+                showNotification('❌ Заявка отклонена');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showNotification(data.message);
+            }
+        } catch(e) {
+            showNotification('Ошибка соединения');
+        }
+    }
+
+    async function removeFriendFromProfile(userId) {
+        if (!confirm('Удалить этого пользователя из друзей?')) return;
+        try {
+            const response = await fetch('/remove_friend/' + userId, { method: 'POST' });
+            const data = await response.json();
+            if (data.success) {
+                showNotification('👋 Пользователь удален из друзей');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showNotification(data.message);
+            }
+        } catch(e) {
+            showNotification('Ошибка соединения');
+        }
+    }
+
+    function startChat(userId) {
+        window.location.href = '/chat?user=' + userId;
+    }
+
+    function showAllMutualFriends() {
+        showNotification('Все общие друзья отображаются в списке');
+    }
+
+    document.getElementById('commentsModal')?.addEventListener('click', function(e) {
+        if (e.target === this) closeCommentsModal();
+    });
+
+    document.getElementById('repostModal')?.addEventListener('click', function(e) {
+        if (e.target === this) closeRepostModal();
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeCommentsModal();
+            closeRepostModal();
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.post').forEach(post => {
+            const postId = post.dataset.postId;
+            if (postId) {
+                loadCommentsPreviewInProfile(postId);
+            }
+        });
+    });
+
+    loadLikedStateInProfile();
+</script>
+{% endblock %}

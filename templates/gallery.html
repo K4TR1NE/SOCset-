@@ -1,0 +1,843 @@
+{% extends "layout.html" %}
+
+{% block title %}VEGA - Галерея{% endblock %}
+
+{% block extra_css %}
+<style>
+    .gallery-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .upload-btn {
+        background: var(--gradient);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 30px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+    }
+
+    .upload-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(157,123,232,0.4);
+    }
+
+    .tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 10px;
+    }
+
+    .tab-btn {
+        padding: 10px 22px;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 15px;
+        border-radius: 10px;
+        transition: all 0.3s;
+        font-weight: 500;
+    }
+
+    .tab-btn:hover {
+        background: rgba(157,123,232,0.1);
+        color: var(--secondary);
+    }
+
+    .tab-btn.active {
+        background: var(--gradient);
+        color: white;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+    }
+
+    .gallery-item {
+        background: var(--card-bg);
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s;
+        position: relative;
+    }
+
+    .gallery-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(157,123,232,0.3);
+        border-color: var(--secondary);
+    }
+
+    .gallery-item .media-preview {
+        width: 100%;
+        height: 200px;
+        background: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        cursor: pointer;
+    }
+
+    .gallery-item img, .gallery-item video {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .gallery-item-actions {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        gap: 8px;
+        opacity: 0;
+        transition: all 0.3s;
+    }
+
+    .gallery-item:hover .gallery-item-actions {
+        opacity: 1;
+    }
+
+    .gallery-action-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(0,0,0,0.7);
+        border: none;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        backdrop-filter: blur(5px);
+    }
+
+    .gallery-action-btn:hover {
+        background: var(--gradient);
+        transform: scale(1.1);
+    }
+
+    .gallery-item-info {
+        padding: 12px;
+    }
+
+    .gallery-item-info p {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+        word-break: break-word;
+    }
+
+    .gallery-item-info .date {
+        font-size: 10px;
+        opacity: 0.6;
+    }
+
+    /* Модалка просмотра */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.95);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal.active {
+        display: flex;
+    }
+
+    .modal-content {
+        max-width: 90%;
+        max-height: 90%;
+        position: relative;
+    }
+
+    .modal img, .modal video {
+        max-width: 100%;
+        max-height: 85vh;
+        border-radius: 12px;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .modal-close {
+        position: absolute;
+        top: -40px;
+        right: 0;
+        color: white;
+        font-size: 32px;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: none;
+        border: none;
+    }
+
+    .modal-close:hover {
+        transform: scale(1.1);
+        color: var(--danger);
+    }
+
+    .modal-download {
+        position: absolute;
+        bottom: -50px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--gradient);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 30px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+
+    .modal-download:hover {
+        transform: translateX(-50%) translateY(-2px);
+    }
+
+    /* Модалка редактирования */
+    .edit-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.85);
+        z-index: 1001;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .edit-modal.active {
+        display: flex;
+    }
+
+    .edit-modal-content {
+        background: var(--card-bg);
+        border-radius: 20px;
+        width: 90%;
+        max-width: 450px;
+        padding: 25px;
+        border: 1px solid var(--border-color);
+    }
+
+    .edit-modal-content h3 {
+        margin-bottom: 20px;
+        font-size: 20px;
+    }
+
+    .edit-modal-content textarea {
+        width: 100%;
+        padding: 12px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        color: var(--text-light);
+        font-size: 14px;
+        resize: vertical;
+        font-family: inherit;
+        margin-bottom: 20px;
+    }
+
+    .edit-modal-content textarea:focus {
+        border-color: var(--secondary);
+        outline: none;
+    }
+
+    .edit-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+
+    /* Модалка загрузки */
+    .upload-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.85);
+        z-index: 1001;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .upload-modal.active {
+        display: flex;
+    }
+
+    .upload-modal-content {
+        background: var(--card-bg);
+        border-radius: 20px;
+        width: 90%;
+        max-width: 500px;
+        padding: 25px;
+        border: 1px solid var(--border-color);
+        text-align: center;
+    }
+
+    .upload-dropzone {
+        border: 2px dashed var(--border-color);
+        border-radius: 16px;
+        padding: 40px;
+        margin: 20px 0;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .upload-dropzone:hover {
+        border-color: var(--secondary);
+        background: rgba(157,123,232,0.05);
+    }
+
+    .upload-dropzone.drag-over {
+        border-color: var(--secondary);
+        background: rgba(157,123,232,0.1);
+    }
+
+    .upload-preview {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 15px;
+    }
+
+    .upload-preview-item {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 2px solid var(--secondary);
+    }
+
+    .upload-preview-item img, .upload-preview-item video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .upload-remove {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        background: var(--danger);
+        color: white;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 10px;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px;
+        color: var(--text-muted);
+    }
+
+    .empty-state i {
+        font-size: 60px;
+        margin-bottom: 15px;
+        opacity: 0.3;
+    }
+
+    @media (max-width: 768px) {
+        .gallery-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        .gallery-item .media-preview {
+            height: 150px;
+        }
+        .gallery-header {
+            flex-direction: column;
+        }
+        .upload-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="gallery-header">
+    <h1 class="page-title">Галерея</h1>
+    {% if not session.get('is_guest') %}
+    <button class="upload-btn" onclick="openUploadModal()">
+        <i class="fas fa-upload"></i> Загрузить фото/видео
+    </button>
+    {% endif %}
+</div>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('photos')">📷 Фото ({{ photos|length }})</button>
+    <button class="tab-btn" onclick="switchTab('videos')">🎬 Видео ({{ videos|length }})</button>
+    <button class="tab-btn" onclick="switchTab('all')">🖼️ Все ({{ all_items|length }})</button>
+</div>
+
+<div class="tab-content active" id="photos-tab">
+    {% if photos %}
+    <div class="gallery-grid">
+        {% for item in photos %}
+        <div class="gallery-item" data-id="{{ item.id }}" data-path="{{ item.file_path }}" data-type="image" data-caption="{{ item.caption }}">
+            <div class="media-preview" onclick="openMedia('{{ item.file_path }}', 'image')">
+                <img src="{{ item.file_path }}" alt="Фото" loading="lazy">
+            </div>
+            <div class="gallery-item-actions">
+                <button class="gallery-action-btn" onclick="event.stopPropagation(); editCaption({{ item.id }}, '{{ item.caption|escape }}')" title="Редактировать описание">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="gallery-action-btn" onclick="event.stopPropagation(); downloadFile('{{ item.file_path }}')" title="Скачать">
+                    <i class="fas fa-download"></i>
+                </button>
+                <button class="gallery-action-btn" onclick="event.stopPropagation(); deleteGalleryItem({{ item.id }})" title="Удалить" style="color: var(--danger);">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="gallery-item-info">
+                <p>{{ item.caption or 'Без описания' }}</p>
+                <p class="date">{{ item.created_at[:10] if item.created_at else '' }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-image"></i>
+        <p>Нет фото</p>
+        <p style="font-size: 13px; margin-top: 10px;">Нажмите "Загрузить" чтобы добавить фото</p>
+    </div>
+    {% endif %}
+</div>
+
+<div class="tab-content" id="videos-tab">
+    {% if videos %}
+    <div class="gallery-grid">
+        {% for item in videos %}
+        <div class="gallery-item" data-id="{{ item.id }}" data-path="{{ item.file_path }}" data-type="video" data-caption="{{ item.caption }}">
+            <div class="media-preview" onclick="openMedia('{{ item.file_path }}', 'video')">
+                <video preload="metadata">
+                    <source src="{{ item.file_path }}">
+                </video>
+            </div>
+            <div class="gallery-item-actions">
+                <button class="gallery-action-btn" onclick="event.stopPropagation(); editCaption({{ item.id }}, '{{ item.caption|escape }}')" title="Редактировать описание">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="gallery-action-btn" onclick="event.stopPropagation(); downloadFile('{{ item.file_path }}')" title="Скачать">
+                    <i class="fas fa-download"></i>
+                </button>
+                <button class="gallery-action-btn" onclick="event.stopPropagation(); deleteGalleryItem({{ item.id }})" title="Удалить" style="color: var(--danger);">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="gallery-item-info">
+                <p>{{ item.caption or 'Без описания' }}</p>
+                <p class="date">{{ item.created_at[:10] if item.created_at else '' }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-video"></i>
+        <p>Нет видео</p>
+        <p style="font-size: 13px; margin-top: 10px;">Нажмите "Загрузить" чтобы добавить видео</p>
+    </div>
+    {% endif %}
+</div>
+
+<div class="tab-content" id="all-tab">
+    {% if all_items %}
+    <div class="gallery-grid">
+        {% for item in all_items %}
+        <div class="gallery-item" data-id="{{ item.id }}" data-path="{{ item.file_path }}" data-type="{{ item.file_type }}" data-caption="{{ item.caption }}">
+            <div class="media-preview" onclick="openMedia('{{ item.file_path }}', '{{ item.file_type }}')">
+                {% if item.file_type == 'image' %}
+                <img src="{{ item.file_path }}" alt="Фото" loading="lazy">
+                {% else %}
+                <video preload="metadata">
+                    <source src="{{ item.file_path }}">
+                </video>
+                {% endif %}
+            </div>
+            <div class="gallery-item-actions">
+                <button class="gallery-action-btn" onclick="event.stopPropagation(); editCaption({{ item.id }}, '{{ item.caption|escape }}')" title="Редактировать описание">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="gallery-action-btn" onclick="event.stopPropagation(); downloadFile('{{ item.file_path }}')" title="Скачать">
+                    <i class="fas fa-download"></i>
+                </button>
+                <button class="gallery-action-btn" onclick="event.stopPropagation(); deleteGalleryItem({{ item.id }})" title="Удалить" style="color: var(--danger);">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="gallery-item-info">
+                <p>{{ item.caption or 'Без описания' }}</p>
+                <p class="date">{{ item.created_at[:10] if item.created_at else '' }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-images"></i>
+        <p>Галерея пуста</p>
+        <p style="font-size: 13px; margin-top: 10px;">Нажмите "Загрузить" чтобы добавить фото или видео</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Модалка просмотра -->
+<div class="modal" id="mediaModal" onclick="closeMedia(event)">
+    <button class="modal-close">&times;</button>
+    <div class="modal-content">
+        <img id="modalImage" src="" style="display:none;">
+        <video id="modalVideo" controls style="display:none;">
+            <source id="modalVideoSource" src="">
+        </video>
+        <button class="modal-download" id="modalDownloadBtn" onclick="downloadCurrentMedia()">
+            <i class="fas fa-download"></i> Скачать
+        </button>
+    </div>
+</div>
+
+<!-- Модалка редактирования -->
+<div class="edit-modal" id="editModal">
+    <div class="edit-modal-content">
+        <h3><i class="fas fa-edit"></i> Редактировать описание</h3>
+        <textarea id="editCaption" rows="3" placeholder="Введите описание..."></textarea>
+        <div class="edit-actions">
+            <button class="btn btn-secondary" onclick="closeEditModal()">Отмена</button>
+            <button class="btn btn-primary" onclick="saveCaption()">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка загрузки -->
+<div class="upload-modal" id="uploadModal">
+    <div class="upload-modal-content">
+        <h3><i class="fas fa-cloud-upload-alt"></i> Загрузить фото/видео</h3>
+        <div class="upload-dropzone" id="dropzone" onclick="document.getElementById('uploadInput').click()">
+            <i class="fas fa-cloud-upload-alt" style="font-size: 48px; margin-bottom: 15px;"></i>
+            <p>Нажмите или перетащите файлы сюда</p>
+            <p style="font-size: 12px; margin-top: 10px;">Поддерживаются: PNG, JPG, JPEG, GIF, WEBP, MP4, WEBM, AVI</p>
+        </div>
+        <input type="file" id="uploadInput" accept="image/*,video/*" multiple style="display:none;">
+        <div id="uploadPreview" class="upload-preview"></div>
+        <div class="edit-actions" style="margin-top: 20px;">
+            <button class="btn btn-secondary" onclick="closeUploadModal()">Отмена</button>
+            <button class="btn btn-primary" onclick="uploadToGallery()" id="uploadConfirmBtn">Загрузить</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentEditItemId = null;
+    let uploadFiles = [];
+    let currentMediaPath = null;
+    let currentMediaType = null;
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(tab + '-tab').classList.add('active');
+    }
+
+    // Открытие медиа
+    function openMedia(path, type) {
+        const modal = document.getElementById('mediaModal');
+        const img = document.getElementById('modalImage');
+        const video = document.getElementById('modalVideo');
+        const videoSource = document.getElementById('modalVideoSource');
+
+        currentMediaPath = path;
+        currentMediaType = type;
+
+        img.style.display = 'none';
+        video.style.display = 'none';
+
+        if (type === 'image') {
+            img.src = path;
+            img.style.display = 'block';
+        } else {
+            videoSource.src = path;
+            video.load();
+            video.style.display = 'block';
+        }
+
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeMedia(event) {
+        if (event.target === document.getElementById('mediaModal') || event.target.classList.contains('modal-close')) {
+            const modal = document.getElementById('mediaModal');
+            const video = document.getElementById('modalVideo');
+            modal.classList.remove('active');
+            video.pause();
+            document.body.style.overflow = '';
+        }
+    }
+
+    function downloadCurrentMedia() {
+        if (currentMediaPath) {
+            downloadFile(currentMediaPath);
+        }
+    }
+
+    function downloadFile(filePath) {
+        const link = document.createElement('a');
+        link.href = filePath;
+        link.download = filePath.split('/').pop();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showNotification('📥 Скачивание начато');
+    }
+
+    // Редактирование описания
+    function editCaption(id, currentCaption) {
+        currentEditItemId = id;
+        document.getElementById('editCaption').value = currentCaption;
+        document.getElementById('editModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').classList.remove('active');
+        document.body.style.overflow = '';
+        currentEditItemId = null;
+    }
+
+    async function saveCaption() {
+        const newCaption = document.getElementById('editCaption').value.trim();
+
+        try {
+            const response = await fetch('/update_gallery_caption', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ item_id: currentEditItemId, caption: newCaption })
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                showNotification('✅ Описание обновлено');
+                location.reload();
+            } else {
+                showNotification(data.message || 'Ошибка', true);
+            }
+        } catch(e) {
+            showNotification('Ошибка соединения', true);
+        }
+    }
+
+    // Удаление из галереи
+    async function deleteGalleryItem(itemId) {
+        if (!confirm('Удалить этот файл из галереи? Это действие нельзя отменить.')) return;
+
+        try {
+            const response = await fetch('/delete_gallery_item/' + itemId, { method: 'POST' });
+            const data = await response.json();
+
+            if (data.success) {
+                showNotification('🗑️ Файл удален');
+                location.reload();
+            } else {
+                showNotification(data.message || 'Ошибка', true);
+            }
+        } catch(e) {
+            showNotification('Ошибка соединения', true);
+        }
+    }
+
+    // Загрузка файлов
+    function openUploadModal() {
+        document.getElementById('uploadModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeUploadModal() {
+        document.getElementById('uploadModal').classList.remove('active');
+        document.body.style.overflow = '';
+        uploadFiles = [];
+        document.getElementById('uploadPreview').innerHTML = '';
+        document.getElementById('uploadInput').value = '';
+    }
+
+    // Drag and drop
+    const dropzone = document.getElementById('dropzone');
+
+    dropzone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        dropzone.classList.add('drag-over');
+    });
+
+    dropzone.addEventListener('dragleave', function(e) {
+        dropzone.classList.remove('drag-over');
+    });
+
+    dropzone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        dropzone.classList.remove('drag-over');
+        const files = Array.from(e.dataTransfer.files);
+        handleUploadFiles(files);
+    });
+
+    document.getElementById('uploadInput').addEventListener('change', function(e) {
+        handleUploadFiles(Array.from(e.target.files));
+    });
+
+    function handleUploadFiles(files) {
+        const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'video/mp4', 'video/webm', 'video/avi', 'video/quicktime'];
+
+        for (let file of files) {
+            if (allowedTypes.includes(file.type)) {
+                if (file.size <= 50 * 1024 * 1024) {
+                    uploadFiles.push(file);
+                } else {
+                    showNotification(`Файл ${file.name} слишком большой (макс. 50MB)`, true);
+                }
+            } else {
+                showNotification(`Формат файла ${file.name} не поддерживается`, true);
+            }
+        }
+
+        updateUploadPreview();
+    }
+
+    function updateUploadPreview() {
+        const container = document.getElementById('uploadPreview');
+        container.innerHTML = '';
+
+        uploadFiles.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const div = document.createElement('div');
+                div.className = 'upload-preview-item';
+                if (file.type.startsWith('image/')) {
+                    div.innerHTML = `<img src="${e.target.result}"><span class="upload-remove" onclick="removeUploadFile(${index})">&times;</span>`;
+                } else {
+                    div.innerHTML = `<video src="${e.target.result}"></video><span class="upload-remove" onclick="removeUploadFile(${index})">&times;</span>`;
+                }
+                container.appendChild(div);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function removeUploadFile(index) {
+        uploadFiles.splice(index, 1);
+        updateUploadPreview();
+    }
+
+    async function uploadToGallery() {
+        if (uploadFiles.length === 0) {
+            showNotification('Выберите файлы для загрузки', true);
+            return;
+        }
+
+        const btn = document.getElementById('uploadConfirmBtn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
+        btn.disabled = true;
+
+        const formData = new FormData();
+        for (let file of uploadFiles) {
+            formData.append('gallery_files', file);
+        }
+
+        try {
+            const response = await fetch('/upload_to_gallery', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                showNotification('✅ Файлы загружены в галерею!');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showNotification(data.message || 'Ошибка загрузки', true);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        } catch(e) {
+            console.error('Error:', e);
+            showNotification('Ошибка соединения', true);
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+
+    function showNotification(message, isError = false) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: ${isError ? 'var(--danger)' : 'var(--gradient)'};
+            color: white; padding: 12px 24px;
+            border-radius: 30px; z-index: 9999; font-weight: 500;
+            animation: fadeInUp 0.3s ease-out;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        `;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeMedia(e);
+            closeEditModal();
+            closeUploadModal();
+        }
+    });
+</script>
+{% endblock %}

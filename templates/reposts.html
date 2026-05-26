@@ -1,0 +1,571 @@
+{% extends "layout.html" %}
+
+{% block title %}VEGA - Репосты{% endblock %}
+
+{% block extra_css %}
+<style>
+    .reposts-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .repost-item {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 20px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 20px;
+        transition: all 0.2s;
+    }
+
+    .repost-item:hover {
+        border-color: var(--secondary);
+    }
+
+    .repost-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .repost-author {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+    }
+
+    .repost-author-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .repost-author-name {
+        font-weight: 600;
+    }
+
+    .repost-time {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .repost-text {
+        margin-bottom: 15px;
+        padding: 12px;
+        background: rgba(255,255,255,0.03);
+        border-radius: 12px;
+        font-style: italic;
+    }
+
+    /* Оригинальный пост */
+    .original-post {
+        background: rgba(255,255,255,0.05);
+        border-radius: 16px;
+        padding: 15px;
+        margin-top: 10px;
+        border-left: 3px solid var(--secondary);
+    }
+
+    .original-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        cursor: pointer;
+    }
+
+    .original-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .original-name {
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    .original-content {
+        font-size: 14px;
+        line-height: 1.5;
+        margin-bottom: 10px;
+    }
+
+    .original-media {
+        margin-top: 10px;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .original-media img, .original-media video {
+        max-width: 100%;
+        max-height: 300px;
+        object-fit: contain;
+        border-radius: 12px;
+    }
+
+    .original-stats {
+        display: flex;
+        gap: 15px;
+        margin-top: 10px;
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .repost-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .repost-action-btn {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 6px 12px;
+        border-radius: 20px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+    }
+
+    .repost-action-btn:hover {
+        background: rgba(157,123,232,0.15);
+        color: var(--secondary);
+    }
+
+    .repost-action-btn.danger:hover {
+        background: rgba(255,107,139,0.15);
+        color: var(--danger);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px;
+        color: var(--text-muted);
+    }
+
+    .empty-state i {
+        font-size: 60px;
+        margin-bottom: 15px;
+        opacity: 0.3;
+    }
+
+    /* Модалка для репоста */
+    .repost-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.85);
+        z-index: 1001;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .repost-modal.active {
+        display: flex;
+    }
+
+    .repost-modal-content {
+        background: var(--card-bg);
+        border-radius: 20px;
+        width: 90%;
+        max-width: 450px;
+        padding: 25px;
+        border: 1px solid var(--border-color);
+    }
+
+    .repost-modal-content h3 {
+        margin-bottom: 20px;
+    }
+
+    .repost-modal-content textarea {
+        width: 100%;
+        padding: 12px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        color: var(--text-light);
+        font-size: 14px;
+        resize: vertical;
+        margin-bottom: 20px;
+    }
+
+    .repost-options {
+        margin-bottom: 20px;
+    }
+
+    .repost-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .repost-option:hover {
+        background: rgba(157,123,232,0.1);
+    }
+
+    .repost-option.selected {
+        background: rgba(157,123,232,0.2);
+        border: 1px solid var(--secondary);
+    }
+
+    .repost-option input {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    .repost-option label {
+        flex: 1;
+        cursor: pointer;
+    }
+
+    .friend-search {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .friend-search input {
+        flex: 1;
+        padding: 10px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        color: var(--text-light);
+    }
+
+    .friend-results {
+        margin-top: 10px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .friend-result-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    .friend-result-item:hover {
+        background: rgba(157,123,232,0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="reposts-container">
+    <h1 class="page-title"><i class="fas fa-share-alt"></i> Репосты</h1>
+
+    <div id="repostsList">
+        <div class="empty-state">
+            <i class="fas fa-share-alt"></i>
+            <p>У вас пока нет репостов</p>
+            <p style="font-size: 13px; margin-top: 10px;">Нажмите "Репост" под любым постом в ленте</p>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка создания репоста -->
+<div class="repost-modal" id="repostModal">
+    <div class="repost-modal-content">
+        <h3><i class="fas fa-share-alt"></i> Сделать репост</h3>
+        <textarea id="repostComment" rows="3" placeholder="Ваш комментарий (необязательно)..."></textarea>
+        
+        <div class="repost-options">
+            <div class="repost-option selected" onclick="selectRepostOption('wall')">
+                <input type="radio" name="repost_target" value="wall" checked> 
+                <label>На свою стену</label>
+            </div>
+            <div class="repost-option" onclick="selectRepostOption('friend')">
+                <input type="radio" name="repost_target" value="friend"> 
+                <label>Другу на стену</label>
+            </div>
+        </div>
+        
+        <div id="friendSelectArea" style="display: none;">
+            <div class="friend-search">
+                <input type="text" id="friendSearch" placeholder="Поиск друга..." oninput="searchFriends()">
+            </div>
+            <div id="friendResults" class="friend-results"></div>
+        </div>
+        
+        <div class="edit-actions" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+            <button class="btn btn-secondary" onclick="closeRepostModal()">Отмена</button>
+            <button class="btn btn-primary" onclick="confirmRepost()">Репостнуть</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentRepostPostId = null;
+    let selectedFriendId = null;
+    let friendsList = [];
+
+    function selectRepostOption(option) {
+        document.querySelectorAll('.repost-option').forEach(opt => opt.classList.remove('selected'));
+        if (option === 'wall') {
+            document.querySelector('.repost-option:first-child').classList.add('selected');
+            document.getElementById('friendSelectArea').style.display = 'none';
+            selectedFriendId = null;
+        } else {
+            document.querySelector('.repost-option:last-child').classList.add('selected');
+            document.getElementById('friendSelectArea').style.display = 'block';
+            loadFriends();
+        }
+    }
+
+    async function loadFriends() {
+        try {
+            const response = await fetch('/get_friends_list');
+            const data = await response.json();
+            if (data.success) {
+                friendsList = data.friends;
+            }
+        } catch(e) {
+            console.error('Error loading friends:', e);
+        }
+    }
+
+    function searchFriends() {
+        const query = document.getElementById('friendSearch').value.toLowerCase();
+        const results = friendsList.filter(f => f.name.toLowerCase().includes(query));
+        const container = document.getElementById('friendResults');
+        
+        if (results.length === 0) {
+            container.innerHTML = '<div style="padding: 10px; text-align: center; color: var(--text-muted);">Друзья не найдены</div>';
+            return;
+        }
+        
+        container.innerHTML = results.map(friend => `
+            <div class="friend-result-item" onclick="selectFriend(${friend.id}, '${escapeHtml(friend.name)}')">
+                <img src="${friend.avatar}" style="width: 36px; height: 36px; border-radius: 50%;">
+                <div>
+                    <div style="font-weight: 600;">${escapeHtml(friend.name)}</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">${friend.friends_count} друзей</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function selectFriend(id, name) {
+        selectedFriendId = id;
+        document.getElementById('friendSearch').value = name;
+        document.getElementById('friendResults').innerHTML = '';
+        showNotification(`Выбран друг: ${name}`);
+    }
+
+    async function getFriendsList() {
+        try {
+            const response = await fetch('/get_friends_list');
+            const data = await response.json();
+            if (data.success) {
+                friendsList = data.friends;
+            }
+        } catch(e) {
+            console.error('Error:', e);
+        }
+    }
+
+    function openRepostModal(postId) {
+        currentRepostPostId = postId;
+        document.getElementById('repostModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+        selectedFriendId = null;
+        document.getElementById('friendSearch').value = '';
+        document.getElementById('repostComment').value = '';
+        document.getElementById('friendSelectArea').style.display = 'none';
+        document.querySelector('.repost-option:first-child').classList.add('selected');
+        document.querySelector('.repost-option:last-child').classList.remove('selected');
+    }
+
+    function closeRepostModal() {
+        document.getElementById('repostModal').classList.remove('active');
+        document.body.style.overflow = '';
+        currentRepostPostId = null;
+    }
+
+    async function confirmRepost() {
+        if (!currentRepostPostId) return;
+        
+        const target = document.querySelector('input[name="repost_target"]:checked').value;
+        const comment = document.getElementById('repostComment').value.trim();
+        
+        let targetUserId = null;
+        if (target === 'friend' && selectedFriendId) {
+            targetUserId = selectedFriendId;
+        } else if (target === 'friend' && !selectedFriendId) {
+            showNotification('Выберите друга', true);
+            return;
+        }
+        
+        try {
+            const response = await fetch('/create_repost/' + currentRepostPostId, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    target_user_id: targetUserId,
+                    content: comment
+                })
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                showNotification('✅ Репост сделан!');
+                closeRepostModal();
+                loadReposts();
+            } else {
+                showNotification(data.message || 'Ошибка', true);
+            }
+        } catch(e) {
+            console.error('Error:', e);
+            showNotification('Ошибка соединения', true);
+        }
+    }
+
+    async function loadReposts() {
+        try {
+            const response = await fetch('/get_reposts');
+            const data = await response.json();
+            
+            const container = document.getElementById('repostsList');
+            
+            if (data.success && data.reposts && data.reposts.length > 0) {
+                container.innerHTML = data.reposts.map(repost => `
+                    <div class="repost-item" data-repost-id="${repost.id}">
+                        <div class="repost-header">
+                            <div class="repost-author" onclick="location.href='/user/${repost.user_id}'">
+                                <img src="${repost.reposter_avatar}" class="repost-author-avatar">
+                                <div>
+                                    <div class="repost-author-name">${escapeHtml(repost.reposter_name)}</div>
+                                    <div class="repost-time">${formatTime(repost.created_at)}</div>
+                                </div>
+                            </div>
+                            <button class="repost-action-btn danger" onclick="deleteRepost(${repost.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        
+                        ${repost.content ? `<div class="repost-text">${escapeHtml(repost.content)}</div>` : ''}
+                        
+                        <div class="original-post">
+                            <div class="original-header" onclick="location.href='/user/${repost.original_author_id}'">
+                                <img src="${repost.original_author_avatar}" class="original-avatar">
+                                <div>
+                                    <div class="original-name">${escapeHtml(repost.original_author_name)}</div>
+                                    <div class="repost-time">оригинальный пост</div>
+                                </div>
+                            </div>
+                            <div class="original-content">${repost.original_content || ''}</div>
+                            
+                            ${repost.original_image ? `
+                            <div class="original-media">
+                                <img src="${repost.original_image}" alt="Фото">
+                            </div>
+                            ` : ''}
+                            
+                            <div class="original-stats">
+                                <span><i class="fas fa-thumbs-up"></i> ${repost.original_likes || 0}</span>
+                                <span><i class="fas fa-comment"></i> ${repost.original_comments || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-share-alt"></i>
+                        <p>У вас пока нет репостов</p>
+                        <p style="font-size: 13px; margin-top: 10px;">Нажмите "Репост" под любым постом в ленте</p>
+                    </div>
+                `;
+            }
+        } catch(e) {
+            console.error('Error loading reposts:', e);
+        }
+    }
+
+    async function deleteRepost(repostId) {
+        if (!confirm('Удалить этот репост?')) return;
+        
+        try {
+            const response = await fetch('/delete_repost/' + repostId, { method: 'POST' });
+            const data = await response.json();
+            
+            if (data.success) {
+                showNotification('🗑️ Репост удален');
+                loadReposts();
+            } else {
+                showNotification(data.message || 'Ошибка', true);
+            }
+        } catch(e) {
+            showNotification('Ошибка соединения', true);
+        }
+    }
+
+    function formatTime(timestamp) {
+        if (!timestamp) return 'только что';
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diff = Math.floor((now - date) / 1000);
+        if (diff < 60) return 'только что';
+        if (diff < 3600) return Math.floor(diff / 60) + ' мин назад';
+        if (diff < 86400) return Math.floor(diff / 3600) + ' ч назад';
+        return date.toLocaleDateString();
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text || '';
+        return div.innerHTML;
+    }
+
+    function showNotification(message, isError = false) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: ${isError ? 'var(--danger)' : 'var(--gradient)'};
+            color: white; padding: 12px 24px;
+            border-radius: 30px; z-index: 9999; font-weight: 500;
+            animation: fadeInUp 0.3s ease-out;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        `;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeRepostModal();
+        }
+    });
+
+    // Загружаем репосты при загрузке страницы
+    loadReposts();
+    getFriendsList();
+</script>
+{% endblock %}
