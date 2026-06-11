@@ -1,1615 +1,1091 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VEGA - Астрологическая сеть</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        :root {
-            --primary: #9d7be8;
-            --primary-dark: #7c5bc0;
-            --secondary: #c77dff;
-            --accent: #b8a2ff;
-            --dark: #1a142b;
-            --dark-light: #2a1f3a;
-            --card-bg: #251c33;
-            --card-hover: #322841;
-            --text-light: #f0e9ff;
-            --text-muted: #cbbae3;
-            --gray: #a08bb4;
-            --success: #8a9eff;
-            --warning: #ffb86b;
-            --danger: #ff6b8b;
-            --shadow: rgba(0, 0, 0, 0.3);
-            --border-color: #3f3153;
-            --gradient: linear-gradient(135deg, #9d7be8 0%, #c77dff 100%);
-            --zodiac-glow: rgba(157, 123, 232, 0.3);
-        }
-
-        body {
-            background: linear-gradient(135deg, #1e1730 0%, #2a1f3a 100%);
-            color: var(--text-light);
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-
-        .container {
-            display: flex;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* Header */
-        header {
-            background: rgba(37, 28, 51, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            padding: 0 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 26px;
-            font-weight: 700;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 1px;
-        }
-
-        .logo i {
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 30px;
-        }
-
-        .search-bar {
-            display: flex;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 30px;
-            padding: 8px 20px;
-            width: 40%;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(5px);
-        }
-
-        .search-bar i {
-            color: var(--text-muted);
-        }
-
-        .search-bar input {
-            border: none;
-            background: transparent;
-            width: 100%;
-            margin-left: 10px;
-            outline: none;
-            color: var(--text-light);
-        }
-
-        .search-bar input::placeholder {
-            color: var(--gray);
-        }
-
-        .nav-icons {
-            display: flex;
-            gap: 20px;
-            font-size: 20px;
-        }
-
-        .nav-icons a {
-            color: var(--text-muted);
-            transition: all 0.3s;
-            position: relative;
-        }
-
-        .nav-icons a:hover {
-            color: var(--secondary);
-            transform: translateY(-2px);
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--gradient);
-            color: white;
-            font-size: 11px;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid var(--card-bg);
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(157, 123, 232, 0.15);
-            padding: 5px 15px 5px 5px;
-            border-radius: 30px;
-            border: 1px solid var(--border-color);
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--secondary);
-            box-shadow: 0 0 10px var(--zodiac-glow);
-        }
-
-        .user-profile span {
-            color: var(--text-light);
-            font-weight: 500;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            padding: 20px 15px;
-            position: sticky;
-            top: 80px;
-            height: calc(100vh - 80px);
-            overflow-y: auto;
-        }
-
-        .sidebar::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        .sidebar::-webkit-scrollbar-track {
-            background: var(--dark-light);
-        }
-
-        .sidebar::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-
-        .sidebar-section {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 20px var(--shadow);
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(5px);
-        }
-
-        .sidebar-title {
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--text-light);
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .sidebar-title i {
-            color: var(--secondary);
-            font-size: 16px;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px 15px;
-            border-radius: 12px;
-            margin-bottom: 5px;
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .menu-item:hover {
-            background: rgba(157, 123, 232, 0.15);
-            color: var(--secondary);
-            transform: translateX(5px);
-        }
-
-        .menu-item.active {
-            background: var(--gradient);
-            color: white;
-            box-shadow: 0 5px 15px rgba(157, 123, 232, 0.4);
-        }
-
-        .menu-item i {
-            width: 20px;
-            text-align: center;
-        }
-
-        .friend-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .friend-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px;
-            border-radius: 12px;
-            transition: all 0.3s;
-        }
-
-        .friend-item:hover {
-            background: rgba(157, 123, 232, 0.1);
-        }
-
-        .friend-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--border-color);
-        }
-
-        .friend-name {
-            font-weight: 500;
-            color: var(--text-light);
-        }
-
-        .friend-status {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-left: auto;
-            box-shadow: 0 0 8px currentColor;
-        }
-
-        .online {
-            background-color: var(--success);
-            box-shadow: 0 0 10px var(--success);
-        }
-
-        .offline {
-            background-color: var(--gray);
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* Story Section */
-        .story-section {
-            display: flex;
-            gap: 15px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-        }
-
-        .story-section::-webkit-scrollbar {
-            height: 5px;
-        }
-
-        .story-section::-webkit-scrollbar-track {
-            background: var(--dark-light);
-            border-radius: 10px;
-        }
-
-        .story-section::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-
-        .story-card {
-            min-width: 120px;
-            height: 200px;
-            border-radius: 16px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 8px 20px var(--shadow);
-            cursor: pointer;
-            border: 1px solid var(--border-color);
-        }
-
-        .story-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s;
-        }
-
-        .story-card:hover img {
-            transform: scale(1.1);
-        }
-
-        .story-card.add-story {
-            background: var(--card-bg);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border: 2px dashed var(--primary);
-        }
-
-        .add-story i {
-            font-size: 30px;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-        }
-
-        .add-story span {
-            color: var(--text-muted);
-        }
-
-        .story-author {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            color: white;
-            font-weight: 500;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-            background: rgba(0, 0, 0, 0.3);
-            padding: 5px 10px;
-            border-radius: 20px;
-            backdrop-filter: blur(5px);
-        }
-
-        /* Create Post */
-        .create-post {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 8px 20px var(--shadow);
-            border: 1px solid var(--border-color);
-        }
-
-        .post-input {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .post-input textarea {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 12px 20px;
-            resize: none;
-            height: 50px;
-            font-size: 16px;
-            outline: none;
-            color: var(--text-light);
-        }
-
-        .post-input textarea::placeholder {
-            color: var(--gray);
-        }
-
-        .post-actions {
-            display: flex;
-            justify-content: space-between;
-            padding-top: 15px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .post-actions-left {
-            display: flex;
-            gap: 10px;
-        }
-
-        .post-action {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 15px;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: var(--text-muted);
-        }
-
-        .post-action:hover {
-            background: rgba(157, 123, 232, 0.15);
-            color: var(--secondary);
-        }
-
-        .post-action i {
-            font-size: 18px;
-        }
-
-        .photo-action i { color: var(--success); }
-        .video-action i { color: var(--primary); }
-        .event-action i { color: var(--warning); }
-
-        .post-button {
-            background: var(--gradient);
-            color: white;
-            border: none;
-            padding: 8px 30px;
-            border-radius: 30px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .post-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(157, 123, 232, 0.4);
-        }
-
-        /* Feed */
-        .feed {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .post {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 8px 20px var(--shadow);
-            border: 1px solid var(--border-color);
-        }
-
-        .post-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .post-author {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .post-author-info h4 {
-            font-weight: 600;
-            color: var(--text-light);
-        }
-
-        .post-author-info p {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        .post-content {
-            margin-bottom: 15px;
-            line-height: 1.6;
-            color: var(--text-light);
-        }
-
-        .post-image {
-            width: 100%;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            border: 1px solid var(--border-color);
-        }
-
-        .post-stats {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-top: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        .post-actions-buttons {
-            display: flex;
-            justify-content: space-around;
-            padding-top: 10px;
-        }
-
-        .post-action-button {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 20px;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: var(--text-muted);
-        }
-
-        .post-action-button:hover {
-            background: rgba(157, 123, 232, 0.15);
-            color: var(--secondary);
-        }
-
-        /* Right Sidebar */
-        .right-sidebar {
-            width: 300px;
-            padding: 20px 15px;
-            position: sticky;
-            top: 80px;
-            height: calc(100vh - 80px);
-            overflow-y: auto;
-        }
-
-        .right-sidebar::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        .right-sidebar::-webkit-scrollbar-track {
-            background: var(--dark-light);
-        }
-
-        .right-sidebar::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-
-        .birthdays, .events, .sponsored, .horoscope, .social-links {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 20px var(--shadow);
-            border: 1px solid var(--border-color);
-        }
-
-        .birthday-item, .event-item, .horoscope-item, .social-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .birthday-item:last-child, .event-item:last-child, .horoscope-item:last-child, .social-item:last-child {
-            border-bottom: none;
-        }
-
-        .birthday-icon, .event-icon, .zodiac-icon, .social-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #9d7be8 0%, #c77dff 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            box-shadow: 0 5px 15px rgba(157, 123, 232, 0.3);
-        }
-
-        .event-icon {
-            background: linear-gradient(135deg, #c77dff 0%, #b8a2ff 100%);
-        }
-        
-        .social-icon {
-            background: linear-gradient(135deg, #0088cc 0%, #5d8bf4 100%);
-        }
-        
-        .social-icon.vk {
-            background: linear-gradient(135deg, #4a76a8 0%, #6d8eb0 100%);
-        }
-        
-        .social-icon.telegram {
-            background: linear-gradient(135deg, #0088cc 0%, #5d8bf4 100%);
-        }
-
-        .birthday-info, .event-info, .zodiac-info, .social-info {
-            flex: 1;
-        }
-
-        .birthday-name, .event-name, .zodiac-sign, .social-name {
-            font-weight: 600;
-            color: var(--text-light);
-            margin-bottom: 5px;
-        }
-
-        .birthday-date, .event-date, .zodiac-date, .social-link {
-            color: var(--text-muted);
-            font-size: 13px;
-        }
-        
-        .social-link a {
-            color: var(--secondary);
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-        
-        .social-link a:hover {
-            color: var(--accent);
-            text-decoration: underline;
-        }
-
-        .zodiac-prediction {
-            color: var(--secondary);
-            font-size: 12px;
-            margin-top: 3px;
-            font-style: italic;
-        }
-
-        .sponsored-item {
-            margin-top: 15px;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px var(--shadow);
-            border: 1px solid var(--border-color);
-        }
-
-        .sponsored-item img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-        }
-
-        .sponsored-info {
-            padding: 15px;
-            background: var(--dark-light);
-        }
-
-        .sponsored-title {
-            font-weight: 600;
-            color: var(--text-light);
-            margin-bottom: 5px;
-        }
-
-        .sponsored-desc {
-            color: var(--text-muted);
-            font-size: 13px;
-        }
-
-        /* Footer */
-        footer {
-            background: var(--dark);
-            color: var(--text-light);
-            padding: 40px 20px 20px;
-            margin-top: 40px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .footer-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 30px;
-        }
-
-        .footer-section {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .footer-section h3 {
-            margin-bottom: 20px;
-            font-size: 18px;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .footer-links {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .footer-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .footer-links a:hover {
-            color: var(--secondary);
-            transform: translateX(5px);
-        }
-
-        /* User Agreement Section */
-        .user-agreement {
-            max-width: 1400px;
-            margin: 30px auto 20px;
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 25px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 8px 20px var(--shadow);
-        }
-
-        .agreement-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            cursor: pointer;
-        }
-
-        .agreement-header h2 {
-            font-size: 22px;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .agreement-header i {
-            font-size: 24px;
-            color: var(--secondary);
-            transition: transform 0.3s;
-        }
-
-        .agreement-header i.rotate {
-            transform: rotate(180deg);
-        }
-
-        .agreement-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-out;
-            color: var(--text-muted);
-            line-height: 1.6;
-        }
-
-        .agreement-content.show {
-            max-height: 2000px;
-            transition: max-height 0.5s ease-in;
-        }
-
-        .agreement-section {
-            margin-bottom: 20px;
-        }
-
-        .agreement-section h3 {
-            color: var(--secondary);
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-
-        .agreement-section p {
-            margin-bottom: 8px;
-            padding-left: 15px;
-        }
-
-        .agreement-section ul {
-            padding-left: 35px;
-            margin: 10px 0;
-        }
-
-        .agreement-section li {
-            margin-bottom: 5px;
-        }
-
-        .agreement-date {
-            text-align: right;
-            color: var(--secondary);
-            font-style: italic;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .copyright {
-            text-align: center;
-            padding-top: 20px;
-            color: var(--text-muted);
-            font-size: 14px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        /* Theme toggle */
-        .theme-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--gradient);
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 5px 20px rgba(157, 123, 232, 0.5);
-            z-index: 1000;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s;
-        }
-
-        .theme-toggle:hover {
-            transform: scale(1.1);
-        }
-
-        /* Zodiac decorations */
-        .zodiac-ring {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
-        .horoscope-badge {
-            display: inline-block;
-            background: rgba(157, 123, 232, 0.2);
-            padding: 5px 10px;
-            border-radius: 20px;
-            color: var(--secondary);
-            font-size: 12px;
-            margin-top: 10px;
-        }
-
-        /* Responsive */
-        @media (max-width: 1200px) {
-            .right-sidebar {
-                display: none;
-            }
-
-            .sidebar {
-                width: 80px;
-            }
-
-            .menu-item span, .sidebar-title, .friend-name {
-                display: none;
-            }
-
-            .menu-item {
-                justify-content: center;
-            }
-
-            .search-bar {
-                width: 30%;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: static;
-                display: flex;
-                overflow-x: auto;
-                padding: 10px;
-                gap: 10px;
-            }
-
-            .sidebar-section {
-                min-width: 200px;
-                margin-bottom: 0;
-            }
-
-            .search-bar {
-                display: none;
-            }
-
-            .post-actions-buttons span {
-                display: none;
-            }
-
-            .nav-icons {
-                gap: 15px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Header -->
-    <header>
-        <div class="header-content">
-            <div class="logo">
-                <i class="fas fa-star"></i>
-                <span>VEGA</span>
-            </div>
-
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Поиск людей, гороскопов, событий...">
-            </div>
-
-            <div class="nav-icons">
-                <a href="#"><i class="fas fa-home"></i></a>
-                <a href="#">
-                    <i class="fas fa-user-friends"></i>
-                    <span class="notification-badge">3</span>
-                </a>
-                <a href="#">
-                    <i class="fas fa-comment-dots"></i>
-                    <span class="notification-badge">5</span>
-                </a>
-                <a href="#">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge">12</span>
-                </a>
-            </div>
-
-            <div class="user-profile">
-                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Аватар" class="avatar">
-                <span>Иван ♌ Лев</span>
-            </div>
+{% extends "layout.html" %}
+
+{% block title %}VEGA - Главная{% endblock %}
+
+{% block search_placeholder %}Поиск в ленте...{% endblock %}
+
+{% block extra_css %}
+<style>
+    .create-post {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 20px;
+    }
+
+    .post-input {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .tox-tinymce {
+        border-radius: 16px !important;
+        border: 1px solid var(--border-color) !important;
+        background: var(--card-bg) !important;
+    }
+
+    .tox-edit-area {
+        background: var(--card-bg) !important;
+    }
+
+    .tox-edit-area__iframe {
+        background: var(--card-bg) !important;
+    }
+
+    .tox .tox-toolbar,
+    .tox .tox-toolbar__overflow,
+    .tox .tox-toolbar__primary {
+        background: var(--card-bg) !important;
+        border-bottom-color: var(--border-color) !important;
+    }
+
+    .tox .tox-tbtn {
+        color: var(--text-muted) !important;
+    }
+
+    .tox .tox-tbtn:hover {
+        background: rgba(157,123,232,0.15) !important;
+        color: var(--secondary) !important;
+    }
+
+    #previewContainer {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+    }
+
+    .preview-item {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 2px solid var(--secondary);
+        background: #000;
+    }
+
+    .preview-item img, .preview-item video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .preview-remove {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: var(--danger);
+        color: #fff;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 12px;
+    }
+
+    .post-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 15px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .post-actions-left {
+        display: flex;
+        gap: 10px;
+    }
+
+    .post-action {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 15px;
+        border-radius: 30px;
+        cursor: pointer;
+        color: var(--text-muted);
+        background: none;
+        border: none;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+
+    .post-action:hover {
+        background: rgba(157,123,232,0.15);
+        color: var(--secondary);
+    }
+
+    .post-button {
+        background: var(--gradient);
+        color: #fff;
+        border: none;
+        padding: 10px 30px;
+        border-radius: 30px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .post-button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(157,123,232,0.4);
+    }
+
+    .feed {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .post {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid var(--border-color);
+        transition: all 0.2s;
+    }
+
+    .post:hover {
+        border-color: var(--secondary);
+    }
+
+    .post-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .post-author {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+    }
+
+    .post-author-info h4 {
+        font-weight: 600;
+        font-size: 15px;
+        margin-bottom: 2px;
+    }
+
+    .post-author-info p {
+        color: var(--text-muted);
+        font-size: 12px;
+    }
+
+    .post-content {
+        margin-bottom: 15px;
+        line-height: 1.6;
+        font-size: 15px;
+    }
+
+    .post-media {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .post-media img, .post-media video {
+        width: 100%;
+        max-height: 500px;
+        object-fit: contain;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        background: #000;
+        cursor: pointer;
+    }
+
+    /* Единая панель действий */
+    .post-actions-panel {
+        display: flex;
+        justify-content: space-around;
+        padding-top: 12px;
+        margin-top: 8px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 25px;
+        border-radius: 30px;
+        cursor: pointer;
+        color: var(--text-muted);
+        background: transparent;
+        border: none;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+        background: rgba(157,123,232,0.15);
+        color: var(--secondary);
+    }
+
+    .action-btn.liked {
+        color: var(--success);
+    }
+
+    .stats-row {
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-muted);
+        font-size: 14px;
+    }
+
+    .stats-row span {
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .stats-row span:hover {
+        color: var(--secondary);
+    }
+
+    .post-menu {
+        position: relative;
+    }
+
+    .post-dropdown {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 25px;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        z-index: 10;
+        min-width: 150px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .post-dropdown button {
+        width: 100%;
+        padding: 10px 15px;
+        background: none;
+        border: none;
+        color: var(--text-light);
+        cursor: pointer;
+        text-align: left;
+        font-size: 13px;
+    }
+
+    .post-dropdown button:hover {
+        background: rgba(157,123,232,0.15);
+    }
+
+    /* Модалки */
+    .comments-modal, .share-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.85);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .comments-modal.active, .share-modal.active {
+        display: flex;
+    }
+
+    .comments-modal-content, .share-modal-content {
+        background: var(--card-bg);
+        border-radius: 20px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--border-color);
+    }
+
+    .comments-modal-header, .share-modal-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .comments-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .comment-item {
+        display: flex;
+        gap: 12px;
+        padding: 10px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.03);
+    }
+
+    .comment-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        cursor: pointer;
+    }
+
+    .comment-content {
+        flex: 1;
+    }
+
+    .comment-author {
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 4px;
+        cursor: pointer;
+    }
+
+    .comment-text {
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .comment-time {
+        font-size: 10px;
+        color: var(--text-muted);
+        margin-top: 4px;
+    }
+
+    .comments-input-area {
+        padding: 15px;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        gap: 10px;
+    }
+
+    .comments-input-area input {
+        flex: 1;
+        padding: 10px 15px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border-color);
+        border-radius: 25px;
+        color: var(--text-light);
+        outline: none;
+    }
+
+    .comments-input-area input:focus {
+        border-color: var(--secondary);
+    }
+
+    .comments-input-area button {
+        background: var(--gradient);
+        border: none;
+        color: white;
+        padding: 8px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+    }
+
+    .share-option {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .share-option:hover {
+        background: rgba(157,123,232,0.1);
+    }
+
+    .share-option-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+
+    .share-option-icon.wall {
+        background: linear-gradient(135deg, #9d7be8, #c77dff);
+    }
+
+    .share-option-icon.friend {
+        background: var(--success);
+    }
+
+    .friends-list-container {
+        display: none;
+    }
+
+    .friends-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .back-button {
+        padding: 12px 20px;
+        border-bottom: 1px solid var(--border-color);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(157,123,232,0.05);
+    }
+
+    .back-button:hover {
+        background: rgba(157,123,232,0.15);
+    }
+
+    .friend-select-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .friend-select-item:hover {
+        background: rgba(157,123,232,0.1);
+    }
+
+    .friend-select-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .shared-post {
+        background: rgba(157,123,232,0.08);
+        border-left: 3px solid var(--secondary);
+        border-radius: 12px;
+        padding: 12px;
+        margin-top: 10px;
+    }
+
+    .shared-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .shared-header img {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+    }
+
+    .repost-notice {
+        color: var(--secondary);
+        font-size: 12px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .right-sidebar {
+        width: 280px;
+        flex-shrink: 0;
+    }
+
+    .events {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 18px;
+        border: 1px solid var(--border-color);
+        position: sticky;
+        top: 80px;
+    }
+
+    .event-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border-color);
+        cursor: pointer;
+    }
+
+    .event-item:last-child {
+        border-bottom: none;
+    }
+
+    .event-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        flex-shrink: 0;
+    }
+
+    .event-name {
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .event-date {
+        color: var(--text-muted);
+        font-size: 12px;
+    }
+
+    .sidebar-section {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 18px;
+        margin-top: 20px;
+        border: 1px solid var(--border-color);
+    }
+
+    .sidebar-title {
+        font-weight: 600;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .friend-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .friend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    .friend-item:hover {
+        background: rgba(157,123,232,0.1);
+    }
+
+    .friend-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .friend-name {
+        font-weight: 500;
+        font-size: 14px;
+        flex: 1;
+    }
+
+    .friend-status {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    .online { background: var(--success); box-shadow: 0 0 8px var(--success); }
+    .offline { background: var(--gray); }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if not session.get('is_guest') %}
+<div class="create-post">
+    <form id="postForm" enctype="multipart/form-data">
+        <div class="post-input">
+            <img src="{{ current_user.avatar }}" class="avatar">
+            <textarea id="post-editor" name="content" placeholder="Что у вас нового?"></textarea>
         </div>
-    </header>
-
-    <div class="container">
-        <!-- Left Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-section">
-                <div class="sidebar-title">
-                    <i class="fas fa-crystal-ball"></i> Меню
-                </div>
-                <a href="#" class="menu-item active">
-                    <i class="fas fa-home"></i>
-                    <span>Лента</span>
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-user-friends"></i>
-                    <span>Друзья</span>
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-users"></i>
-                    <span>Сообщества</span>
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-images"></i>
-                    <span>Фотографии</span>
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-video"></i>
-                    <span>Видео</span>
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>События</span>
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-cog"></i>
-                    <span>Настройки</span>
-                </a>
+        <div id="previewContainer"></div>
+        <div class="post-actions">
+            <div class="post-actions-left">
+                <label class="post-action" style="cursor:pointer;">
+                    <i class="fas fa-image"></i>
+                    <span>Фото/Видео</span>
+                    <input type="file" name="media" accept="image/*,video/*" multiple style="display:none;" onchange="previewFiles(this)">
+                </label>
             </div>
+            <button type="button" class="post-button" onclick="publishPost()">Опубликовать</button>
+        </div>
+    </form>
+</div>
+{% else %}
+<div class="card" style="text-align: center; padding: 20px; margin-bottom: 20px;">
+    <i class="fas fa-user-astronaut" style="font-size: 40px; color: var(--secondary); margin-bottom: 10px;"></i>
+    <p>Вы вошли как гость. Для публикации постов <a href="/login">войдите</a> или <a href="/register">зарегистрируйтесь</a>.</p>
+</div>
+{% endif %}
 
-            <div class="sidebar-section">
-                <div class="sidebar-title">
-                    <i class="fas fa-moon"></i> Друзья онлайн
-                </div>
-                <div class="friend-list">
-                    <div class="friend-item">
-                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Друг" class="friend-avatar">
-                        <div class="friend-name">Анна ♓ Рыбы</div>
-                        <div class="friend-status online"></div>
-                    </div>
-                    <div class="friend-item">
-                        <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Друг" class="friend-avatar">
-                        <div class="friend-name">Сергей ♏ Скорпион</div>
-                        <div class="friend-status online"></div>
-                    </div>
-                    <div class="friend-item">
-                        <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Друг" class="friend-avatar">
-                        <div class="friend-name">Ольга ♎ Весы</div>
-                        <div class="friend-status offline"></div>
-                    </div>
-                    <div class="friend-item">
-                        <img src="https://randomuser.me/api/portraits/men/55.jpg" alt="Друг" class="friend-avatar">
-                        <div class="friend-name">Дмитрий ♉ Телец</div>
-                        <div class="friend-status online"></div>
-                    </div>
+<div class="feed">
+    {% for post in posts %}
+    <div class="post" data-post-id="{{ post.id }}">
+        <div class="post-header">
+            <div class="post-author" onclick="location.href='/user/{{ post.author.id }}'">
+                <img src="{{ post.author.avatar }}" class="avatar">
+                <div class="post-author-info">
+                    <h4>{{ post.author.name }}</h4>
+                    <p>{{ post.created_at[:10] if post.created_at else '' }}</p>
                 </div>
             </div>
-
-            <div class="sidebar-section">
-                <div class="sidebar-title">
-                    <i class="fas fa-sun"></i> Гороскоп на сегодня
-                </div>
-                <div class="horoscope-item">
-                    <div class="zodiac-icon">
-                        <i class="fas fa-lion"></i>
-                    </div>
-                    <div class="zodiac-info">
-                        <div class="zodiac-sign">Лев</div>
-                        <div class="zodiac-date">23.07 - 22.08</div>
-                        <div class="zodiac-prediction">Удачный день для начинаний</div>
-                    </div>
-                </div>
-                <div class="horoscope-badge">
-                    <i class="fas fa-sparkles"></i> Ваш знак - Лев
+            <div class="post-menu">
+                <i class="fas fa-ellipsis-h" style="color:var(--text-muted);cursor:pointer;" onclick="togglePostMenu(this)"></i>
+                <div class="post-dropdown">
+                    {% if post.author_id == current_user.id %}
+                    <button onclick="editPost({{ post.id }})"><i class="fas fa-edit"></i> Редактировать</button>
+                    <button onclick="deletePost({{ post.id }})"><i class="fas fa-trash"></i> Удалить</button>
+                    {% else %}
+                    <button onclick="reportPost({{ post.id }})"><i class="fas fa-flag"></i> Пожаловаться</button>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Stories -->
-            <div class="story-section">
-                <div class="story-card add-story">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>История</span>
-                </div>
-                <div class="story-card">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="История">
-                    <div class="story-author">♈ Овен</div>
-                </div>
-                <div class="story-card">
-                    <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="История">
-                    <div class="story-author">♉ Телец</div>
-                </div>
-                <div class="story-card">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="История">
-                    <div class="story-author">♊ Близнецы</div>
-                </div>
-                <div class="story-card">
-                    <img src="https://images.unsplash.com/photo-1507591064344-4c6ce005-128b-97dc8267b0a8?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="История">
-                    <div class="story-author">♋ Рак</div>
-                </div>
-            </div>
+        {% if post.is_repost and post.original_author %}
+        <div class="repost-notice">
+            <i class="fas fa-retweet"></i> Репост от {{ post.original_author.name }}
+        </div>
+        {% endif %}
 
-            <!-- Create Post -->
-            <div class="create-post">
-                <div class="post-input">
-                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Аватар" class="avatar">
-                    <textarea placeholder="Что вам подсказывают звезды, Иван?"></textarea>
-                </div>
-                <div class="post-actions">
-                    <div class="post-actions-left">
-                        <div class="post-action photo-action">
-                            <i class="fas fa-image"></i>
-                            <span>Фото</span>
-                        </div>
-                        <div class="post-action video-action">
-                            <i class="fas fa-video"></i>
-                            <span>Видео</span>
-                        </div>
-                        <div class="post-action event-action">
-                            <i class="fas fa-star"></i>
-                            <span>Гороскоп</span>
-                        </div>
-                    </div>
-                    <button class="post-button">Опубликовать</button>
-                </div>
-            </div>
+        {% if post.content %}
+        <div class="post-content" id="post-content-{{ post.id }}">
+            {{ post.content|safe }}
+        </div>
+        {% endif %}
 
-            <!-- Feed -->
-            <div class="feed">
-                <!-- Post 1 -->
-                <div class="post">
-                    <div class="post-header">
-                        <div class="post-author">
-                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Автор" class="avatar">
-                            <div class="post-author-info">
-                                <h4>Анна ♓ Рыбы</h4>
-                                <p>2 часа назад · <i class="fas fa-globe-europe"></i></p>
-                            </div>
-                        </div>
-                        <i class="fas fa-ellipsis-h"></i>
-                    </div>
+        {% set post_files = [] %}
+        {% for item in all_items if item.post_id == post.id %}
+            {% set _ = post_files.append(item) %}
+        {% endfor %}
 
-                    <div class="post-content">
-                        <p>✨ Сегодня Луна в моем знаке - невероятное вдохновение! Побывала на выставке современного искусства. Звезды говорили, что этот день принесет новые знакомства. Так и вышло! 🎨✨</p>
-                        <p class="horoscope-badge">♓ Рыбы: день творчества и гармонии</p>
-                    </div>
+        {% if post_files %}
+        <div class="post-media">
+            {% for file in post_files %}
+                {% if file.file_type == 'video' %}
+                <video controls><source src="{{ file.file_path }}"></video>
+                {% else %}
+                <img src="{{ file.file_path }}" alt="Фото" onclick="window.open('{{ file.file_path }}','_blank')">
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
 
-                    <img src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Пост" class="post-image">
-
-                    <div class="post-stats">
-                        <div class="post-likes">
-                            <i class="fas fa-thumbs-up"></i> 245
-                        </div>
-                        <div class="post-comments">
-                            42 комментария
-                        </div>
-                        <div class="post-shares">
-                            5 репостов
-                        </div>
-                    </div>
-
-                    <div class="post-actions-buttons">
-                        <div class="post-action-button">
-                            <i class="far fa-thumbs-up"></i>
-                            <span>Нравится</span>
-                        </div>
-                        <div class="post-action-button">
-                            <i class="far fa-comment"></i>
-                            <span>Комментировать</span>
-                        </div>
-                        <div class="post-action-button">
-                            <i class="fas fa-star"></i>
-                            <span>Гороскоп</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Post 2 -->
-                <div class="post">
-                    <div class="post-header">
-                        <div class="post-author">
-                            <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Автор" class="avatar">
-                            <div class="post-author-info">
-                                <h4>Сергей ♏ Скорпион</h4>
-                                <p>5 часов назад · <i class="fas fa-user-friends"></i></p>
-                            </div>
-                        </div>
-                        <i class="fas fa-ellipsis-h"></i>
-                    </div>
-
-                    <div class="post-content">
-                        <p>🚀 Завершил большой проект! Скорпионы сегодня на пике продуктивности. Спасибо команде за поддержку! 🔥</p>
-                        <p>Кстати, кто верит в силу камней? Поделитесь опытом 💎</p>
-                        <p class="horoscope-badge">♏ Скорпион: ваша решительность принесет плоды</p>
-                    </div>
-
-                    <div class="post-stats">
-                        <div class="post-likes">
-                            <i class="fas fa-thumbs-up"></i> 189
-                        </div>
-                        <div class="post-comments">
-                            36 комментариев
-                        </div>
-                        <div class="post-shares">
-                            3 репоста
-                        </div>
-                    </div>
-
-                    <div class="post-actions-buttons">
-                        <div class="post-action-button">
-                            <i class="far fa-thumbs-up"></i>
-                            <span>Нравится</span>
-                        </div>
-                        <div class="post-action-button">
-                            <i class="far fa-comment"></i>
-                            <span>Комментировать</span>
-                        </div>
-                        <div class="post-action-button">
-                            <i class="fas fa-star"></i>
-                            <span>Гороскоп</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- Единая панель статистики -->
+        <div class="stats-row">
+            <span onclick="likePost({{ post.id }})">
+                <i class="fas fa-thumbs-up"></i> <span id="likes-{{ post.id }}">{{ post.likes or 0 }}</span>
+            </span>
+            <span onclick="openComments({{ post.id }})">
+                <i class="fas fa-comment"></i> <span id="comments-count-{{ post.id }}">{{ post.comments_count or 0 }}</span>
+            </span>
+            <span onclick="openShareModal({{ post.id }})">
+                <i class="fas fa-retweet"></i> <span id="shares-{{ post.id }}">{{ post.shares or 0 }}</span>
+            </span>
         </div>
 
-        <!-- Right Sidebar -->
-        <div class="right-sidebar">
-            <div class="birthdays">
-                <div class="sidebar-title">
-                    <i class="fas fa-cake-candles"></i> Дни рождения
-                </div>
-                <div class="birthday-item">
-                    <div class="birthday-icon">
-                        <i class="fas fa-birthday-cake"></i>
-                    </div>
-                    <div class="birthday-info">
-                        <div class="birthday-name">Мария ♊ Близнецы</div>
-                        <div class="birthday-date">Сегодня · 25 лет</div>
-                    </div>
-                </div>
-                <div class="birthday-item">
-                    <div class="birthday-icon">
-                        <i class="fas fa-birthday-cake"></i>
-                    </div>
-                    <div class="birthday-info">
-                        <div class="birthday-name">Дмитрий ♉ Телец</div>
-                        <div class="birthday-date">Завтра · 32 года</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="events">
-                <div class="sidebar-title">
-                    <i class="fas fa-calendar-check"></i> События
-                </div>
-                <div class="event-item">
-                    <div class="event-icon">
-                        <i class="fas fa-music"></i>
-                    </div>
-                    <div class="event-info">
-                        <div class="event-name">✨ Астрологический фестиваль</div>
-                        <div class="event-date">Суббота, 15:00</div>
-                    </div>
-                </div>
-                <div class="event-item">
-                    <div class="event-icon">
-                        <i class="fas fa-moon"></i>
-                    </div>
-                    <div class="event-info">
-                        <div class="event-name">Новолуние в Раке</div>
-                        <div class="event-date">Воскресенье, 19:00</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="horoscope">
-                <div class="sidebar-title">
-                    <i class="fas fa-sparkles"></i> Гороскоп недели
-                </div>
-                <div class="horoscope-item">
-                    <div class="zodiac-icon">
-                        <i class="fas fa-ram"></i>
-                    </div>
-                    <div class="zodiac-info">
-                        <div class="zodiac-sign">Овен</div>
-                        <div class="zodiac-prediction">Энергия бьет ключом</div>
-                    </div>
-                </div>
-                <div class="horoscope-item">
-                    <div class="zodiac-icon">
-                        <i class="fas fa-bull"></i>
-                    </div>
-                    <div class="zodiac-info">
-                        <div class="zodiac-sign">Телец</div>
-                        <div class="zodiac-prediction">Финансовая удача</div>
-                    </div>
-                </div>
-                <div class="horoscope-item">
-                    <div class="zodiac-icon">
-                        <i class="fas fa-twins"></i>
-                    </div>
-                    <div class="zodiac-info">
-                        <div class="zodiac-sign">Близнецы</div>
-                        <div class="zodiac-prediction">Новые знакомства</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Telegram Links -->
-            <div class="social-links">
-                <div class="sidebar-title">
-                    <i class="fab fa-telegram"></i> Telegram
-                </div>
-                <div class="social-item">
-                    <div class="social-icon telegram">
-                        <i class="fab fa-telegram"></i>
-                    </div>
-                    <div class="social-info">
-                        <div class="social-name">K4TR1NE</div>
-                        <div class="social-link">
-                            <a href="https://t.me/K4TR1NE" target="_blank">@K4TR1NE</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="social-item">
-                    <div class="social-icon telegram">
-                        <i class="fab fa-telegram"></i>
-                    </div>
-                    <div class="social-info">
-                        <div class="social-name">ArtemiyVadimch</div>
-                        <div class="social-link">
-                            <a href="https://t.me/ArtemiyVadimch" target="_blank">@ArtemiyVadimch</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="social-item">
-                    <div class="social-icon telegram">
-                        <i class="fab fa-telegram"></i>
-                    </div>
-                    <div class="social-info">
-                        <div class="social-name">G1h0sts</div>
-                        <div class="social-link">
-                            <a href="https://t.me/G1h0sts" target="_blank">@G1h0sts</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- VK Links -->
-            <div class="social-links">
-                <div class="sidebar-title">
-                    <i class="fab fa-vk"></i> ВКонтакте
-                </div>
-                <div class="social-item">
-                    <div class="social-icon vk">
-                        <i class="fab fa-vk"></i>
-                    </div>
-                    <div class="social-info">
-                        <div class="social-name">gregoreu</div>
-                        <div class="social-link">
-                            <a href="https://vk.ru/gregoreu" target="_blank">vk.ru/gregoreu</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="social-item">
-                    <div class="social-icon vk">
-                        <i class="fab fa-vk"></i>
-                    </div>
-                    <div class="social-info">
-                        <div class="social-name">jamkar</div>
-                        <div class="social-link">
-                            <a href="https://vk.ru/jamkar" target="_blank">vk.ru/jamkar</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="social-item">
-                    <div class="social-icon vk">
-                        <i class="fab fa-vk"></i>
-                    </div>
-                    <div class="social-info">
-                        <div class="social-name">id617362202</div>
-                        <div class="social-link">
-                            <a href="https://vk.ru/id617362202" target="_blank">vk.ru/id617362202</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sponsored">
-                <div class="sidebar-title">
-                    <i class="fas fa-ad"></i> Рекомендуем
-                </div>
-                <div class="sponsored-item">
-                    <img src="https://images.unsplash.com/photo-1532968961962-8a0cb3a2d4f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Реклама">
-                    <div class="sponsored-info">
-                        <div class="sponsored-title">✨ Астрологический центр</div>
-                        <div class="sponsored-desc">Консультация астролога -20%</div>
-                    </div>
-                </div>
-            </div>
+        <!-- Единая панель кнопок действий -->
+        <div class="post-actions-panel">
+            <button class="action-btn" id="like-btn-{{ post.id }}" onclick="likePost({{ post.id }})">
+                <i class="far fa-thumbs-up"></i> Нравится
+            </button>
+            <button class="action-btn" onclick="openComments({{ post.id }})">
+                <i class="far fa-comment"></i> Комментировать
+            </button>
+            <button class="action-btn" onclick="openShareModal({{ post.id }})">
+                <i class="fas fa-retweet"></i> Поделиться
+            </button>
         </div>
     </div>
+    {% endfor %}
+</div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3><i class="fas fa-star"></i> VEGA</h3>
-                <div class="footer-links">
-                    <a href="#"><i class="fas fa-crystal-ball"></i> О проекте</a>
-                    <a href="#"><i class="fas fa-sparkles"></i> Вакансии</a>
-                    <a href="#"><i class="fas fa-ad"></i> Реклама</a>
-                    <a href="#"><i class="fas fa-question-circle"></i> Помощь</a>
-                </div>
-            </div>
-
-            <div class="footer-section">
-                <h3><i class="fas fa-lock"></i> Конфиденциальность</h3>
-                <div class="footer-links">
-                    <a href="#">Политика конфиденциальности</a>
-                    <a href="#">Условия использования</a>
-                    <a href="#">Настройки конфиденциальности</a>
-                    <a href="#">Файлы cookie</a>
-                </div>
-            </div>
-
-            <div class="footer-section">
-                <h3><i class="fas fa-envelope"></i> Контакты</h3>
-                <div class="footer-links">
-                    <a href="#">Служба поддержки</a>
-                    <a href="#">Пресс-центр</a>
-                    <a href="#">Разработчикам</a>
-                    <a href="#">Партнеры</a>
-                </div>
-            </div>
-
-            <div class="footer-section">
-                <h3><i class="fas fa-globe"></i> Мы в соцсетях</h3>
-                <div class="footer-links">
-                    <a href="https://t.me/K4TR1NE" target="_blank"><i class="fab fa-telegram"></i> Telegram</a>
-                    <a href="https://vk.ru/gregoreu" target="_blank"><i class="fab fa-vk"></i> ВКонтакте</a>
-                </div>
-            </div>
+<!-- Модалка комментариев -->
+<div class="comments-modal" id="commentsModal">
+    <div class="comments-modal-content">
+        <div class="comments-modal-header">
+            <h3>Комментарии</h3>
+            <button class="comments-modal-close" onclick="closeComments()">&times;</button>
         </div>
-
-        <!-- User Agreement Section -->
-        <div class="user-agreement" id="userAgreement">
-            <div class="agreement-header" onclick="toggleAgreement()">
-                <i class="fas fa-chevron-down" id="agreementArrow"></i>
-                <h2>📜 ПОЛЬЗОВАТЕЛЬСКОЕ СОГЛАШЕНИЕ</h2>
-            </div>
-            <div class="agreement-content" id="agreementContent">
-                <p><strong>г. Ижевск, 07.02.2026</strong></p>
-                <p>Настоящий документ «Пользовательское соглашение» (далее — Соглашение) представляет собой предложение Vega (далее — «Администрация») заключить договор на изложенных ниже условиях с любым физическим лицом, использующим Сайт (далее — «Пользователь»).</p>
-
-                <div class="agreement-section">
-                    <h3>1. Общие положения</h3>
-                    <p>1.1. Настоящее Соглашение регулирует отношения между Администрацией сайта http://127.0.0.1:5000/ (далее — «Сайт») и Пользователем по использованию Сайта и его функциональных возможностей.</p>
-                    <p>1.2. Текст Соглашения является публичной офертой в соответствии со ст. 437 Гражданского кодекса РФ.</p>
-                    <p>1.3. Фактом начала использования Сайта (любых его сервисов, включая просмотр страниц, регистрацию, размещение контента) Пользователь выражает свое полное и безоговорочное согласие (акцепт) с условиями настоящего Соглашения в соответствии со ст. 438 ГК РФ.</p>
-                    <p>1.4. Администрация имеет право вносить изменения в Соглашение в одностороннем порядке путем размещения новой версии на Сайте. Новая редакция вступает в силу с момента ее публикации, если иное не предусмотрено новой редакцией. Продолжение использования Сайта означает принятие изменений.</p>
-                </div>
-
-                <div class="agreement-section">
-                    <h3>2. Статус Сторон и регистрация</h3>
-                    <p>2.1. Администрация Сайта — лицо, обладающее правами администрирования Сайта и обеспечивающее его функционирование.</p>
-                    <p>2.2. Пользователь — дееспособное физическое лицо, достигшее возраста, допустимого для акцепта настоящего Соглашения в соответствии с законодательством РФ, и прошедшее процедуру регистрации на Сайте.</p>
-                    <p>2.3. Регистрация на Сайте является бесплатной и добровольной.</p>
-                    <p>2.4. При регистрации Пользователь обязан предоставить достоверную и актуальную информацию (адрес электронной почты, логин, пароль). Пользователь несет ответственность за достоверность предоставленной информации.</p>
-                    <p>2.5. Пользователь обязуется не передавать третьим лицам свои логин и пароль, а также несет ответственность за сохранность своей учетной записи.</p>
-                </div>
-
-                <div class="agreement-section">
-                    <h3>3. Права и обязанности Сторон</h3>
-                    <p><strong>3.1. Пользователь имеет право:</strong></p>
-                    <p>3.1.1. Бесплатно пользоваться основными сервисами Сайта (создавать профиль, размещать контент, общаться с другими пользователями) в соответствии с функционалом Сайта.</p>
-                    <p>3.1.2. Получать информацию о работе Сайта.</p>
-                    <p>3.1.3. Обращаться к Администрации с вопросами и предложениями.</p>
-                    
-                    <p><strong>3.2. Пользователь обязуется:</strong></p>
-                    <p>3.2.1. Не размещать на Сайте материалы, которые являются незаконными, нарушают права третьих лиц (в том числе авторские права), пропагандируют насилие, ненависть, дискриминацию, содержат нецензурную брань или оскорбления.</p>
-                    <p>3.2.2. Не использовать Сайт для распространения спама, вирусов, а также для сбора персональных данных других пользователей.</p>
-                    <p>3.2.3. Не выдавать себя за другого человека или представителя организации без достаточных прав.</p>
-                    <p>3.2.4. Не нарушать работоспособность Сайта, не пытаться получить несанкционированный доступ к его функциям.</p>
-                    
-                    <p><strong>3.3. Администрация имеет право:</strong></p>
-                    <p>3.3.1. По своему усмотрению изменять, дополнять или удалять любой контент, размещенный Пользователем, если он нарушает условия Соглашения.</p>
-                    <p>3.3.2. Блокировать или удалять учетную запись Пользователя без предварительного уведомления в случае нарушения условий Соглашения.</p>
-                    <p>3.3.3. Проводить профилактические работы на Сайте с возможным временным приостановлением доступа к Сайту.</p>
-                    
-                    <p><strong>3.4. Администрация обязуется:</strong></p>
-                    <p>3.4.1. Принимать разумные усилия для обеспечения работоспособности Сайта и защиты учетных записей Пользователей.</p>
-                    <p>3.4.2. Обеспечивать конфиденциальность персональных данных Пользователей в соответствии с Политикой конфиденциальности.</p>
-                </div>
-
-                <div class="agreement-section">
-                    <h3>4. Интеллектуальная собственность и контент пользователя</h3>
-                    <p>4.1. Размещая на Сайте контент (тексты, фотографии, видео, иные материалы), Пользователь предоставляет Администрации неисключительную безвозмездную лицензию на его использование (воспроизведение, распространение, публичный показ, переработку) в рамках функционирования Сайта (например, для отображения в ленте новостей) без выплаты вознаграждения.</p>
-                    <p>4.2. Пользователь гарантирует, что размещаемый им контент не нарушает авторских прав и иных законных прав третьих лиц.</p>
-                    <p>4.3. Администрация вправе использовать фирменное наименование, товарные знаки и иные обозначения Пользователя (никнейм, аватар) в рекламных материалах, связанных с продвижением Сайта.</p>
-                </div>
-
-                <div class="agreement-section">
-                    <h3>5. Ответственность</h3>
-                    <p>5.1. Сайт предоставляется на условиях «как есть». Администрация не несет ответственности за несоответствие Сайта целям и ожиданиям Пользователя.</p>
-                    <p>5.2. Администрация не несет ответственности за действия Пользователей, связанные с размещением и использованием контента, а также за любые споры, возникающие между Пользователями.</p>
-                    <p>5.3. Администрация не несет ответственности за посещение и использование Пользователем внешних ресурсов (сторонних сайтов), ссылки на которые могут содержаться на Сайте.</p>
-                    <p>5.4. Совокупная ответственность Администрации ограничена 100 (ста) рублями или суммой, уплаченной Пользователем Администрации за последний месяц (если применимо).</p>
-                </div>
-
-                <div class="agreement-section">
-                    <h3>6. Персональные данные и конфиденциальность</h3>
-                    <p>6.1. Использование Сайта регулируется Политикой конфиденциальности, размещенной по адресу: http://127.0.0.1:5000/ps.</p>
-                    <p>6.2. Нажимая кнопку «Зарегистрироваться» или продолжая использование Сайта, Пользователь дает свое согласие на сбор, хранение и обработку своих персональных данных на условиях, указанных в Политике конфиденциальности.</p>
-                </div>
-
-                <div class="agreement-section">
-                    <h3>7. Заключительные положения</h3>
-                    <p>7.1. Настоящее Соглашение регулируется и толкуется в соответствии с законодательством Российской Федерации.</p>
-                    <p>7.2. Все споры, не урегулированные путем переговоров, подлежат рассмотрению в суде по месту нахождения Администрации Сайта.</p>
-                    <p>7.3. Если какое-либо положение Соглашения будет признано судом недействительным, это не влечет недействительности остальных его положений.</p>
-                </div>
-
-                <div class="agreement-date">
-                    <p>Настоящее Соглашение вступает в силу с 07.02.2026</p>
-                </div>
-            </div>
+        <div class="comments-list" id="commentsList"></div>
+        <div class="comments-input-area">
+            <input type="text" id="commentInput" placeholder="Написать комментарий..." onkeypress="if(event.key==='Enter') submitComment()">
+            <button onclick="submitComment()">Отправить</button>
         </div>
-
-        <div class="copyright">
-            <i class="fas fa-crystal-ball"></i> 2026 VEGA · Социальная астрологическая сеть <i class="fas fa-sparkles"></i>
-        </div>
-    </footer>
-
-    <div class="theme-toggle" id="themeToggle">
-        <i class="fas fa-moon"></i>
     </div>
+</div>
 
-    <script>
-        // Theme toggle (for mood/theme switching)
-        const themeToggle = document.getElementById('themeToggle');
-        
-        themeToggle.addEventListener('click', () => {
-            const root = document.documentElement;
-            const currentPrimary = getComputedStyle(root).getPropertyValue('--primary').trim();
-            
-            if (currentPrimary === '#9d7be8') {
-                // Switch to darker purple theme
-                root.style.setProperty('--primary', '#7c4dff');
-                root.style.setProperty('--primary-dark', '#6a3de8');
-                root.style.setProperty('--secondary', '#b388ff');
-                root.style.setProperty('--card-bg', '#1e1a2b');
-                root.style.setProperty('--dark-light', '#231e33');
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-            } else {
-                // Switch back to default
-                root.style.setProperty('--primary', '#9d7be8');
-                root.style.setProperty('--primary-dark', '#7c5bc0');
-                root.style.setProperty('--secondary', '#c77dff');
-                root.style.setProperty('--card-bg', '#251c33');
-                root.style.setProperty('--dark-light', '#2a1f3a');
-                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-            }
-        });
+<!-- Модалка репоста -->
+<div class="share-modal" id="shareModal">
+    <div class="share-modal-content">
+        <div class="share-modal-header">
+            <h3>Поделиться</h3>
+            <button class="share-close" onclick="closeShareModal()">&times;</button>
+        </div>
+        <div id="shareOptions">
+            <div class="share-option" onclick="shareToWall()">
+                <div class="share-option-icon wall"><i class="fas fa-newspaper"></i></div>
+                <div><h4>На свою стену</h4><p style="font-size:12px;color:var(--text-muted);">Опубликовать репост</p></div>
+            </div>
+            <div class="share-option" onclick="showFriendsForShare()">
+                <div class="share-option-icon friend"><i class="fas fa-user-friends"></i></div>
+                <div><h4>Отправить другу</h4><p style="font-size:12px;color:var(--text-muted);">В личном сообщении</p></div>
+            </div>
+        </div>
+        <div id="friendsListContainer" style="display:none;">
+            <div class="back-button" onclick="backToShareOptions()"><i class="fas fa-arrow-left"></i> Назад</div>
+            <div class="friends-list" id="friendsList"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
-        // Toggle User Agreement
-        function toggleAgreement() {
-            const content = document.getElementById('agreementContent');
-            const arrow = document.getElementById('agreementArrow');
-            
-            content.classList.toggle('show');
-            arrow.classList.toggle('rotate');
-        }
+{% block right_sidebar %}
+<div class="right-sidebar">
+    <div class="events">
+        <div class="sidebar-title"><i class="fas fa-calendar-check"></i> События <a href="/events" style="margin-left:auto;font-size:11px;">Все</a></div>
+        {% for e in events %}
+        <div class="event-item" onclick="location.href='/events?date={{ e.date }}'">
+            <div class="event-icon" style="background:{{ e.color or '#9d7be8' }};"><i class="fas fa-{{ e.icon or 'star' }}"></i></div>
+            <div><div class="event-name">{{ e.name }}</div><div class="event-date">{{ e.date }}</div></div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="sidebar-section">
+        <div class="sidebar-title"><i class="fas fa-user-friends"></i> Друзья <a href="/friends" style="margin-left:auto;font-size:11px;">Все</a></div>
+        <div class="friend-list">
+            {% for f in online_friends %}
+            <div class="friend-item" onclick="location.href='/user/{{ f.id }}'">
+                <img src="{{ f.avatar }}" class="friend-avatar"><span class="friend-name">{{ f.name }}</span><span class="friend-status online"></span>
+            </div>
+            {% endfor %}
+            {% for f in offline_friends %}
+            <div class="friend-item" onclick="location.href='/user/{{ f.id }}'">
+                <img src="{{ f.avatar }}" class="friend-avatar"><span class="friend-name">{{ f.name }}</span><span class="friend-status offline"></span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
 
-        // Like button functionality
-        document.querySelectorAll('.post-action-button').forEach(button => {
-            button.addEventListener('click', function() {
-                if (this.querySelector('span').textContent === 'Нравится') {
-                    this.innerHTML = '<i class="fas fa-thumbs-up"></i><span>Понравилось</span>';
-                    this.style.color = 'var(--secondary)';
-                    this.style.background = 'rgba(157, 123, 232, 0.15)';
+{% block scripts %}
+<script>
+    let selectedFiles = [];
+    let currentPostId = null;
+    let likedPosts = new Set();
+    let currentSharePostId = null;
+
+    function previewFiles(input) {
+        const container = document.getElementById('previewContainer');
+        container.innerHTML = '';
+        selectedFiles = Array.from(input.files);
+        selectedFiles.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const div = document.createElement('div');
+                div.className = 'preview-item';
+                if (file.type.startsWith('image/')) {
+                    div.innerHTML = `<img src="${e.target.result}"><span class="preview-remove" onclick="removeFile(${index})">&times;</span>`;
+                } else {
+                    div.innerHTML = `<video src="${e.target.result}"></video><span class="preview-remove" onclick="removeFile(${index})">&times;</span>`;
                 }
-            });
+                container.appendChild(div);
+            };
+            reader.readAsDataURL(file);
         });
+    }
 
-        // Story hover effect
-        document.querySelectorAll('.story-card:not(.add-story)').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-5px)';
-                this.style.boxShadow = '0 15px 30px rgba(157, 123, 232, 0.3)';
-            });
-
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-                this.style.boxShadow = '0 8px 20px var(--shadow)';
-            });
+    function removeFile(index) {
+        selectedFiles.splice(index, 1);
+        const input = document.querySelector('input[name=media]');
+        input.value = '';
+        const container = document.getElementById('previewContainer');
+        container.innerHTML = '';
+        selectedFiles.forEach((file, newIndex) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const div = document.createElement('div');
+                div.className = 'preview-item';
+                if (file.type.startsWith('image/')) {
+                    div.innerHTML = `<img src="${e.target.result}"><span class="preview-remove" onclick="removeFile(${newIndex})">&times;</span>`;
+                } else {
+                    div.innerHTML = `<video src="${e.target.result}"></video><span class="preview-remove" onclick="removeFile(${newIndex})">&times;</span>`;
+                }
+                container.appendChild(div);
+            };
+            reader.readAsDataURL(file);
         });
+    }
 
-        // Post button functionality
-        const postButton = document.querySelector('.post-button');
-        const postTextarea = document.querySelector('textarea');
+    async function publishPost() {
+        const formData = new FormData();
+        const content = document.getElementById('post-editor').value;
+        formData.append('content', content);
+        for (let file of selectedFiles) formData.append('media', file);
+        const btn = document.querySelector('.post-button');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Публикация...';
+        btn.disabled = true;
+        try {
+            const response = await fetch('/create_post', { method: 'POST', body: formData });
+            const data = await response.json();
+            if (data.success) {
+                showNotification('✅ Пост опубликован!');
+                setTimeout(() => location.reload(), 1000);
+            } else alert(data.error || 'Ошибка');
+        } catch(e) { alert('Ошибка соединения'); }
+        finally { btn.innerHTML = originalText; btn.disabled = false; }
+    }
 
-        postButton.addEventListener('click', function() {
-            if (postTextarea.value.trim() !== '') {
-                alert('✨ Ваш пост опубликован! Звезды благоволят вам ✨');
-                postTextarea.value = '';
-            } else {
-                alert('🌟 Пожалуйста, напишите что-нибудь...');
+    async function loadLikedState() {
+        try {
+            const response = await fetch('/get_user_likes');
+            const data = await response.json();
+            if (data.success && data.liked_posts) {
+                likedPosts = new Set(data.liked_posts);
+                likedPosts.forEach(postId => {
+                    const btn = document.getElementById('like-btn-' + postId);
+                    if (btn) { btn.classList.add('liked'); btn.innerHTML = '<i class="fas fa-thumbs-up"></i> Нравится'; }
+                });
             }
-        });
+        } catch(e) {}
+    }
 
-        // Add zodiac icons animation
-        setInterval(() => {
-            document.querySelectorAll('.zodiac-icon, .birthday-icon, .event-icon, .social-icon').forEach(icon => {
-                icon.style.boxShadow = '0 5px 20px rgba(157, 123, 232, 0.5)';
-                setTimeout(() => {
-                    icon.style.boxShadow = '0 5px 15px rgba(157, 123, 232, 0.3)';
-                }, 500);
+    async function likePost(postId) {
+        const btn = document.getElementById('like-btn-' + postId);
+        if (!btn) return;
+        btn.style.opacity = '0.6';
+        try {
+            const response = await fetch('/like_post/' + postId, { method: 'POST' });
+            const data = await response.json();
+            if (data.success) {
+                document.getElementById('likes-' + postId).innerText = data.new_count;
+                if (data.action === 'liked') {
+                    likedPosts.add(postId);
+                    btn.classList.add('liked');
+                    btn.innerHTML = '<i class="fas fa-thumbs-up"></i> Нравится';
+                } else {
+                    likedPosts.delete(postId);
+                    btn.classList.remove('liked');
+                    btn.innerHTML = '<i class="far fa-thumbs-up"></i> Нравится';
+                }
+            }
+        } catch(e) {}
+        finally { btn.style.opacity = '1'; }
+    }
+
+    function openShareModal(postId) {
+        currentSharePostId = postId;
+        document.getElementById('shareModal').classList.add('active');
+    }
+
+    function closeShareModal() {
+        document.getElementById('shareModal').classList.remove('active');
+        document.getElementById('shareOptions').style.display = 'block';
+        document.getElementById('friendsListContainer').style.display = 'none';
+    }
+
+    async function shareToWall() {
+        showNotification('🔄 Создание репоста...');
+        try {
+            const response = await fetch('/repost/' + currentSharePostId, { method: 'POST' });
+            const data = await response.json();
+            if (data.success) {
+                document.getElementById('shares-' + currentSharePostId).innerText = data.new_count;
+                showNotification('✅ Репост опубликован!');
+                setTimeout(() => location.reload(), 1000);
+            } else showNotification(data.message);
+        } catch(e) { showNotification('Ошибка'); }
+        closeShareModal();
+    }
+
+    async function showFriendsForShare() {
+        try {
+            const response = await fetch('/get_friends_list');
+            const data = await response.json();
+            if (data.success && data.friends) {
+                const friendsList = document.getElementById('friendsList');
+                if (data.friends.length === 0) friendsList.innerHTML = '<div style="padding:20px;text-align:center;">Нет друзей</div>';
+                else {
+                    friendsList.innerHTML = data.friends.map(f => `
+                        <div class="friend-select-item" onclick="shareToFriend(${f.id}, '${f.name}')">
+                            <img src="${f.avatar}" class="friend-select-avatar">
+                            <div><div class="friend-select-name">${f.name}</div><div style="font-size:11px;color:var(--text-muted);">${f.zodiac || ''}</div></div>
+                        </div>
+                    `).join('');
+                }
+                document.getElementById('shareOptions').style.display = 'none';
+                document.getElementById('friendsListContainer').style.display = 'block';
+            }
+        } catch(e) { showNotification('Ошибка загрузки друзей'); }
+    }
+
+    async function shareToFriend(friendId, friendName) {
+        showNotification(`📤 Отправка ${friendName}...`);
+        try {
+            const response = await fetch('/share_to_friend', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ post_id: currentSharePostId, friend_id: friendId })
             });
-        }, 3000);
-    </script>
-</body>
-</html>
-```
+            const data = await response.json();
+            if (data.success) {
+                document.getElementById('shares-' + currentSharePostId).innerText = data.new_count;
+                showNotification(`✅ Отправлено ${friendName}!`);
+            } else showNotification(data.message);
+        } catch(e) { showNotification('Ошибка'); }
+        closeShareModal();
+    }
 
-Что добавлено:
+    function backToShareOptions() {
+        document.getElementById('shareOptions').style.display = 'block';
+        document.getElementById('friendsListContainer').style.display = 'none';
+    }
 
-1. Пользовательское соглашение - полный текст документа, размещенный в подвале сайта
-2. Интерактивный заголовок - можно нажать на заголовок, чтобы развернуть/свернуть текст соглашения
-3. Структурированное отображение - документ разбит на разделы с заголовками для удобства чтения
-4. Стилизация - соглашение оформлено в общем стиле сайта с фиолетовыми акцентами
-5. Дата - указана дата 07.02.2026 в соответствии с документом
-6. Анимация - плавное раскрытие текста при клике на заголовок
+    async function openComments(postId) {
+        currentPostId = postId;
+        const modal = document.getElementById('commentsModal');
+        const commentsList = document.getElementById('commentsList');
+        commentsList.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin"></i> Загрузка...</div>';
+        modal.classList.add('active');
+        try {
+            const response = await fetch('/get_comments/' + postId);
+            const data = await response.json();
+            if (data.success && data.comments) {
+                if (data.comments.length === 0) commentsList.innerHTML = '<div style="text-align:center;padding:20px;">Нет комментариев</div>';
+                else {
+                    commentsList.innerHTML = data.comments.map(c => `
+                        <div class="comment-item">
+                            <img src="${c.author_avatar}" class="comment-avatar" onclick="location.href='/user/${c.user_id}'">
+                            <div class="comment-content">
+                                <div class="comment-author" onclick="location.href='/user/${c.user_id}'">${c.author_name}</div>
+                                <div class="comment-text">${c.content}</div>
+                                <div class="comment-time">${formatTime(c.created_at)}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+        } catch(e) { commentsList.innerHTML = '<div style="text-align:center;padding:20px;">Ошибка</div>'; }
+    }
+
+    function closeComments() {
+        document.getElementById('commentsModal').classList.remove('active');
+        document.getElementById('commentInput').value = '';
+    }
+
+    async function submitComment() {
+        const content = document.getElementById('commentInput').value.trim();
+        if (!content) return;
+        try {
+            const response = await fetch('/add_comment/' + currentPostId, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: content })
+            });
+            const data = await response.json();
+            if (data.success) {
+                const countSpan = document.getElementById('comments-count-' + currentPostId);
+                countSpan.innerText = parseInt(countSpan.innerText) + 1;
+                document.getElementById('commentInput').value = '';
+                await openComments(currentPostId);
+            }
+        } catch(e) {}
+    }
+
+    function formatTime(timestamp) {
+        if (!timestamp) return 'только что';
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diff = Math.floor((now - date) / 1000);
+        if (diff < 60) return 'только что';
+        if (diff < 3600) return Math.floor(diff / 60) + ' мин назад';
+        if (diff < 86400) return Math.floor(diff / 3600) + ' ч назад';
+        return date.toLocaleDateString();
+    }
+
+    function togglePostMenu(icon) {
+        const dropdown = icon.parentElement.querySelector('.post-dropdown');
+        document.querySelectorAll('.post-dropdown').forEach(d => { if (d !== dropdown) d.style.display = 'none'; });
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    }
+
+    async function editPost(postId) {
+        const newContent = prompt('Новый текст:');
+        if (!newContent) return;
+        try {
+            const response = await fetch('/edit_post/' + postId, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: newContent })
+            });
+            const data = await response.json();
+            if (data.success) {
+                document.getElementById('post-content-' + postId).innerHTML = '<p>' + newContent + '</p>';
+                showNotification('Пост обновлен');
+            }
+        } catch(e) {}
+    }
+
+    async function deletePost(postId) {
+        if (!confirm('Удалить пост?')) return;
+        try {
+            const response = await fetch('/delete_post/' + postId, { method: 'POST' });
+            const data = await response.json();
+            if (data.success) {
+                document.querySelector(`.post[data-post-id="${postId}"]`).remove();
+                showNotification('Пост удален');
+            }
+        } catch(e) {}
+    }
+
+    function reportPost() { showNotification('Жалоба отправлена'); }
+    function showNotification(msg) {
+        const n = document.createElement('div');
+        n.textContent = msg;
+        n.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--gradient);color:#fff;padding:10px 20px;border-radius:30px;z-index:9999;animation:fadeInUp 0.3s;';
+        document.body.appendChild(n);
+        setTimeout(() => n.remove(), 3000);
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.post-menu')) document.querySelectorAll('.post-dropdown').forEach(d => d.style.display = 'none');
+    });
+    document.getElementById('commentsModal')?.addEventListener('click', e => { if (e.target === e.currentTarget) closeComments(); });
+    document.getElementById('shareModal')?.addEventListener('click', e => { if (e.target === e.currentTarget) closeShareModal(); });
+    loadLikedState();
+</script>
+{% endblock %}

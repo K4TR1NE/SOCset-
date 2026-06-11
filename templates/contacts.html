@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% extends "layout.html" %}
+
+{% block title %}VEGA - Контакты{% endblock %}
+
+{% block content %}
+<h1 class="page-title"><i class="fas fa-envelope"></i> Контакты</h1>
+<div class="card" style="text-align: center;">
+    <p style="margin-bottom: 30px;">Свяжитесь с нами любым удобным способом</p>
+    <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+        <div><i class="fas fa-envelope" style="font-size: 30px; color: var(--secondary);"></i><br><a href="mailto:vega@social.ru">vega@social.ru</a></div>
+        <div><i class="fab fa-telegram" style="font-size: 30px; color: var(--secondary);"></i><br><a href="#">@vega_social</a></div>
+        <div><i class="fab fa-github" style="font-size: 30px; color: var(--secondary);"></i><br><a href="#">github.com/vega-social</a></div>
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>

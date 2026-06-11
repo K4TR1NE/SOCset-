@@ -1,1039 +1,436 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VEGA - Сообщества</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+{% extends "layout.html" %}
 
-        :root {
-            --primary: #9d7be8;
-            --primary-dark: #7c5bc0;
-            --secondary: #c77dff;
-            --accent: #b8a2ff;
-            --dark: #1a142b;
-            --dark-light: #2a1f3a;
-            --card-bg: #251c33;
-            --card-hover: #322841;
-            --text-light: #f0e9ff;
-            --text-muted: #cbbae3;
-            --gray: #a08bb4;
-            --success: #8a9eff;
-            --warning: #ffb86b;
-            --danger: #ff6b8b;
-            --shadow: rgba(0, 0, 0, 0.3);
-            --border-color: #3f3153;
-            --gradient: linear-gradient(135deg, #9d7be8 0%, #c77dff 100%);
-        }
+{% block title %}VEGA - Сообщества{% endblock %}
 
-        body {
-            background: linear-gradient(135deg, #1e1730 0%, #2a1f3a 100%);
-            color: var(--text-light);
-            line-height: 1.6;
-            min-height: 100vh;
-        }
+{% block extra_css %}
+<style>
+    .categories-bar {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid var(--border-color);
+    }
 
-        .container {
-            display: flex;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+    .categories-bar::-webkit-scrollbar {
+        height: 4px;
+    }
 
-        /* Header */
-        header {
-            background: rgba(37, 28, 51, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--border-color);
-        }
+    .category-chip {
+        padding: 10px 24px;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 30px;
+        cursor: pointer;
+        transition: all 0.3s;
+        white-space: nowrap;
+        color: var(--text-muted);
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        user-select: none;
+    }
 
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
+    .category-chip:hover {
+        background: rgba(157,123,232,0.15);
+        color: var(--secondary);
+        border-color: var(--secondary);
+    }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 26px;
-            font-weight: 700;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 1px;
-            text-decoration: none;
-        }
+    .category-chip.active {
+        background: var(--gradient);
+        color: white;
+        border-color: transparent;
+    }
 
-        .logo i {
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 30px;
-        }
+    .category-chip .count {
+        background: rgba(255,255,255,0.2);
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+    }
 
-        .search-bar {
-            display: flex;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 30px;
-            padding: 8px 20px;
-            width: 40%;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(5px);
-        }
+    .communities-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
 
-        .search-bar i {
-            color: var(--text-muted);
-        }
+    .community-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s;
+        display: flex;
+        gap: 20px;
+        cursor: pointer;
+    }
 
-        .search-bar input {
-            border: none;
-            background: transparent;
-            width: 100%;
-            margin-left: 10px;
-            outline: none;
-            color: var(--text-light);
-        }
+    .community-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px rgba(157,123,232,0.3);
+        border-color: var(--secondary);
+    }
 
-        .search-bar input::placeholder {
-            color: var(--gray);
-        }
+    .community-avatar-img {
+        width: 80px;
+        height: 80px;
+        border-radius: 16px;
+        object-fit: cover;
+        border: 2px solid var(--border-color);
+    }
 
-        .nav-icons {
-            display: flex;
-            gap: 20px;
-            font-size: 20px;
-        }
+    .community-content-col {
+        flex: 1;
+        min-width: 0;
+    }
 
-        .nav-icons a {
-            color: var(--text-muted);
-            transition: all 0.3s;
-            position: relative;
-            text-decoration: none;
-        }
+    .community-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+    }
 
-        .nav-icons a:hover,
-        .nav-icons a.active {
-            color: var(--secondary);
-            transform: translateY(-2px);
-        }
+    .community-name {
+        font-size: 18px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
 
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--gradient);
-            color: white;
-            font-size: 11px;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid var(--card-bg);
-        }
+    .verified-badge {
+        color: var(--success);
+        font-size: 16px;
+    }
 
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(157, 123, 232, 0.15);
-            padding: 5px 15px 5px 5px;
-            border-radius: 30px;
-            border: 1px solid var(--border-color);
-        }
+    .community-category-tag {
+        background: rgba(157,123,232,0.2);
+        color: var(--secondary);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+    }
 
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--secondary);
-            box-shadow: 0 0 10px rgba(157, 123, 232, 0.3);
-        }
+    .community-desc {
+        color: var(--text-muted);
+        font-size: 14px;
+        margin-bottom: 15px;
+        line-height: 1.5;
+    }
 
-        .avatar-sm {
-            width: 35px;
-            height: 35px;
-        }
+    .community-stats {
+        display: flex;
+        gap: 30px;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--border-color);
+    }
 
-        .avatar-lg {
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .stat-value {
+        font-weight: 700;
+        color: var(--text-light);
+        font-size: 18px;
+    }
+
+    .stat-label {
+        color: var(--text-muted);
+        font-size: 12px;
+        margin-top: 2px;
+    }
+
+    .online-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .online-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--success);
+    }
+
+    .community-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .community-actions .btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .btn-subscribe {
+        background: var(--success);
+        color: white;
+    }
+
+    .btn-unsubscribe {
+        background: rgba(255,255,255,0.08);
+        color: var(--text-muted);
+        border: 1px solid var(--border-color);
+    }
+
+    .filter-label {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 0;
+        cursor: pointer;
+        color: var(--text-muted);
+        transition: all 0.3s;
+    }
+
+    .filter-label:hover {
+        color: var(--text-light);
+    }
+
+    .filter-label input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: var(--primary);
+    }
+
+    @media (max-width: 768px) {
+        .community-card {
+            flex-direction: column;
+        }
+        .community-avatar-img {
             width: 60px;
             height: 60px;
         }
-
-        /* Sidebar */
-        .sidebar {
-            width: 280px;
-            padding: 20px 0;
-            position: sticky;
-            top: 80px;
-            height: calc(100vh - 80px);
-            overflow-y: auto;
-        }
-
-        .sidebar-section {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 20px var(--shadow);
-            border: 1px solid var(--border-color);
-        }
-
-        .sidebar-title {
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--text-light);
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .sidebar-title i {
-            color: var(--secondary);
-            font-size: 16px;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px 15px;
-            border-radius: 12px;
-            margin-bottom: 5px;
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .menu-item:hover {
-            background: rgba(157, 123, 232, 0.15);
-            color: var(--secondary);
-            transform: translateX(5px);
-        }
-
-        .menu-item.active {
-            background: var(--gradient);
-            color: white;
-            box-shadow: 0 5px 15px rgba(157, 123, 232, 0.4);
-        }
-
-        .menu-item i {
-            width: 20px;
-            text-align: center;
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            padding: 20px;
-            min-width: 0;
-        }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .page-title {
-            font-size: 28px;
-            font-weight: 700;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .btn {
-            padding: 10px 25px;
-            border-radius: 30px;
-            border: none;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            white-space: nowrap;
-        }
-
-        .btn-primary {
-            background: var(--gradient);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(157, 123, 232, 0.4);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-light);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(157, 123, 232, 0.15);
-            border-color: var(--secondary);
-        }
-
-        .btn-subscribe {
-            background: var(--success);
-            color: white;
-            padding: 8px 20px;
-            font-size: 13px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-subscribe:hover {
-            background: #7b8ef0;
-            transform: translateY(-2px);
-        }
-
-        .btn-unsubscribe {
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--text-muted);
-            border: 1px solid var(--border-color);
-            padding: 8px 20px;
-            font-size: 13px;
-        }
-
-        .btn-unsubscribe:hover {
-            background: rgba(255, 107, 139, 0.2);
-            border-color: var(--danger);
-            color: var(--danger);
-        }
-
-        /* Categories */
-        .categories-bar {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .categories-bar::-webkit-scrollbar {
-            height: 4px;
-        }
-
-        .categories-bar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .categories-bar::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-
-        .category-chip {
-            padding: 10px 24px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.3s;
-            white-space: nowrap;
-            color: var(--text-muted);
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            user-select: none;
-        }
-
-        .category-chip:hover {
-            background: rgba(157, 123, 232, 0.15);
-            color: var(--secondary);
-            border-color: var(--secondary);
-        }
-
-        .category-chip.active {
-            background: var(--gradient);
-            color: white;
-            border-color: transparent;
-            box-shadow: 0 5px 15px rgba(157, 123, 232, 0.4);
-        }
-
-        .category-chip .count {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        /* Communities Grid */
-        .communities-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .community-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 8px 20px var(--shadow);
-            border: 1px solid var(--border-color);
-            transition: all 0.3s;
-            display: flex;
-            gap: 20px;
-            cursor: pointer;
-        }
-
-        .community-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(157, 123, 232, 0.3);
-            border-color: var(--secondary);
-        }
-
-        .community-avatar-col {
-            flex-shrink: 0;
-        }
-
-        .community-avatar-img {
-            width: 80px;
-            height: 80px;
-            border-radius: 16px;
-            object-fit: cover;
-            border: 2px solid var(--border-color);
-        }
-
-        .community-content-col {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .community-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-        }
-
-        .community-name {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-light);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .verified-badge {
-            color: var(--success);
-            font-size: 16px;
-        }
-
-        .community-category-tag {
-            background: rgba(157, 123, 232, 0.2);
-            color: var(--secondary);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            white-space: nowrap;
-        }
-
-        .community-desc {
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-
         .community-stats {
-            display: flex;
-            gap: 30px;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
+            gap: 15px;
         }
+    }
+</style>
+{% endblock %}
 
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-        }
+{% block content %}
+<h1 class="page-title">Сообщества</h1>
 
-        .stat-value {
-            font-weight: 700;
-            color: var(--text-light);
-            font-size: 18px;
-        }
-
-        .stat-label {
-            color: var(--text-muted);
-            font-size: 12px;
-            margin-top: 2px;
-        }
-
-        .online-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .online-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--success);
-            box-shadow: 0 0 8px var(--success);
-        }
-
-        .community-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .community-actions .btn {
-            flex: 1;
-            justify-content: center;
-        }
-
-        /* Right Sidebar */
-        .right-sidebar {
-            width: 300px;
-            padding: 20px 0;
-            position: sticky;
-            top: 80px;
-            height: calc(100vh - 80px);
-            overflow-y: auto;
-        }
-
-        .sidebar-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 20px var(--shadow);
-            border: 1px solid var(--border-color);
-        }
-
-        .suggested-community {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .suggested-community:last-child {
-            border-bottom: none;
-        }
-
-        .suggested-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
-            object-fit: cover;
-            flex-shrink: 0;
-        }
-
-        .suggested-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .suggested-name {
-            font-weight: 600;
-            color: var(--text-light);
-            font-size: 14px;
-        }
-
-        .suggested-members {
-            color: var(--text-muted);
-            font-size: 12px;
-        }
-
-        .suggested-join {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--success);
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .suggested-join:hover {
-            transform: scale(1.1);
-            box-shadow: 0 5px 15px rgba(138, 158, 255, 0.4);
-        }
-
-        .filter-label {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 0;
-            cursor: pointer;
-            color: var(--text-muted);
-            transition: all 0.3s;
-        }
-
-        .filter-label:hover {
-            color: var(--text-light);
-        }
-
-        .filter-label input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-            accent-color: var(--primary);
-        }
-
-        /* Mobile responsive */
-        @media (max-width: 1200px) {
-            .right-sidebar {
-                display: none;
-            }
-
-            .community-card {
-                flex-direction: column;
-            }
-
-            .community-avatar-img {
-                width: 60px;
-                height: 60px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-                padding: 0;
-            }
-
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: static;
-                padding: 10px;
-            }
-
-            .sidebar-section {
-                display: flex;
-                overflow-x: auto;
-                gap: 10px;
-                padding: 10px;
-            }
-
-            .menu-item {
-                white-space: nowrap;
-                flex-shrink: 0;
-            }
-
-            .menu-item span {
-                display: inline;
-            }
-
-            .sidebar-title {
-                display: none;
-            }
-
-            .main-content {
-                padding: 10px;
-            }
-
-            .community-stats {
-                gap: 15px;
-            }
-
-            .page-header {
-                flex-direction: column;
-                gap: 10px;
-                align-items: flex-start;
-            }
-
-            .search-bar {
-                display: none;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Header -->
-    <header>
-        <div class="header-content">
-            <a href="/" class="logo">
-                <i class="fas fa-star"></i>
-                <span>VEGA</span>
-            </a>
-
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Поиск сообществ..." id="communitySearch" onkeyup="searchCommunities()">
-            </div>
-
-            <div class="nav-icons">
-                <a href="/"><i class="fas fa-home"></i></a>
-                <a href="/friends">
-                    <i class="fas fa-user-friends"></i>
-                    <span class="notification-badge">3</span>
-                </a>
-                <a href="/communities" class="active">
-                    <i class="fas fa-users"></i>
-                </a>
-                <a href="#">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge">{{ notification_count }}</span>
-                </a>
-            </div>
-
-            <div class="user-profile">
-                <img src="{{ current_user.avatar }}" alt="Аватар" class="avatar">
-                <span>{{ current_user.name }}</span>
-            </div>
-        </div>
-    </header>
-
-    <div class="container">
-       <div class="sidebar">
-    <div class="sidebar-section">
-        <div class="sidebar-title">
-            <i class="fas fa-crystal-ball"></i> Меню
-        </div>
-        <a href="/" class="menu-item">
-            <i class="fas fa-home"></i>
-            <span>Лента</span>
-        </a>
-        <a href="/friends" class="menu-item {% if request.path == '/friends' %}active{% endif %}">
-            <i class="fas fa-user-friends"></i>
-            <span>Друзья</span>
-        </a>
-        <a href="/communities" class="menu-item {% if request.path == '/communities' %}active{% endif %}">
-            <i class="fas fa-users"></i>
-            <span>Сообщества</span>
-        </a>
-        <a href="#" class="menu-item">
-            <i class="fas fa-images"></i>
-            <span>Фотографии</span>
-        </a>
-        <a href="#" class="menu-item">
-            <i class="fas fa-video"></i>
-            <span>Видео</span>
-        </a>
-        <a href="#" class="menu-item">
-            <i class="fas fa-calendar-alt"></i>
-            <span>События</span>
-        </a>
-        <a href="/settings" class="menu-item {% if request.path == '/settings' %}active{% endif %}">
-            <i class="fas fa-cog"></i>
-            <span>Настройки</span>
-        </a>
+<div class="categories-bar">
+    <div class="category-chip active" onclick="filterByCategory('all')">
+        <i class="fas fa-globe"></i> Все
+        <span class="count">{{ communities|length }}</span>
     </div>
+    {% for category in categories %}
+    <div class="category-chip" onclick="filterByCategory('{{ category.name }}')">
+        <i class="fas {{ category.icon }}"></i> {{ category.name }}
+        <span class="count">{{ category.count }}</span>
+    </div>
+    {% endfor %}
 </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="page-header">
-                <h1 class="page-title">Сообщества</h1>
-                <button class="btn btn-primary" onclick="createCommunity()">
-                    <i class="fas fa-plus"></i> Создать сообщество
-                </button>
-            </div>
-
-            <!-- Categories -->
-            <div class="categories-bar">
-                <div class="category-chip active" onclick="filterByCategory('all')">
-                    <i class="fas fa-globe"></i> Все
-                    <span class="count">{{ communities|length }}</span>
-                </div>
-                {% for category in categories %}
-                <div class="category-chip" onclick="filterByCategory('{{ category.name }}')">
-                    <i class="fas {{ category.icon }}"></i> {{ category.name }}
-                    <span class="count">{{ category.count }}</span>
-                </div>
-                {% endfor %}
-            </div>
-
-            <!-- Communities List -->
-            <div class="communities-grid" id="communitiesGrid">
-                {% for community in communities %}
-                <div class="community-card" data-category="{{ community.category }}" data-name="{{ community.name.lower() }}" data-desc="{{ community.description.lower() }}">
-                    <div class="community-avatar-col">
-                        <img src="{{ community.avatar }}" alt="{{ community.name }}" class="community-avatar-img">
-                    </div>
-
-                    <div class="community-content-col">
-                        <div class="community-header">
-                            <div class="community-name">
-                                {{ community.name }}
-                                {% if community.is_verified %}
-                                <span class="verified-badge" title="Подтвержденное сообщество">
-                                    <i class="fas fa-check-circle"></i>
-                                </span>
-                                {% endif %}
-                            </div>
-                            <span class="community-category-tag">{{ community.category }}</span>
-                        </div>
-
-                        <div class="community-desc">{{ community.description }}</div>
-
-                        <div class="community-stats">
-                            <div class="stat-item">
-                                <span class="stat-value">{{ community.members_count|format_number }}</span>
-                                <span class="stat-label">участников</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-value">
-                                    <span class="online-indicator">
-                                        <span class="online-dot"></span> {{ community.online_count }}
-                                    </span>
-                                </span>
-                                <span class="stat-label">онлайн</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-value">{{ community.posts_count|format_number }}</span>
-                                <span class="stat-label">постов</span>
-                            </div>
-                        </div>
-
-                        <div class="community-actions">
-                            {% if community.is_subscribed %}
-                            <button class="btn btn-unsubscribe" onclick="toggleSubscribe({{ community.id }}, this)">
-                                <i class="fas fa-check"></i> Вы подписаны
-                            </button>
-                            {% else %}
-                            <button class="btn btn-subscribe" onclick="toggleSubscribe({{ community.id }}, this)">
-                                <i class="fas fa-plus"></i> Подписаться
-                            </button>
-                            {% endif %}
-                            <button class="btn btn-secondary" onclick="viewCommunity({{ community.id }})">
-                                <i class="fas fa-info-circle"></i> Инфо
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
+<div class="communities-grid" id="communitiesGrid">
+    {% for community in communities %}
+    <div class="community-card" data-category="{{ community.category }}" data-name="{{ community.name.lower() }}" data-desc="{{ community.description.lower() }}">
+        <div class="community-avatar-col">
+            <img src="{{ community.avatar }}" alt="{{ community.name }}" class="community-avatar-img">
         </div>
-
-        <!-- Right Sidebar -->
-        <div class="right-sidebar">
-            <div class="sidebar-card">
-                <div class="sidebar-title">
-                    <i class="fas fa-star"></i> Рекомендуемые
+        <div class="community-content-col">
+            <div class="community-header">
+                <div class="community-name">
+                    {{ community.name }}
+                    {% if community.is_verified %}
+                    <span class="verified-badge" title="Подтвержденное сообщество">
+                        <i class="fas fa-check-circle"></i>
+                    </span>
+                    {% endif %}
                 </div>
-
-                {% for community in communities[:3] %}
-                <div class="suggested-community">
-                    <img src="{{ community.avatar }}" alt="{{ community.name }}" class="suggested-avatar">
-                    <div class="suggested-info">
-                        <div class="suggested-name">{{ community.name }}</div>
-                        <div class="suggested-members">{{ community.members_count|format_number }} участников</div>
-                    </div>
-                    <button class="suggested-join" onclick="quickJoin(this)" title="Подписаться">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </div>
-                {% endfor %}
+                <span class="community-category-tag">{{ community.category }}</span>
             </div>
-
-            <div class="sidebar-card">
-                <div class="sidebar-title">
-                    <i class="fas fa-filter"></i> Фильтры
+            <div class="community-desc">{{ community.description }}</div>
+            <div class="community-stats">
+                <div class="stat-item">
+                    <span class="stat-value">{{ "{:,}".format(community.members_count).replace(',', ' ') }}</span>
+                    <span class="stat-label">участников</span>
                 </div>
-                <label class="filter-label">
-                    <input type="checkbox" id="subscribedFilter" onchange="applyFilters()">
-                    <span>Только мои подписки</span>
-                </label>
-                <label class="filter-label">
-                    <input type="checkbox" id="verifiedFilter" onchange="applyFilters()">
-                    <span>Только проверенные</span>
-                </label>
+                <div class="stat-item">
+                    <span class="stat-value">
+                        <span class="online-indicator">
+                            <span class="online-dot"></span> {{ community.online_count }}
+                        </span>
+                    </span>
+                    <span class="stat-label">онлайн</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">{{ "{:,}".format(community.posts_count).replace(',', ' ') }}</span>
+                    <span class="stat-label">постов</span>
+                </div>
+            </div>
+            <div class="community-actions">
+                {% if community.is_subscribed %}
+                <button class="btn btn-unsubscribe" onclick="toggleSubscribe(this)">
+                    <i class="fas fa-check"></i> Вы подписаны
+                </button>
+                {% else %}
+                <button class="btn btn-subscribe" onclick="toggleSubscribe(this)">
+                    <i class="fas fa-plus"></i> Подписаться
+                </button>
+                {% endif %}
+                <button class="btn btn-secondary" onclick="viewCommunity()">
+                    <i class="fas fa-info-circle"></i> Инфо
+                </button>
             </div>
         </div>
     </div>
+    {% endfor %}
+</div>
+{% endblock %}
 
-    <script>
-        // Активная категория
-        let currentCategory = 'all';
+{% block right_sidebar %}
+<div class="right-sidebar" style="width: 280px; flex-shrink: 0;">
+    <div class="sidebar-card" style="background: var(--card-bg); border-radius: 16px; padding: 18px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+        <div class="sidebar-title">
+            <i class="fas fa-star"></i> Рекомендуемые
+        </div>
+        {% for community in communities[:3] %}
+        <div class="suggested-community" style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border-color);">
+            <img src="{{ community.avatar }}" alt="{{ community.name }}" style="width: 45px; height: 45px; border-radius: 12px; object-fit: cover;">
+            <div style="flex: 1;">
+                <div style="font-weight: 600; font-size: 14px;">{{ community.name }}</div>
+                <div style="color: var(--text-muted); font-size: 12px;">{{ "{:,}".format(community.members_count).replace(',', ' ') }} участников</div>
+            </div>
+            <button class="suggested-join" onclick="quickJoin(this)" style="width: 32px; height: 32px; border-radius: 50%; background: var(--success); color: white; border: none; cursor: pointer;">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
 
-        // Фильтрация по категориям
-        function filterByCategory(category) {
-            currentCategory = category;
+    <div class="sidebar-card" style="background: var(--card-bg); border-radius: 16px; padding: 18px; border: 1px solid var(--border-color);">
+        <div class="sidebar-title">
+            <i class="fas fa-filter"></i> Фильтры
+        </div>
+        <label class="filter-label">
+            <input type="checkbox" id="subscribedFilter" onchange="applyFilters()">
+            <span>Только мои подписки</span>
+        </label>
+        <label class="filter-label">
+            <input type="checkbox" id="verifiedFilter" onchange="applyFilters()">
+            <span>Только проверенные</span>
+        </label>
+    </div>
+</div>
+{% endblock %}
 
-            // Обновляем чипы
-            document.querySelectorAll('.category-chip').forEach(chip => {
-                chip.classList.remove('active');
-            });
+{% block scripts %}
+<script>
+    let currentCategory = 'all';
+    let searchQuery = '';
 
-            // Находим активный чип
-            const chips = document.querySelectorAll('.category-chip');
-            chips.forEach(chip => {
-                const chipText = chip.textContent.trim();
-                if (category === 'all' && chipText.includes('Все')) {
-                    chip.classList.add('active');
-                } else if (chipText.includes(category)) {
-                    chip.classList.add('active');
-                }
-            });
+    function filterByCategory(category) {
+        currentCategory = category;
+        document.querySelectorAll('.category-chip').forEach(chip => chip.classList.remove('active'));
+        event.target.closest('.category-chip').classList.add('active');
+        applyFilters();
+    }
 
-            applyFilters();
-        }
+    function searchCommunities() {
+        searchQuery = document.getElementById('communitySearch')?.value.toLowerCase() || '';
+        applyFilters();
+    }
 
-        // Поиск сообществ
-        function searchCommunities() {
-            applyFilters();
-        }
+    function applyFilters() {
+        const subscribedOnly = document.getElementById('subscribedFilter')?.checked || false;
+        const verifiedOnly = document.getElementById('verifiedFilter')?.checked || false;
+        const cards = document.querySelectorAll('.community-card');
 
-        // Применение всех фильтров
-        function applyFilters() {
-            const searchQuery = document.getElementById('communitySearch').value.toLowerCase();
-            const subscribedOnly = document.getElementById('subscribedFilter').checked;
-            const verifiedOnly = document.getElementById('verifiedFilter').checked;
+        cards.forEach(card => {
+            let show = true;
 
-            const cards = document.querySelectorAll('.community-card');
+            if (currentCategory !== 'all' && card.dataset.category !== currentCategory) {
+                show = false;
+            }
 
-            cards.forEach(card => {
-                let show = true;
-
-                // Фильтр по категории
-                if (currentCategory !== 'all' && card.dataset.category !== currentCategory) {
+            if (searchQuery) {
+                const name = card.dataset.name;
+                const desc = card.dataset.desc;
+                if (!name.includes(searchQuery) && !desc.includes(searchQuery)) {
                     show = false;
                 }
-
-                // Фильтр по поиску
-                if (searchQuery) {
-                    const name = card.dataset.name;
-                    const desc = card.dataset.desc;
-                    if (!name.includes(searchQuery) && !desc.includes(searchQuery)) {
-                        show = false;
-                    }
-                }
-
-                card.style.display = show ? 'flex' : 'none';
-            });
-        }
-
-        // Подписка/отписка
-        function toggleSubscribe(communityId, button) {
-            if (button.classList.contains('btn-subscribe')) {
-                button.className = 'btn btn-unsubscribe';
-                button.innerHTML = '<i class="fas fa-check"></i> Вы подписаны';
-                showNotification('✅ Вы подписались на сообщество!');
-            } else {
-                button.className = 'btn btn-subscribe';
-                button.innerHTML = '<i class="fas fa-plus"></i> Подписаться';
-                showNotification('Вы отписались от сообщества');
             }
-        }
 
-        // Просмотр сообщества
-        function viewCommunity(communityId) {
-            showNotification('📱 Открытие сообщества #' + communityId);
-        }
-
-        // Создать сообщество
-        function createCommunity() {
-            const name = prompt('🌟 Введите название нового сообщества:');
-            if (name && name.trim()) {
-                showNotification('🎉 Сообщество "' + name + '" успешно создано!');
-            }
-        }
-
-        // Быстрое присоединение
-        function quickJoin(button) {
-            const icon = button.querySelector('i');
-            if (icon.classList.contains('fa-plus')) {
-                icon.classList.remove('fa-plus');
-                icon.classList.add('fa-check');
-                button.style.background = 'var(--secondary)';
-                showNotification('✅ Вы подписались!');
-            } else {
-                icon.classList.remove('fa-check');
-                icon.classList.add('fa-plus');
-                button.style.background = 'var(--success)';
-                showNotification('Вы отписались');
-            }
-        }
-
-        // Уведомления
-        function showNotification(message) {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: var(--gradient);
-                color: white;
-                padding: 15px 25px;
-                border-radius: 12px;
-                box-shadow: 0 10px 30px rgba(157, 123, 232, 0.5);
-                z-index: 9999;
-                font-weight: 500;
-                animation: slideIn 0.3s ease-out;
-                backdrop-filter: blur(10px);
-                border: 1px solid rgba(255, 255, 255, 0.2);
-            `;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s ease-out';
-                setTimeout(() => notification.remove(), 300);
-            }, 2500);
-        }
-
-        // Добавляем анимации
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes slideOut {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Ховер-эффекты на карточках
-        document.querySelectorAll('.community-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-2px)';
-                this.style.boxShadow = '0 15px 30px rgba(157, 123, 232, 0.3)';
-            });
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-                this.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.3)';
-            });
+            card.style.display = show ? 'flex' : 'none';
         });
-    </script>
-</body>
-</html>
+    }
+
+    function toggleSubscribe(button) {
+        if (button.classList.contains('btn-subscribe')) {
+            button.className = 'btn btn-unsubscribe';
+            button.innerHTML = '<i class="fas fa-check"></i> Вы подписаны';
+            showNotification('✅ Вы подписались на сообщество!');
+        } else {
+            button.className = 'btn btn-subscribe';
+            button.innerHTML = '<i class="fas fa-plus"></i> Подписаться';
+            showNotification('Вы отписались от сообщества');
+        }
+    }
+
+    function viewCommunity() {
+        showNotification('📱 Открытие сообщества');
+    }
+
+    function quickJoin(button) {
+        const icon = button.querySelector('i');
+        if (icon.classList.contains('fa-plus')) {
+            icon.classList.remove('fa-plus');
+            icon.classList.add('fa-check');
+            button.style.background = 'var(--secondary)';
+            showNotification('✅ Вы подписались!');
+        } else {
+            icon.classList.remove('fa-check');
+            icon.classList.add('fa-plus');
+            button.style.background = 'var(--success)';
+            showNotification('Вы отписались');
+        }
+    }
+
+    function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: var(--gradient); color: white; padding: 12px 24px;
+            border-radius: 30px; z-index: 9999; font-weight: 500;
+            animation: fadeInUp 0.3s ease-out;
+        `;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+    }
+
+    // Добавляем анимацию
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Глобальный поиск из шапки
+    const globalSearch = document.getElementById('globalSearch');
+    if (globalSearch) {
+        globalSearch.addEventListener('input', function() {
+            searchQuery = this.value.toLowerCase();
+            applyFilters();
+        });
+    }
+</script>
+{% endblock %}
